@@ -58,6 +58,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# Project specific
 .idea/
 app.db
 db.sqlite3
+staticfiles/
+venv/

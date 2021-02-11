@@ -1,16 +1,30 @@
 import timeago
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
+
+
+# noinspection PyUnusedLocal
+@receiver(post_save, sender=User)
+def create_core_user(sender, instance, **kwargs):
+    CoreUser.objects.get_or_create(user=instance)
 
 
 class Project(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     last_sync = models.DateTimeField(null=True, blank=True)
+    image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
         return self.name
+
+
+class CoreUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    projects = models.ManyToManyField(Project)
 
 
 class Song(models.Model):
@@ -35,6 +49,7 @@ class Lock(models.Model):
         return f"{self.project} locked by {self.name} because {self.reason}"
 
 
+# TODO: move to syncprojects app
 class Sync(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
