@@ -60,3 +60,4 @@ target/
 
 .idea/
 app.db
+db.sqlite3
