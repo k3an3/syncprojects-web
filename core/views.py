@@ -1,5 +1,16 @@
-from django.http import HttpResponse
+from django.views import generic
+
+from core.models import Project, Song
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the syncprojects index.")
+class IndexView(generic.ListView):
+    def get_queryset(self):
+        return Project.objects.order_by('-name')
+
+
+class ProjectDetailView(generic.DetailView):
+    model = Project
+
+
+class SongDetailView(generic.DetailView):
+    model = Song

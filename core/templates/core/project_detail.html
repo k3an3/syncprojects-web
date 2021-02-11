@@ -1,0 +1,10 @@
+{{ song }}
+{% if songs %}
+    <ul>
+    {% for song in songs %}
+    <li><a href="/project/{{ project.id }}/songs/{{ song.id }}">{{ song.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No songs are available.</p>
+{% endif %}
