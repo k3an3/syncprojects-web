@@ -1,8 +1,7 @@
 from django.contrib.auth.models import User, Group
-from django.utils import timezone
 from rest_framework import serializers
 
-from core.models import Project
+from core.models import Project, Song, Lock
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,7 +16,23 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'name']
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class SongSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Song
+        fields = "__all__"
+
+
+class LockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lock
+        fields = "__all__"
+
+
+class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+    is_locked = serializers.BooleanField()
+    songs = SongSerializer(many=True)
+    locks = LockSerializer(many=True)
+
     class Meta:
         model = Project
-        fields = ['id', 'name', 'created_at', 'image']
+        fields = "__all__"

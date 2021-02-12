@@ -14,7 +14,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class SongAdmin(admin.ModelAdmin):
-    fields = ['name', 'url']
+    fields = ['name', 'url', 'project']
 
 
 class CoreUserInline(admin.StackedInline):

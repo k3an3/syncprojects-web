@@ -1,13 +1,14 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
+from django.http import JsonResponse
 from rest_framework import permissions
-from rest_framework.views import APIView
+from rest_framework import viewsets
+from rest_framework.decorators import api_view, action
 
-from api.serializers import UserSerializer, GroupSerializer
-from core.models import Project
+from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, SongSerializer
+from api.utils import get_tokens_for_user
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
@@ -16,7 +17,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
@@ -25,7 +26,14 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class ProjectList(viewsets.ModelViewSet):
-    queryset = Project.objects.all()
-    serializer_class = GroupSerializer
+class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.coreuser.projects.all()
+
+
+@api_view(['GET'])
+def fetch_user_tokens(request):
+    return JsonResponse(get_tokens_for_user(request.user))

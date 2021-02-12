@@ -15,16 +15,34 @@ def create_core_user(sender, instance, **kwargs):
 class Project(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
-    last_sync = models.DateTimeField(null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
         return self.name
 
+    def songs(self):
+        return self.song_set.all()
+
+    def locks(self):
+        return self.lock_set.all()
+
+    def is_locked(self) -> bool:
+        for lock in self.locks():
+            if not lock.end_time or lock.end_time > timezone.now():
+                return True
+            lock.delete()
+        return False
+
+    def is_locked_by_user(self, user):
+        return self.is_locked() and len(self.lock_set.filter(user=user)) > 0
+
 
 class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     projects = models.ManyToManyField(Project)
+
+    def member_of(self, project: Project):
+        return self.projects.get(id=project.id)
 
 
 class Song(models.Model):
@@ -33,6 +51,7 @@ class Song(models.Model):
     url = models.CharField(max_length=300, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
+    sync_enabled = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -43,7 +62,7 @@ class Lock(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     start_time = models.DateTimeField(default=timezone.now)
     end_time = models.DateTimeField(null=True, blank=True)
-    reason = models.CharField(max_length=100)
+    reason = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f"{self.project} locked by {self.name} because {self.reason}"
