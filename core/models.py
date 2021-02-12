@@ -42,7 +42,10 @@ class CoreUser(models.Model):
     projects = models.ManyToManyField(Project)
 
     def member_of(self, project: Project):
-        return self.projects.get(id=project.id)
+        try:
+            return self.projects.get(id=project.id)
+        except Project.DoesNotExist:
+            return False
 
 
 class Song(models.Model):
