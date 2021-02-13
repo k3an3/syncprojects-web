@@ -134,3 +134,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
