@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
 from core.models import Project, Song, Lock
+from sync.models import Sync
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -28,10 +29,17 @@ class LockSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class SyncSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sync
+        fields = "__all__"
+
+
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    is_locked = serializers.BooleanField()
-    songs = SongSerializer(many=True)
-    locks = LockSerializer(many=True)
+    is_locked = serializers.BooleanField(read_only=True)
+    songs = SongSerializer(many=True, read_only=True)
+    locks = LockSerializer(many=True, read_only=True)
+    syncs = SyncSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project

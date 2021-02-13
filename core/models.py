@@ -1,4 +1,3 @@
-import timeago
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.db.models.signals import post_save
@@ -29,12 +28,22 @@ class Project(models.Model):
     def is_locked(self) -> bool:
         for lock in self.locks():
             if not lock.end_time or lock.end_time > timezone.now():
-                return True
+                return lock
             lock.delete()
         return False
 
     def is_locked_by_user(self, user):
-        return self.is_locked() and len(self.lock_set.filter(user=user)) > 0
+        if lock := self.is_locked():
+            f =  lock.user == user
+            return f
+        return False
+
+    def syncs(self, count: int = 10):
+        return self.sync_set.all()[:count]
+
+    def unlock(self):
+        for lock in self.locks():
+            lock.delete()
 
 
 class CoreUser(models.Model):
@@ -68,17 +77,4 @@ class Lock(models.Model):
     reason = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.project} locked by {self.name} because {self.reason}"
-
-
-# TODO: move to syncprojects app
-class Sync(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    sync_time = models.DateTimeField(default=timezone.now)
-
-    def last_sync_str(self):
-        return timeago.format(self.sync_time, timezone.now())
-
-    def __str__(self):
-        return f"{self.user} sync at {self.sync_time}"
+        return f"{self.project} locked by {self.user} because {self.reason}"
