@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
@@ -28,6 +27,8 @@ class UserAdmin(BaseUserAdmin):
     inlines = (CoreUserInline,)
 
 
+admin.site.site_header = 'Syncprojects Admin'
+admin.site.site_title = 'Syncprojects Administration'
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Song, SongAdmin)
 # Use custom user inline
