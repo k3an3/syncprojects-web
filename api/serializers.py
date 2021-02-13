@@ -35,7 +35,7 @@ class SyncSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer):
     is_locked = serializers.BooleanField(read_only=True)
     songs = SongSerializer(many=True, read_only=True)
     locks = LockSerializer(many=True, read_only=True)
