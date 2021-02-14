@@ -1,10 +1,9 @@
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DEBUG = False
+BASE_DIR = Path(__file__).resolve().parent
+DEBUG = True
 
 ALLOWED_HOSTS = []
-SECRET_KEY = ''
 
 DATABASES = {
     'default': {
@@ -22,7 +21,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+#STATIC_ROOT = BASE_DIR / "staticfiles"
 
 INTERNAL_IPS = [
     '127.0.0.1',
