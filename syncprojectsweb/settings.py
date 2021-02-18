@@ -135,6 +135,8 @@ REST_FRAMEWORK = {
     )
 }
 
+PRIVATE_KEY = ""
+
 try:
     from local_settings import *
 except ImportError:
