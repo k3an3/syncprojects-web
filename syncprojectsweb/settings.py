@@ -137,6 +137,8 @@ REST_FRAMEWORK = {
 
 PRIVATE_KEY = ""
 
+LOGIN_REDIRECT_URL = '/'
+
 try:
     from local_settings import *
 except ImportError:

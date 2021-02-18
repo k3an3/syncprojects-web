@@ -31,7 +31,7 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
-    permission_classes = [UserHasProjectAccess]
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
 
     def get_queryset(self):
         return self.request.user.coreuser.projects.all()

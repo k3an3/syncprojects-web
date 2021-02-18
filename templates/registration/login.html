@@ -1,4 +1,5 @@
 {% load static %}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -45,13 +46,15 @@
 <body class="text-center">
 
 <main class="form-signin">
-    <form>
-        <img class="mb-4" src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+    <form method="POST">
+        <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-        <label for="inputEmail" class="visually-hidden">Email address</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-        <label for="inputPassword" class="visually-hidden">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <label for="{{ form.username.id_for_label }}" class="visually-hidden">Username</label>
+        <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
+               class="form-control" placeholder="Username" required autofocus>
+        <label for="{{ form.password.id_for_label }}" class="visually-hidden">Password</label>
+        <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
+               class="form-control" placeholder="Password" required>
         {% csrf_token %}
         <div class="checkbox mb-3">
             <label>
@@ -59,10 +62,9 @@
             </label>
         </div>
         <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
+        <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
     </form>
 </main>
-
 
 
 </body>
