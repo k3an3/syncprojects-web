@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 
-from api.permissions import UserHasProjectAccess
+from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
 from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
 from api.utils import get_tokens_for_user
 from core.models import Lock
@@ -15,9 +15,22 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, AdminOrSelfOnly]
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return User.objects.all().order_by('-date_joined')
+        return User.objects.filter(pk=self.request.user.pk)
+
+    def retrieve(self, request, pk=None):
+        if pk == "self" or pk == request.user.pk:
+            user = request.user
+        elif request.user.is_superuser:
+            user = User.objects.get(pk=pk)
+        else:
+            return super().retrieve(request, pk)
+        return Response(UserSerializer(user, context={'request': request}).data)
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,10 +56,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if request.method == 'PUT':
             locked_by_user = project.is_locked_by_user(request.user)
             if locked_by_user and not request.data.get('force'):
-                return Response({'status': 'locked', 'locked_by': 'self'}, status=409)
+                return Response({'status': 'locked', 'locked_by': 'self'})
             elif not locked_by_user and (lock := project.is_locked()):
-                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time},
-                                status=409)
+                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time})
             else:
                 return Response(LockSerializer(Lock.objects.create(project=project,
                                                                    user=request.user,
@@ -56,7 +68,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 project.unlock()
                 return Response({'status': 'unlocked'})
             elif lock := project.is_locked():
-                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time}, status=408)
+                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time},
+                                status=408)
             else:
                 return Response({'status': 'unlocked', 'locked_by': None}, status=412)
 

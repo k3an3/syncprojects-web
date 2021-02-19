@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views import UserViewSet, GroupViewSet, ProjectViewSet, fetch_user_tokens
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r'users', UserViewSet, 'user')
 router.register(r'groups', GroupViewSet)
 router.register(r'projects', ProjectViewSet, 'project')
 
