@@ -64,3 +64,4 @@ app.db
 db.sqlite3
 staticfiles/
 venv/
+local_settings.py
