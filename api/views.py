@@ -58,11 +58,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
             if locked_by_user and not request.data.get('force'):
                 return Response({'status': 'locked', 'locked_by': 'self'})
             elif not locked_by_user and (lock := project.is_locked()):
-                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time})
+                return Response({'status': 'locked',
+                                 'locked_by': lock.user.username,
+                                 'until': lock.end_time,
+                                 'since': lock.start_time
+                                 })
             else:
-                return Response(LockSerializer(Lock.objects.create(project=project,
-                                                                   user=request.user,
-                                                                   reason=request.data.get('reason'))).data)
+                return Response(LockSerializer(
+                    Lock.objects.create(
+                        project=project,
+                        user=request.user,
+                        reason=request.data.get('reason'))).data,
+                                until=request.data.get('until')
+                                )
         elif request.method == 'DELETE':
             if project.is_locked_by_user(request.user) or request.data.get('force'):
                 project.unlock()
