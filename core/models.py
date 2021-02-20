@@ -69,14 +69,3 @@ class Song(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Lock(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    start_time = models.DateTimeField(default=timezone.now)
-    end_time = models.DateTimeField(null=True, blank=True)
-    reason = models.CharField(max_length=100, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.project} locked by {self.user} because {self.reason}"

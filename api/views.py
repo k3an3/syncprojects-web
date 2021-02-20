@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
 from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
 from api.utils import get_tokens_for_user
-from core.models import Lock
+from sync.models import Lock
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -68,9 +68,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
                     Lock.objects.create(
                         project=project,
                         user=request.user,
-                        reason=request.data.get('reason'))).data,
-                                until=request.data.get('until')
-                                )
+                        reason=request.data.get('reason'),
+                        end_time=request.data.get('until'),
+                    )).data)
         elif request.method == 'DELETE':
             if project.is_locked_by_user(request.user) or request.data.get('force'):
                 project.unlock()
