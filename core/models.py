@@ -36,7 +36,7 @@ class Project(models.Model):
 
     def is_locked_by_user(self, user):
         if lock := self.is_locked():
-            f =  lock.user == user
+            f = lock.user == user
             return f
         return False
 
@@ -57,6 +57,9 @@ class CoreUser(models.Model):
             return self.projects.get(id=project.id)
         except Project.DoesNotExist:
             return False
+
+    def __str__(self):
+        return self.user.username
 
 
 class Song(models.Model):

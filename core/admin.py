@@ -9,10 +9,6 @@ for model in (Lock, Sync):
     admin.site.register(model)
 
 
-class ProjectAdmin(admin.ModelAdmin):
-    fields = ['name']
-
-
 class SongAdmin(admin.ModelAdmin):
     fields = ['name', 'url', 'project']
 
@@ -23,8 +19,19 @@ class CoreUserInline(admin.StackedInline):
     verbose_name_plural = "core user"
 
 
+class CoreUserProjectInline(admin.StackedInline):
+    model = CoreUser.projects.through
+    can_delete = False
+    verbose_name_plural = "core user"
+
+
 class UserAdmin(BaseUserAdmin):
     inlines = (CoreUserInline,)
+
+
+class ProjectAdmin(admin.ModelAdmin):
+    fields = ['name', 'image']
+    inlines = (CoreUserProjectInline,)
 
 
 admin.site.site_header = 'Syncprojects Admin'
