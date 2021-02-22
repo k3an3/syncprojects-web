@@ -95,8 +95,9 @@ def fetch_user_tokens(request):
 def update_webhook(request):
     if request.headers.get('X-Gogs-Signature'):
         secret = bytes(GOGS_SECRET.encode())
-        mac = hmac.new(secret, msg=request.get_data(), digestmod=hashlib.sha256)
+        mac = hmac.new(secret, msg=request.data, digestmod=hashlib.sha256)
         if hmac.compare_digest(mac.hexdigest(), request.headers['X-Gogs-Signature']):
-            update()
+            if request.data.get("ref") == "refs/heads/master":
+                update()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
     return Response({}, status=status.HTTP_403_FORBIDDEN)
