@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-from api.views import UserViewSet, GroupViewSet, ProjectViewSet, fetch_user_tokens
+from api.views import UserViewSet, GroupViewSet, ProjectViewSet, fetch_user_tokens, update_webhook
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, 'user')
@@ -17,5 +17,6 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    path('webauth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('webauth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('webhook/update/', update_webhook, name='update_webhook')
 ]

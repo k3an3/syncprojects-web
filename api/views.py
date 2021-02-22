@@ -1,14 +1,18 @@
+import hashlib
+import hmac
+
 from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
 from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
-from api.utils import get_tokens_for_user
+from api.utils import get_tokens_for_user, update
 from sync.models import Lock
+from syncprojectsweb.settings import GOGS_SECRET
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -85,3 +89,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def fetch_user_tokens(request):
     return JsonResponse(get_tokens_for_user(request.user))
+
+
+@api_view(['POST'])
+def update_webhook(request):
+    if request.headers.get('X-Gogs-Signature'):
+        secret = bytes(GOGS_SECRET.encode())
+        mac = hmac.new(secret, msg=request.get_data(), digestmod=hashlib.sha256)
+        if hmac.compare_digest(mac.hexdigest(), request.headers['X-Gogs-Signature']):
+            update()
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+    return Response({}, status=status.HTTP_403_FORBIDDEN)

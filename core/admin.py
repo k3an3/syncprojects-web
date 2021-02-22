@@ -19,7 +19,7 @@ class CoreUserInline(admin.StackedInline):
     verbose_name_plural = "core user"
 
 
-class CoreUserProjectInline(admin.StackedInline):
+class CoreUserProjectInline(admin.TabularInline):
     model = CoreUser.projects.through
     can_delete = False
     verbose_name_plural = "core user"
