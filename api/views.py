@@ -80,10 +80,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 project.unlock()
                 return Response({'status': 'unlocked'})
             elif lock := project.is_locked():
-                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time},
-                                status=408)
+                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time})
             else:
-                return Response({'status': 'unlocked', 'locked_by': None}, status=412)
+                return Response({'status': 'unlocked', 'locked_by': None})
 
 
 @api_view(['GET'])

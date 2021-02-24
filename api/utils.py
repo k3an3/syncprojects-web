@@ -18,4 +18,5 @@ def get_tokens_for_user(user: User):
 def update():
     subprocess.run(["git", "pull"])
     subprocess.run(["./manage.py", "migrate"])
+    subprocess.run(["./manage.py", "collectstatic", "--noinput"])
     subprocess.run(["sudo", "systemctl", "restart", SYSTEMD_UNIT])

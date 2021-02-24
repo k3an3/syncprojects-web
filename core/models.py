@@ -35,6 +35,8 @@ class Project(models.Model):
         return False
 
     def is_locked_by_user(self, user):
+        # TODO: has anyone else locked it?
+        # TODO: maybe query directly
         if lock := self.is_locked():
             f = lock.user == user
             return f
