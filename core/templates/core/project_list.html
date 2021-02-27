@@ -34,21 +34,16 @@
                         <div class="card-body">
                             <a href="{% url 'core:project_detail' project.id %}"><h5
                                     class="card-title">{{ project.name }}</h5></a>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the card's content.</p>
+                            {% comment %} <p class="card-text">Some quick example text to build on the card title and make up the bulk
+                                of the card's content.</p>{% endcomment %}
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
+    {% else %}
+        <p>
+        <div class="alert alert-info"><strong>No projects here!</strong> Get started and <a href="">create one</a></div>
+        !</p>
     {% endif %}
 {% endblock %}
-{% if project_list %}
-    <ul>
-        {% for project in project_list %}
-            <li><a href="/projects/{{ project.id }}/">{{ project.name }}</a></li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No projects are available.</p>
-{% endif %}

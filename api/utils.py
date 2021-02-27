@@ -1,5 +1,6 @@
 import subprocess
 
+import sys
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -17,6 +18,9 @@ def get_tokens_for_user(user: User):
 
 def update():
     subprocess.run(["git", "pull"])
-    subprocess.run(["./manage.py", "migrate"])
-    subprocess.run(["./manage.py", "collectstatic", "--noinput"])
+    try:
+        subprocess.run([sys.executable, "./manage.py", "migrate"])
+        subprocess.run([sys.executable, "./manage.py", "collectstatic", "--noinput"])
+    except TypeError:
+        pass
     subprocess.run(["sudo", "systemctl", "restart", SYSTEMD_UNIT])

@@ -58,8 +58,14 @@
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Jump to project" aria-label="Search">
-    <ul class="navbar-nav px-3">
+    {# <input class="form-control form-control-dark w-100" type="text" placeholder="Jump to project" aria-label="Search">#}
+    <ul class="navbar-nav px-3 list-group-horizontal">
+        {% if request.user.is_superuser %}
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="{% url 'admin:index' %}"><span class="text-primary">Admin</span></a>
+            </li>
+            &nbsp;
+        {% endif %}
         <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'logout' %}">Sign out {{ request.user.username }}</a>
         </li>
@@ -77,7 +83,9 @@
             </nav>
         {% endblock %}
 
+        {% block main %}
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        {% endblock %}
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 {% block header %}
                 {% endblock %}
@@ -97,6 +105,9 @@
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
         integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.min.js"
+        integrity="sha512-L6Z/YtIPQ7eU3BProP34WGU5yIRk7tNHk7vaC2dB1Vy1atz6wl9mCkTPPZ2Rn1qPr+vY2mZ9odZLdGYuaBk7dQ=="
         crossorigin="anonymous"></script>
 <script src="dashboard.js"></script>
 </body>
