@@ -13,6 +13,14 @@ class IndexView(LoginRequiredMixin, generic.ListView):
 class ProjectDetailView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.DetailView):
     model = Project
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['songs'] = self.get_object().songs()
+        return context
+
 
 class SongDetailView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.DetailView):
     model = Song
+
+    def get_object(self, queryset=None):
+        return Song.objects.get(id=self.kwargs['song'], project=self.kwargs['proj'])

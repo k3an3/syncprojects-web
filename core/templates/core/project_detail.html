@@ -23,69 +23,38 @@
                  style="padding-left: 10px; object-fit: cover; object-position: center">
         </div>
     {% endif %}
-    <ul class="nav flex-column">
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">
-                <span data-feather="home"></span>
-                Dashboard
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span data-feather="file"></span>
-                Lyrics
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span data-feather="shopping-cart"></span>
-                Sound
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span data-feather="users"></span>
-                Assignments
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span data-feather="layers"></span>
-                Accounting
-            </a>
-        </li>
-    </ul>
 
-    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-        <span>Administration</span>
-        <a class="link-secondary" href="#" aria-label="Add a new report">
-            <span data-feather="plus-circle"></span>
-        </a>
-    </h6>
-    <ul class="nav flex-column mb-2">
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span data-feather="file-text"></span>
-                Edit Project
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span data-feather="file-text"></span>
-                Manage Members
-            </a>
-        </li>
-    </ul>
 {% endblock %}
+
+{% include 'core/sidebar.html' %}
 
 {% block content %}
+    {% if songs %}
+        <table class="table table-borderless">
+            <thead>
+            <tr>
+                <th scope="col">Songs</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for song in songs %}
+                <tr>
+                    <td><a href="{% url 'core:song_detail' project.id song.id %}">{{ song.name }}</a></td>
+                    <td>
+                        {% if song.url %}
+                            <audio controls preload="metadata" src="{{ song.url }}"> Your browser does not support the
+                                <code>audio</code> element.
+                            </audio>
+                        {% else %}
+                            <span class="text-muted">No audio</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-primary"><strong>No Songs here!</strong> Get started and <a href="">create one</a></div>
+    {% endif %}
 {% endblock %}
-{% if songs %}
-    <ul>
-        {% for song in songs %}
-            <li><a href="/project/{{ project.id }}/songs/{{ song.id }}">{{ song.name }}</a></li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No songs are available.</p>
-{% endif %}

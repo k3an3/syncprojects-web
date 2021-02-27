@@ -55,11 +55,19 @@ class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     projects = models.ManyToManyField(Project)
 
-    def is_member_of(self, project: Project):
-        try:
-            return self.projects.get(id=project.id)
-        except Project.DoesNotExist:
-            return False
+    def is_member_of(self, obj):
+        if isinstance(obj, Project):
+            try:
+                return self.projects.get(id=obj.id)
+            except Project.DoesNotExist:
+                return False
+        elif isinstance(obj, Song):
+            try:
+                return self.projects.get(id=obj.project.id)
+            except Project.DoesNotExist:
+                return False
+        else:
+            raise NotImplementedError()
 
     def __str__(self):
         return self.user.username

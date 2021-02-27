@@ -1,0 +1,10 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}Logout{% endblock %}
+{% block content %}
+    <main class="form-signin">
+        <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
+        <h1>Goodbye!</h1>
+        <p><a href="{% url 'login' %}">Back to log in</a></p>
+    </main>
+{% endblock %}
