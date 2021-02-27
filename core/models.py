@@ -17,7 +17,6 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(null=True, blank=True)
-    directory_name = models.CharField(max_length=200, null=True, blank=True)
     sync_enabled = models.BooleanField(default=True)
 
     def __str__(self):
@@ -73,6 +72,7 @@ class Song(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     sync_enabled = models.BooleanField(default=True)
+    directory_name = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.name
