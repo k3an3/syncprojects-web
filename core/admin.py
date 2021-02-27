@@ -10,7 +10,7 @@ for model in (Lock, Sync):
 
 
 class SongAdmin(admin.ModelAdmin):
-    fields = ['name', 'url', 'project', 'directory_name', 'sync_enabled']
+    fields = ['name', 'url', 'project', 'sync_enabled']
 
 
 class CoreUserInline(admin.StackedInline):
@@ -30,7 +30,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    fields = ['name', 'image']
+    fields = ['name', 'image', 'directory_name', 'sync_enabled']
     inlines = (CoreUserProjectInline,)
 
 
