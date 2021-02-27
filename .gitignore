@@ -66,3 +66,4 @@ staticfiles/
 venv/
 local_settings.py
 media/
+peaks/

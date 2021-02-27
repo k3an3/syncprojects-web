@@ -5,12 +5,12 @@ from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from rest_framework import permissions, status
 from rest_framework import viewsets
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
 from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
-from api.utils import get_tokens_for_user, update
+from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from sync.models import Lock
 from syncprojectsweb.settings import GOGS_SECRET
 
@@ -92,6 +92,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
 def fetch_user_tokens(request):
     return JsonResponse(get_tokens_for_user(request.user))
 
@@ -106,3 +107,17 @@ def update_webhook(request):
                 update()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
     return Response({}, status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([CsrfExemptSessionAuthentication])
+def peaks(request):
+    # TODO: authz, CSRF
+    try:
+        return Response({
+                            'awp_write_peaks': awp_write_peaks,
+                            'awp_read_peaks': awp_read_peaks,
+                        }[request.data['action']](request.data), status=status.HTTP_200_OK)
+    except KeyError:
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)

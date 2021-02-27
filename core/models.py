@@ -1,3 +1,5 @@
+import base64
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
@@ -85,3 +87,6 @@ class Song(models.Model):
     # TODO: Songs themselves should have locks. Replicate or move functionality from projects
     def __str__(self):
         return self.name
+
+    def encode_url(self):
+        return 'ebsfm:' + base64.b64encode(self.url.encode()).decode()

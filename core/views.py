@@ -24,3 +24,8 @@ class SongDetailView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.D
 
     def get_object(self, queryset=None):
         return Song.objects.get(id=self.kwargs['song'], project=self.kwargs['proj'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['project'] = self.get_object().project
+        return context
