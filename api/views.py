@@ -76,12 +76,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
                         end_time=request.data.get('until'),
                     )).data)
         elif request.method == 'DELETE':
-            if project.is_locked_by_user(request.user) or request.data.get('force'):
+            if project.is_locked_by_user(request.user) or request.data.get('force') and request.user.is_superuser:
+                # success
                 project.unlock()
-                return Response({'status': 'unlocked'})
+                return Response({'result': 'success'})
             elif lock := project.is_locked():
-                return Response({'status': 'locked', 'locked_by': lock.user.username, 'until': lock.end_time})
+                # locked by someone else
+                return Response({'status': 'locked',
+                                 'locked_by': lock.user.username,
+                                 'since': lock.start_time,
+                                 'until': lock.end_time})
             else:
+                # already unlocked
                 return Response({'status': 'unlocked', 'locked_by': None})
 
 
