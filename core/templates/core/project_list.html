@@ -1,8 +1,10 @@
 {% extends 'core/base.html' %}
 {% load static %}
+
 {% block sidebar_container %}{% endblock %}
+
 {% block header %}
-    <h1 class="h2">Dashboard</h1>
+    <h1 class="h2">Project Dashboard</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">New</button>
@@ -25,7 +27,8 @@
                     <div class="card" style="width: 18rem;">
                         <a href="{% url 'core:project_detail' project.id %}">
                             {% if project.image %}
-                                <img src="{{ project.image.url }}" class="card-img-top" alt="...">
+                                <img style="object-fit: cover;" height="192px" src="{{ project.image.url }}"
+                                     class="card-img-top" alt="...">
                             {% else %}
                                 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARIAAAC4CAMAAAAYGZMtAAAAOVBMVEXz8/PS1NP////29vb8/Pz08vPV19bn5+fw8PDj5OPX2tnr6uvP1NLP09PT09Pz9fTe3t7n6uji4eLV9fj5AAAE/klEQVR4nO2dYZtjMBSFWVNEpxL9/z92pSkiJ1qdwe6V835cRtv3OTeXxJL9IQHZv/4C/x+9ki8y4ZQUGRmhEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEmAnJYXWxQHoBxt/932U1Oo4aiFK2vwobt3WX34nJY8vuzsPJ52clJRHIEpJuXmgYzRSlFxs4Vy3PWaUurnl1dYHpRJAupJvKpnDlABMCUAlAAsHYEoApgRINyU6W5gWSTUl9VUZY1RXRzall5I+HrVqnpMvjcrCrCSoJNNd6U0XNR0oSa5wtJpPoZVd8ikJjFgns+3ppeRahkryZjbIppcSE5l+Vv4OySm5tpGJ/llMkiscGElgRj65lDRRJWamJK2U1Di4opK0UrKoZHJCJRElaRVOxsIJ0bHTkrz1FaSWkvACx1H6x00uJdHBxPi7pKYkGpNyZiC1wsm0xpO12SVOginRdejEcArJd9K2rQnmX5NLic2JNuMY25Yq3J6gkl5KUd+bvCzbslE1fM0EC+dJXV+vkSWLRFPymnRTsghTAjAlAFMCUAnAwgGYEoApAZgSgEoAFg7AlABMCXDGlPzyg8+lRNfKlI2xe10uP/2gcxVO5SYQ7eThopK3X+tMKSmq8QYjmFB11MaYt7/2TCmpvFuuok7sDm1+f/NB50lJn5H2lZNLVsWWO5HTKNGVTYC3QANhUOPmcOVmzlkKR1ew/K3sIt44yBb+WrCpXzx64iQpKapQyLN2BiXFfHW8efHoiXOkJGqkdzIVSLhDs1w750hJFbu/d6gdt0O4adnJGZQUcSO3b8+JWe/kBIUTdN9JiX0WydBwa7hHrV1yIj8l8bvPRmwvfpzcGxDXxPuO+JQsjKxTGEzfdZ5OsHbiSmSn5J0Rm5OhQPD+zmjtSE8JthJkPIE3ebh3zInslCz0GsjJc/fIfcCRc3vRSpZ6jc/ttZNI35FcOP2V3tpHrX3SdwSnZMXIOoXhMc/2dBJsC/uO3JR8YiT35k/enseKTUmxptf4PMeT4m0vFqtkXa+J5STSdxr/Vk+hhXOpyo+VTH0HLgFmfUdmSnSXr242QU76MVbb8WT2560/xopMyYcj6/TL78P6zv1F3xGZEpxnXYsaph7vsGl0IlHJp70mcOJY7jvyCmfldc0S41oGTrOUzonAlOA4sJpb/rLvOCfyUrLwIIX1DH1Hq7DvuF4sLyVvJhZXcB+udxTkzeqSp+TXKZn6TqFCJVaFvML5fUq8vhMeyymRlpJiAyWLTuyDolJMyc1zEhzNKZGWkm2UDD9azw8nc3jdYizJn/+p/nLR/UW113eckvQKZ3LirgG9CwSZw2v8CSQ/dOKYLqyFpmQrJZOTohv+Ke2U3DwnenAi9FQNlzF/qmR0onVXtpMSaSkpcCXm50y1YxcO21amksji1HZOZBZOVt3f8cFLte7jrRbZtf9Le3yBKdkbgSnZG6YEkJOSxxvZVNd11c6oUsq7ttxL6g6CSsQqOeSlfQ4hSux59+aHPIqdlGz//tbj4PuEASoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKACoBqASgEoBKAKfkqyAjTgmZQyXAX7B/b3SjnfiiAAAAAElFTkSuQmCC"
                                      class="card-img-top" alt="...">
