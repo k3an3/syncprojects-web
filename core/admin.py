@@ -10,7 +10,7 @@ for model in (Lock, Sync):
 
 
 class SongAdmin(admin.ModelAdmin):
-    fields = ['name', 'url', 'project']
+    fields = ['name', 'url', 'project', 'directory_name', 'sync_enabled']
 
 
 class CoreUserInline(admin.StackedInline):
