@@ -48,5 +48,5 @@ class CoreUserModelTests(TestCase):
 
     def test_membership(self):
         self.user.coreuser.projects.add(self.project_1)
-        self.assertTrue(self.user.coreuser.member_of(self.project_1))
-        self.assertFalse(self.user.coreuser.member_of(self.project_2))
+        self.assertTrue(self.user.coreuser.is_member_of(self.project_1))
+        self.assertFalse(self.user.coreuser.is_member_of(self.project_2))

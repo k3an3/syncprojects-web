@@ -55,7 +55,7 @@ class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     projects = models.ManyToManyField(Project)
 
-    def member_of(self, project: Project):
+    def is_member_of(self, project: Project):
         try:
             return self.projects.get(id=project.id)
         except Project.DoesNotExist:
@@ -74,5 +74,6 @@ class Song(models.Model):
     sync_enabled = models.BooleanField(default=True)
     directory_name = models.CharField(max_length=200, null=True, blank=True)
 
+    # TODO: Songs themselves should have locks. Replicate or move functionality from projects
     def __str__(self):
         return self.name
