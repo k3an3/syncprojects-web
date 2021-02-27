@@ -7,7 +7,7 @@ from core.permissions import UserHasObjectPermissionMixin
 
 class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
-        return Project.objects.order_by('-name')
+        return self.request.user.coreuser.projects.order_by('-name')
 
 
 class ProjectDetailView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.DetailView):

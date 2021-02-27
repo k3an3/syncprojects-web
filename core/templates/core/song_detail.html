@@ -27,6 +27,7 @@
                 loopingOn: false,
                 autoAdvanceToNextMedia: false,
                 mediaEndAction: "stop",
+                createDownloadIconsInPlaylist: false,
                 soundCloudAppId: "",
                 gDriveAppId: "",
                 useKeyboardNavigationForPlayback: true,
@@ -95,7 +96,7 @@
     </div>
     <div id="awp-playlist-list">
         <ul id="playlist-audio1">
-            <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.url }}"
+            <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.encode_url }}"
                 data-artist="{{ song.project.name }}" data-title="{{ song.name }}"
                 data-thumb="{{ song.project.image.url }}"></li>
         </ul>
