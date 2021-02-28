@@ -50,7 +50,7 @@ def awp_read_peaks(_, song):
                 return ''
         peaks = [float(n) for n in song.peaks.split(',')]
         return peaks
-    except (ValueError, JSONDecodeError, HTTPError):
+    except (ValueError, AttributeError, JSONDecodeError, HTTPError):
         return ''
 
 
