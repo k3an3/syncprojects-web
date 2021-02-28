@@ -1,0 +1,21 @@
+{% extends 'core/base.html' %}
+{% load bootstrap5 %}
+
+
+{% block header %}
+    <h1 class="h2">Delete Project {{ project.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+{% block content %}
+    {% bootstrap_messages %}
+    <div class="alert alert-danger">
+        <p class="lead">Are you sure?</p>
+        <p>This is permanent and cannot be reversed. All project and song data will be deleted. If you are positive,
+            click the button below.</p>
+    </div>
+    <form class="form" method="post">
+        {% csrf_token %}
+        <button class="btn btn-lg btn-danger" type="submit">DELETE</button>
+    </form>
+{% endblock %}

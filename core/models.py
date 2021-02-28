@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -53,6 +54,9 @@ class Project(models.Model):
         for lock in self.locks():
             lock.delete()
 
+    def get_absolute_url(self):
+        return reverse('core:project-detail', kwargs={'pk': self.pk})
+
 
 class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -97,3 +101,6 @@ class Song(models.Model):
     def clear_peaks(self):
         self.peaks = ''
         self.save()
+
+    def get_absolute_url(self):
+        return reverse('core:song-detail', kwargs={'proj': self.project.id, 'song': self.id})

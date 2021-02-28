@@ -60,12 +60,14 @@
     <h1 class="h2">{{ song.name }}</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Edit Song</button>
-        </div>
-        <div class="btn-group me-2">
-            <a href="{% url 'core:song_clear_peaks' project.id song.id %}">
+            <a href="{% url 'core:song-clear-peaks' project.id song.id %}">
                 <button type="button" class="btn btn-sm btn-outline-secondary">Redraw Waveform</button>
             </a>
+        </div>
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Edit Song</button>
+            <a href="{% url 'core:song-delete' project.id song.id %}" class="btn btn-sm btn-outline-danger">Delete
+                Song</a>
         </div>
     </div>
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+{% load bootstrap5 %}
+
+
+{% block header %}
+    <h1 class="h2">Create New Project</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+{% block content %}
+    {% bootstrap_messages %}
+    <form class="form" method="post">
+        {% bootstrap_form form %}
+        {% csrf_token %}
+        <br>
+        <button class="btn btn-lg btn-primary" type="submit">Create</button>
+    </form>
+{% endblock %}

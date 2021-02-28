@@ -5,8 +5,10 @@
     <h1 class="h2">{{ project.name }} Dashboard</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-primary">New Song</button>
+            <a href="{% url 'core:song-create' project.id %}" class="btn btn-sm btn-outline-primary">New Song</a>
             <button type="button" class="btn btn-sm btn-outline-secondary">Edit Project</button>
+            <a href="{% url 'core:project-delete' project.id %}" class="btn btn-sm btn-outline-danger">Delete
+                Project</a>
         </div>
 
         <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -40,7 +42,7 @@
             <tbody>
             {% for song in songs %}
                 <tr>
-                    <td><a href="{% url 'core:song_detail' project.id song.id %}">{{ song.name }}</a></td>
+                    <td><a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a></td>
                     <td>
                         {% if song.url %}
                             <audio controls preload="metadata" src="{{ song.url }}"> Your browser does not support the
