@@ -93,3 +93,7 @@ class Song(models.Model):
 
     def encode_url(self):
         return 'ebsfm:' + base64.b64encode(self.url.encode()).decode()
+
+    def clear_peaks(self):
+        self.peaks = ''
+        self.save()

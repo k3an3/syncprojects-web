@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import generic
+from django.shortcuts import redirect
+from django.views import generic, View
 
 from core.models import Project, Song
 from core.permissions import UserHasObjectPermissionMixin
@@ -19,13 +20,22 @@ class ProjectDetailView(LoginRequiredMixin, UserHasObjectPermissionMixin, generi
         return context
 
 
-class SongDetailView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.DetailView):
+class SongLookupBaseView(LoginRequiredMixin, UserHasObjectPermissionMixin):
     model = Song
 
     def get_object(self, queryset=None):
         return Song.objects.get(id=self.kwargs['song'], project=self.kwargs['proj'])
 
+
+class SongDetailView(SongLookupBaseView, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['project'] = self.get_object().project
         return context
+
+
+class ClearSongPeaksView(SongLookupBaseView, View):
+    def get(self, *args, **kwargs):
+        song = self.get_object()
+        song.clear_peaks()
+        return redirect('core:song_detail', song.project.id, song.id)

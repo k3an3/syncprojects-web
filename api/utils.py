@@ -46,12 +46,11 @@ def awp_read_peaks(_, song):
     try:
         if SEAFILE_API_URL and SEAFILE_TOKEN:
             if check_song_updated(song):
-                song.peaks = ''
-                song.save()
+                song.clear_peaks()
                 return ''
         peaks = [float(n) for n in song.peaks.split(',')]
         return peaks
-    except (JSONDecodeError, HTTPError):
+    except (ValueError, JSONDecodeError, HTTPError):
         return ''
 
 
