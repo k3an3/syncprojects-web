@@ -30,7 +30,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    fields = ['name', 'image', 'sync_enabled']
+    fields = ['name', 'image', 'sync_enabled', 'seafile_uuid']
     inlines = (CoreUserProjectInline,)
 
 

@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
 from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
+from core.models import Song
 from sync.models import Lock
 from syncprojectsweb.settings import GOGS_SECRET
 
@@ -115,9 +116,15 @@ def update_webhook(request):
 def peaks(request):
     # TODO: authz, CSRF
     try:
+        song = Song.objects.get(name=request.data['id'])
+    except Song.DoesNotExist:
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
+    if not request.user.coreuser.has_access_to(song):
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
+    try:
         return Response({
                             'awp_write_peaks': awp_write_peaks,
                             'awp_read_peaks': awp_read_peaks,
-                        }[request.data['action']](request.data), status=status.HTTP_200_OK)
+                        }[request.data['action']](request.data, song), status=status.HTTP_200_OK)
     except KeyError:
         return Response({}, status=status.HTTP_400_BAD_REQUEST)

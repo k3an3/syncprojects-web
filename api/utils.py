@@ -1,13 +1,16 @@
+import datetime
 import subprocess
-from os import mkdir
-from os.path import join, exists, isdir
+from json import JSONDecodeError
 
+import requests
 import sys
 from django.contrib.auth.models import User
+from pytz import UTC
+from requests import HTTPError
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from syncprojectsweb.settings import SYSTEMD_UNIT
+from syncprojectsweb.settings import SYSTEMD_UNIT, SEAFILE_API_URL, SEAFILE_TOKEN
 
 
 def get_tokens_for_user(user: User):
@@ -29,30 +32,38 @@ def update():
     subprocess.run(["sudo", "systemctl", "restart", SYSTEMD_UNIT])
 
 
-def awp_write_peaks(data):
+def awp_write_peaks(data, song):
     # TODO: use redis or something fast
-    dest_file = join('peaks', f"{data['id']}.peaks")
-    if not isdir('peaks'):
-        mkdir('peaks')
-    if exists(dest_file):
-        # TODO: when to update based on song changes?
+    if song.peaks:
         return {'message': 'exists'}
     else:
-        with open(dest_file, "w") as f:
-            f.write(data['peaks'])
+        song.peaks = data['peaks']
+        song.save()
         return {'message': 'success'}
 
 
-def awp_read_peaks(data):
+def awp_read_peaks(_, song):
     try:
-        dest_file = join('peaks', f"{data['id']}.peaks")
-        if not isdir('peaks'):
-            mkdir('peaks')
-        with open(dest_file) as f:
-            peaks = [float(n) for n in f.read().split(',')]
+        if SEAFILE_API_URL and SEAFILE_TOKEN:
+            if check_song_updated(song):
+                song.peaks = ''
+                song.save()
+                return ''
+        peaks = [float(n) for n in song.peaks.split(',')]
         return peaks
-    except (KeyError, FileNotFoundError):
+    except (JSONDecodeError, HTTPError):
         return ''
+
+
+def check_song_updated(song):
+    r = requests.get(f"{SEAFILE_API_URL}repos/{song.project.seafile_uuid}/file/detail/",
+                     params={'p': f"{song.name}.mp3"},
+                     headers={'Authorization': f'Token {SEAFILE_TOKEN}'}).json()
+    mtime = datetime.datetime.utcfromtimestamp(r['mtime'])
+    old_mtime = song.last_mtime
+    song.last_mtime = mtime
+    song.save()
+    return not old_mtime or mtime.replace(tzinfo=UTC) > old_mtime
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):

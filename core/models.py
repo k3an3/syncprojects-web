@@ -20,6 +20,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(null=True, blank=True)
     sync_enabled = models.BooleanField(default=True)
+    seafile_uuid = models.UUIDField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -57,7 +58,7 @@ class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     projects = models.ManyToManyField(Project)
 
-    def is_member_of(self, obj):
+    def has_access_to(self, obj):
         if isinstance(obj, Project):
             try:
                 return self.projects.get(id=obj.id)
@@ -83,6 +84,8 @@ class Song(models.Model):
     updated_at = models.DateTimeField(default=timezone.now)
     sync_enabled = models.BooleanField(default=True)
     directory_name = models.CharField(max_length=200, null=True, blank=True)
+    last_mtime = models.DateTimeField(null=True, blank=True)
+    peaks = models.TextField(null=True, blank=True)
 
     # TODO: Songs themselves should have locks. Replicate or move functionality from projects
     def __str__(self):

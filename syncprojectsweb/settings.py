@@ -149,6 +149,8 @@ LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SYSTEMD_UNIT = "syncprojects"
 GOGS_SECRET = ""
+SEAFILE_API_URL = ""
+SEAFILE_TOKEN = ""
 
 try:
     from local_settings import *
