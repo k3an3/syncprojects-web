@@ -21,7 +21,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(null=True, blank=True)
     sync_enabled = models.BooleanField(default=True)
-    seafile_uuid = models.UUIDField(null=True, blank=True)
+    seafile_uuid = models.UUIDField(null=True, blank=True, help_text="ID of project from Seafile (optional)")
 
     def __str__(self):
         return self.name
@@ -83,11 +83,13 @@ class CoreUser(models.Model):
 class Song(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    url = models.CharField(max_length=300, null=True, blank=True)
+    url = models.CharField(max_length=300, null=True, blank=True,
+                           help_text="URL to audio file for this song (optional)")
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     sync_enabled = models.BooleanField(default=True)
-    directory_name = models.CharField(max_length=200, null=True, blank=True)
+    directory_name = models.CharField(max_length=200, null=True, blank=True,
+                                      help_text="Specify a different folder name for Syncprojects-client to use (optional)")
     last_mtime = models.DateTimeField(null=True, blank=True)
     peaks = models.TextField(null=True, blank=True)
 
