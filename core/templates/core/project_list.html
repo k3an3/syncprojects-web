@@ -45,7 +45,8 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="alert alert-primary"><strong>No projects here!</strong> Get started and <a href="">create one</a>
+        <div class="alert alert-primary"><strong>No projects here!</strong> Get started and <a
+                href="{% url 'core:project-create' %}">create one</a>
         </div>
     {% endif %}
 {% endblock %}

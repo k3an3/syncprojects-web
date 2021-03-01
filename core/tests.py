@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
-from core.models import Project
+from core.models import Project, Song
 from sync.models import Lock
 
 
@@ -44,9 +44,31 @@ class CoreUserModelTests(TestCase):
     def setUp(self):
         self.project_1 = Project.objects.create(name="test1")
         self.project_2 = Project.objects.create(name="test1")
+        self.song_1 = Song.objects.create(name='foo', project=self.project_1)
+        self.song_2 = Song.objects.create(name='bar', project=self.project_2)
         self.user = User.objects.create(username="tester")
 
     def test_membership(self):
         self.user.coreuser.projects.add(self.project_1)
         self.assertTrue(self.user.coreuser.has_access_to(self.project_1))
         self.assertFalse(self.user.coreuser.has_access_to(self.project_2))
+
+    def test_membership_song(self):
+        self.user.coreuser.projects.add(self.project_1)
+        self.assertTrue(self.user.coreuser.has_access_to(self.song_1))
+        self.assertFalse(self.user.coreuser.has_access_to(self.song_2))
+
+    def test_membership_unhandled_type(self):
+        with self.assertRaises(NotImplementedError):
+            self.user.coreuser.has_access_to("asdf")
+
+
+class SongModelTests(TestCase):
+    def setUp(self):
+        self.project_1 = Project.objects.create(name="test1")
+        self.song = Song.objects.create(name='foo', project=self.project_1)
+
+    def test_clear_peaks(self):
+        self.song.peaks = 'asdfy'
+        self.song.clear_peaks()
+        self.assertEquals(self.song.peaks, '')
