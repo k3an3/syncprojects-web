@@ -37,6 +37,11 @@ class ProjectModelTests(TestCase):
         self.assertTrue(self.project.is_locked())
         self.assertTrue(len(self.project.locks.all()) == 1)
 
+    def test_unlock(self):
+        Lock.objects.create(object=self.project, user=self.user, end_time=timezone.now() + timedelta(seconds=15))
+        self.project.unlock()
+        self.assertFalse(self.project.is_locked())
+
 
 class CoreUserModelTests(TestCase):
     def setUp(self):
@@ -97,3 +102,8 @@ class SongModelTests(TestCase):
         Lock.objects.create(object=self.song, user=self.user, end_time=timezone.now() + timedelta(seconds=15))
         self.assertTrue(self.song.is_locked())
         self.assertTrue(len(self.song.locks.all()) == 1)
+
+    def test_unlock(self):
+        Lock.objects.create(object=self.song, user=self.user, end_time=timezone.now() + timedelta(seconds=15))
+        self.song.unlock()
+        self.assertFalse(self.song.is_locked())

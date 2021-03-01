@@ -56,7 +56,7 @@ class LockableModel:
         return False
 
     def unlock(self):
-        for lock in self.locks():
+        for lock in self.locks.all():
             lock.delete()
 
 
