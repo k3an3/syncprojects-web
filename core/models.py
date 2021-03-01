@@ -37,7 +37,6 @@ class Lock(models.Model):
 
 
 class LockableModel:
-
     def locks(self):
         return self.lock_set.all()
 
