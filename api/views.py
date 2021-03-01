@@ -69,7 +69,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             else:
                 return Response(LockSerializer(
                     Lock.objects.create(
-                        project=project,
+                        object=project,
                         user=request.user,
                         reason=request.data.get('reason'),
                         end_time=request.data.get('until'),
