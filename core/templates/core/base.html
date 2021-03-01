@@ -65,7 +65,7 @@
             &nbsp;
         {% endif %}
         <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'logout' %}">Sign out {{ request.user.username }}</a>
+            <a class="nav-link" href="{% url 'logout' %}">Sign out {{ request.user.coreuser }}</a>
         </li>
     </ul>
 </header>

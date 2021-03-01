@@ -1,21 +1,21 @@
 {% extends './base.html' %}
 {% load static %}
 {% block content %}
-<main class="form-signin">
-    <form method="POST">
-        <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
-        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-        <label for="{{ form.username.id_for_label }}" class="visually-hidden">Username</label>
-        <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
-               class="form-control" placeholder="Username" required autofocus>
-        <label for="{{ form.password.id_for_label }}" class="visually-hidden">Password</label>
-        <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
-               class="form-control" placeholder="Password" required>
-        {% csrf_token %}
-        <small class="text-muted"><a href="{% url 'password_reset' %}">Forgot Password</a></small>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
-        <p><a href="mailto:support@syncprojects.app">support@syncprojects.app</a></p>
-    </form>
-</main>
+    <main class="form-signin">
+        <form method="POST">
+            <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
+            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            <label for="{{ form.username.id_for_label }}" class="visually-hidden">Email</label>
+            <input type="email" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
+                   class="form-control" placeholder="Email" required autofocus>
+            <label for="{{ form.password.id_for_label }}" class="visually-hidden">Password</label>
+            <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
+                   class="form-control" placeholder="Password" required>
+            {% csrf_token %}
+            <small class="text-muted"><a href="{% url 'password_reset' %}">Forgot Password</a></small>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+            <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
+            <p><a href="mailto:support@syncprojects.app">support@syncprojects.app</a></p>
+        </form>
+    </main>
 {% endblock %}

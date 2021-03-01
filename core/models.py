@@ -1,19 +1,10 @@
 import base64
 
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 
-
-# noinspection PyUnusedLocal
-@receiver(post_save, sender=get_user_model())
-def create_core_user(sender, instance, created, **kwargs):
-    if created:
-        CoreUser.objects.create(user=instance)
 
 
 class Project(models.Model):
@@ -77,7 +68,7 @@ class CoreUser(models.Model):
             raise NotImplementedError()
 
     def __str__(self):
-        return self.user.username
+        return self.user.first_name or self.user.username
 
 
 class Song(models.Model):
