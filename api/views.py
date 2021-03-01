@@ -1,6 +1,5 @@
 import hashlib
 import hmac
-
 from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from rest_framework import permissions, status
@@ -11,8 +10,7 @@ from rest_framework.response import Response
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
 from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song
-from sync.models import Lock
+from core.models import Song, Lock
 from syncprojectsweb.settings import GOGS_SECRET
 
 

@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
-from core.models import Project, Song
-from sync.models import Sync, Lock
+from core.models import Project, Song, Lock
+from sync.models import Sync
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
