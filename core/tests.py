@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
+import syncprojects.operations
 from core.models import Project, Song, Lock
 
 
@@ -39,7 +40,7 @@ class ProjectModelTests(TestCase):
 
     def test_unlock(self):
         Lock.objects.create(object=self.project, user=self.user, end_time=timezone.now() + timedelta(seconds=15))
-        self.project.unlock()
+        syncprojects.operations.unlock()
         self.assertFalse(self.project.is_locked())
 
 
@@ -105,5 +106,5 @@ class SongModelTests(TestCase):
 
     def test_unlock(self):
         Lock.objects.create(object=self.song, user=self.user, end_time=timezone.now() + timedelta(seconds=15))
-        self.song.unlock()
+        syncprojects.operations.unlock()
         self.assertFalse(self.song.is_locked())

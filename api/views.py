@@ -7,6 +7,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
+import syncprojects.operations
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
 from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
@@ -77,7 +78,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         elif request.method == 'DELETE':
             if project.is_locked_by_user(request.user) or request.data.get('force') and request.user.is_superuser:
                 # success
-                project.unlock()
+                syncprojects.operations.unlock()
                 return Response({'result': 'success'})
             elif lock := project.is_locked():
                 # locked by someone else
