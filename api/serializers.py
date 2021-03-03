@@ -17,12 +17,6 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'name']
 
 
-class SongSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Song
-        fields = "__all__"
-
-
 class LockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lock
@@ -44,3 +38,13 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = "__all__"
+
+
+class SongSerializer(serializers.ModelSerializer):
+    is_locked = serializers.BooleanField(read_only=True)
+    locks = LockSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Song
+        fields = ["id", "name", "created_at", "updated_at", "sync_enabled", "directory_name", "last_mtime", "project"]
+
