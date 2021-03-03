@@ -31,18 +31,16 @@ class SyncSerializer(serializers.ModelSerializer):
 
 class SongSerializer(serializers.ModelSerializer):
     is_locked = serializers.BooleanField(read_only=True)
-    locks = LockSerializer(many=True, read_only=True)
 
     class Meta:
         model = Song
         fields = ["id", "name", "created_at", "updated_at", "sync_enabled", "directory_name", "last_mtime", "project",
-                  "is_locked", "locks"]
+                  "is_locked"]
 
 
 class ProjectSerializer(serializers.ModelSerializer):
     is_locked = serializers.BooleanField(read_only=True)
     songs = SongSerializer(many=True, read_only=True)
-    locks = LockSerializer(many=True, read_only=True)
     syncs = SyncSerializer(many=True, read_only=True)
 
     class Meta:

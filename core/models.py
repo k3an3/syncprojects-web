@@ -37,10 +37,6 @@ class Lock(models.Model):
 
 
 class LockableModel:
-    # TODO: name conflict
-    def locks(self):
-        return self.locks.all()
-
     def is_locked(self) -> bool:
         for lock in self.locks.all():
             if not lock.end_time or lock.end_time > timezone.now():
