@@ -29,6 +29,15 @@ class SyncSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class SongSerializer(serializers.ModelSerializer):
+    is_locked = serializers.BooleanField(read_only=True)
+    locks = LockSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Song
+        fields = ["id", "name", "created_at", "updated_at", "sync_enabled", "directory_name", "last_mtime", "project"]
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     is_locked = serializers.BooleanField(read_only=True)
     songs = SongSerializer(many=True, read_only=True)
@@ -38,13 +47,3 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = "__all__"
-
-
-class SongSerializer(serializers.ModelSerializer):
-    is_locked = serializers.BooleanField(read_only=True)
-    locks = LockSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Song
-        fields = ["id", "name", "created_at", "updated_at", "sync_enabled", "directory_name", "last_mtime", "project"]
-
