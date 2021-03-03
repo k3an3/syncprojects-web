@@ -37,8 +37,9 @@ class Lock(models.Model):
 
 
 class LockableModel:
+    # TODO: name conflict
     def locks(self):
-        return self.lock_set.all()
+        return self.locks.all()
 
     def is_locked(self) -> bool:
         for lock in self.locks.all():
@@ -51,8 +52,7 @@ class LockableModel:
         # TODO: has anyone else locked it?
         # TODO: maybe query directly
         if lock := self.is_locked():
-            f = lock.user == user
-            return f
+            return lock.user == user
         return False
 
     def unlock(self):
