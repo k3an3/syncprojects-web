@@ -5,6 +5,12 @@
         <form method="POST">
             <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    <p class="lead">We couldn't log you in</p>
+                    <p>Please enter a valid email address and password.</p>
+                </div>
+            {% endif %}
             <label for="{{ form.username.id_for_label }}" class="visually-hidden">Email</label>
             <input type="email" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
                    class="form-control" placeholder="Email" required autofocus>
