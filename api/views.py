@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+
 from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from rest_framework import permissions, status
@@ -56,11 +57,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['put', 'delete'])
     def lock(self, request, pk=None):
         project = self.get_object()
+        if not self.request.user.coreuser.has_access_to(project):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        if 'song' in request.data:
+            song = Song.objects.get(id=request.data['song'], project=project)
+            obj = song
+        else:
+            obj = project
+
         if request.method == 'PUT':
-            locked_by_user = project.is_locked_by_user(request.user)
+            locked_by_user = obj.is_locked_by_user(request.user)
             if locked_by_user and not request.data.get('force'):
                 return Response({'status': 'locked', 'locked_by': 'self'})
-            elif not locked_by_user and (lock := project.is_locked()):
+            elif not locked_by_user and (lock := obj.is_locked()):
                 return Response({'status': 'locked',
                                  'locked_by': lock.user.username,
                                  'until': lock.end_time,
@@ -69,17 +78,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
             else:
                 return Response(LockSerializer(
                     Lock.objects.create(
-                        object=project,
+                        object=obj,
                         user=request.user,
                         reason=request.data.get('reason'),
                         end_time=request.data.get('until'),
                     )).data)
         elif request.method == 'DELETE':
-            if project.is_locked_by_user(request.user) or request.data.get('force') and request.user.is_superuser:
+            if obj.is_locked_by_user(request.user) or request.data.get('force') and request.user.is_superuser:
                 # success
-                project.unlock()
+                obj.unlock()
                 return Response({'result': 'success'})
-            elif lock := project.is_locked():
+            elif lock := obj.is_locked():
                 # locked by someone else
                 return Response({'status': 'locked',
                                  'locked_by': lock.user.username,
