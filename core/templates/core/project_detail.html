@@ -5,6 +5,9 @@
     <h1 class="h2">{{ project.name }} Dashboard</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
+            <a href="" class="btn btn-sm btn-outline-primary">Sync Project</a>
+        </div>
+        <div class="btn-group me-2">
             <a href="{% url 'core:song-create' project.id %}" class="btn btn-sm btn-outline-primary">New Song</a>
             <button type="button" class="btn btn-sm btn-outline-secondary">Edit Project</button>
             <a href="{% url 'core:project-delete' project.id %}" class="btn btn-sm btn-outline-danger">Delete
