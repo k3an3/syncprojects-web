@@ -9,9 +9,10 @@ from rest_framework.decorators import api_view, action, permission_classes, auth
 from rest_framework.response import Response
 
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
-from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer
+from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
+from sync.models import ClientUpdate
 from syncprojectsweb.settings import GOGS_SECRET
 
 
@@ -44,6 +45,12 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAdminUser]
+
+
+class ClientUpdateViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ClientUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = ClientUpdate.objects.all()
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

@@ -3,10 +3,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 from core.models import Project, Song, CoreUser, Lock
-from sync.models import Sync
 
-for model in (Lock, Sync):
-    admin.site.register(model)
+admin.site.register(Lock)
 
 
 class SongAdmin(admin.ModelAdmin):

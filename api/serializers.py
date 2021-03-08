@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
 from core.models import Project, Song, Lock
-from sync.models import Sync
+from sync.models import Sync, ClientUpdate
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -45,4 +45,10 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
+        fields = "__all__"
+
+
+class ClientUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientUpdate
         fields = "__all__"
