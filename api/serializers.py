@@ -49,6 +49,13 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ClientUpdateSerializer(serializers.ModelSerializer):
+    updater = serializers.SerializerMethodField()
+
     class Meta:
         model = ClientUpdate
-        fields = "__all__"
+        fields = ["version", "updater", "package"]
+
+    def get_updater(self, client_update):
+        request = self.context.get('request')
+        url = client_update.latest_updater()
+        return request.build_absolute_uri(url)

@@ -1,6 +1,6 @@
 import base64
-from django.contrib.auth import get_user_model
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -89,7 +89,7 @@ class Project(models.Model, LockableModel):
 class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     projects = models.ManyToManyField(Project)
-    subscribed_projects = models.ManyToManyField(Project)
+    subscribed_projects = models.ManyToManyField(Project, related_name="subscribed_projects")
 
     def check_object_access(self, obj, projects):
         if isinstance(obj, Project):

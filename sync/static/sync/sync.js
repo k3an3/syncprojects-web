@@ -17,7 +17,7 @@ function localRequest(path, method = 'POST') {
     return response.json();
 }
 
-function APIRequest(path) {
+function APIRequest(path, method = 'POST') {
     const response = fetch("/api/v1/" + path, {
         method: method,
         mode: 'same-origin',

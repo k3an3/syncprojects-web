@@ -2,6 +2,7 @@ import timeago
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 from core.models import Project, Song
@@ -22,13 +23,16 @@ class Sync(models.Model):
 
 class ClientUpdate(models.Model):
     version = models.CharField(max_length=20, unique=True)
-    _updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)
+    updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)
     package = models.FileField(upload_to='updates/')
 
     def __str__(self):
         return f"Update v{self.version}"
 
-    def updater(self) -> str:
-        if self._updater:
-            return self._updater
-        return ClientUpdate.objects.filter(_updater__isnull=False)[0]
+    def latest_updater(self) -> str:
+        if self.updater:
+            return self.updater.url
+        try:
+            return ClientUpdate.objects.filter(~Q(updater=''))[0].updater.url
+        except IndexError:
+            return None
