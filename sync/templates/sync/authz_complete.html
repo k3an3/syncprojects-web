@@ -1,0 +1,11 @@
+{% extends 'registration/base.html' %}
+{% load static %}
+{% block title %}Authorization Success{% endblock %}
+{% block content %}
+    <main class="form-signin">
+        <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
+        <h1>Success!</h1>
+        <p>You have successfully authorized the client application. You may either close this tab, or return <a
+                href="/">home</a>.</p>
+    </main>
+{% endblock %}

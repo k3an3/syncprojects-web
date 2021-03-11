@@ -1,8 +1,5 @@
-const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
-const sync_button = document.querySelector('#sync_button');
-
-function localRequest(path, method = 'POST') {
-    const response = fetch("http://localhost:5000/api/" + path, {
+async function localRequest(path, method = 'POST', data) {
+    const response = await fetch("http://localhost:5000/api/" + path, {
         method: method,
         mode: 'cors',
         cache: 'no-cache',
@@ -17,7 +14,7 @@ function localRequest(path, method = 'POST') {
     return response.json();
 }
 
-function APIRequest(path, method = 'POST') {
+function APIRequest(path, method = 'POST', data) {
     const response = fetch("/api/v1/" + path, {
         method: method,
         mode: 'same-origin',
@@ -30,13 +27,3 @@ function APIRequest(path, method = 'POST') {
     });
     return response.json();
 }
-
-function getContext() {
-    let matches = window.location.path.match(proj_re);
-    console.log({'proj': matches.groups.project, 'song': matches.groups.song});
-    return matches;
-}
-
-sync_button.addEventListener('click', event => {
-    button.textContent = `Click count: ${event.detail}`;
-});

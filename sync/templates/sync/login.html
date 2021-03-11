@@ -1,13 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Syncprojects Client Authorization</title>
-</head>
-<body>
-<p>Logging you in...</p>
-</body>
-<script>
-    document.location = "http://localhost:5000/api/auth?data={{ auth_data }}";
-</script>
-</html>
+{% extends 'registration/base.html' %}
+{% load static %}
+{% block title %}Syncprojects Client Authorization{% endblock %}
+{% block content %}
+    <main class="form-signin">
+        <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
+        <p>Logging you in...</p>
+    </main>
+    <script src="{% static 'sync/sync.js' %}"></script>
+    <script>
+        localRequest('auth', 'POST', {'data': "{{ auth_data }}"}).then(data => {
+            document.location = "{% url 'sync:client-login-success' %}";
+        });
+    </script>
+{% endblock %}
