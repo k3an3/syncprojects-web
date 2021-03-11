@@ -31,6 +31,12 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
+class ProjectUpdateView(generic.UpdateView):
+    model = Project
+    fields = ['name', 'image', 'sync_enabled', 'seafile_uuid']
+    template_name_suffix = '_update_form'
+
+
 class ProjectDeleteView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy('core:index')
@@ -68,6 +74,12 @@ class SongLookupBaseView(LoginRequiredMixin, UserHasObjectPermissionMixin):
 
 class SongDetailView(SongLookupBaseView, generic.DetailView):
     pass
+
+
+class SongUpdateView(SongLookupBaseView, generic.UpdateView):
+    model = Song
+    fields = ['name', 'url', 'sync_enabled', 'directory_name']
+    template_name_suffix = '_update_form'
 
 
 class ClearSongPeaksView(SongLookupBaseView, View):

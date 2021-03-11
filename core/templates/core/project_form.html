@@ -14,5 +14,6 @@
         {% csrf_token %}
         <br>
         <button class="btn btn-lg btn-primary" type="submit">Create</button>
+        <a href="{% url 'core:index' %}" class="btn btn-secondary">Cancel</a>
     </form>
 {% endblock %}

@@ -13,6 +13,7 @@ from api.serializers import UserSerializer, GroupSerializer, ProjectSerializer, 
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
 from sync.models import ClientUpdate
+from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET
 
 
@@ -142,3 +143,10 @@ def peaks(request):
                         }[request.data['action']](request.data, song), status=status.HTTP_200_OK)
     except KeyError:
         return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([CsrfExemptSessionAuthentication])
+def sign_data(request):
+    return Response({'data': get_signed_data(request.data, request.user)})

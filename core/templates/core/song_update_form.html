@@ -2,7 +2,7 @@
 {% load bootstrap5 %}
 
 {% block header %}
-    <h1 class="h2">Create New Song for Project {{ project.name }}</h1>
+    <h1 class="h2">Edit song {{ song.name }} in Project {{ project.name }}</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
     </div>
 {% endblock %}
@@ -24,7 +24,7 @@
         {% bootstrap_form form %}
         {% csrf_token %}
         <br>
-        <button class="btn btn-lg btn-primary" type="submit">Create</button>
-        <a href="{% url 'core:project-detail' project.id %}" class="btn btn-secondary">Cancel</a>
+        <button class="btn btn-lg btn-primary" type="submit">Save Changes</button>
+        <a href="{% url 'core:song-detail' project.id song.id %}" class="btn btn-secondary">Cancel</a>
     </form>
 {% endblock %}
