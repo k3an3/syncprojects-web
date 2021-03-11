@@ -16,4 +16,4 @@ class UserHasProjectAccess(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        return request.user.coreuser.has_access_to(obj)
+        return request.user.coreuser.has_member_access(obj)

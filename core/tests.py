@@ -53,17 +53,17 @@ class CoreUserModelTests(TestCase):
 
     def test_membership(self):
         self.user.coreuser.projects.add(self.project_1)
-        self.assertTrue(self.user.coreuser.has_access_to(self.project_1))
-        self.assertFalse(self.user.coreuser.has_access_to(self.project_2))
+        self.assertTrue(self.user.coreuser.has_member_access(self.project_1))
+        self.assertFalse(self.user.coreuser.has_member_access(self.project_2))
 
     def test_membership_song(self):
         self.user.coreuser.projects.add(self.project_1)
-        self.assertTrue(self.user.coreuser.has_access_to(self.song_1))
-        self.assertFalse(self.user.coreuser.has_access_to(self.song_2))
+        self.assertTrue(self.user.coreuser.has_member_access(self.song_1))
+        self.assertFalse(self.user.coreuser.has_member_access(self.song_2))
 
     def test_membership_unhandled_type(self):
         with self.assertRaises(NotImplementedError):
-            self.user.coreuser.has_access_to("asdf")
+            self.user.coreuser.has_member_access("asdf")
 
 
 class SongModelTests(TestCase):

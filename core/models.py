@@ -57,11 +57,20 @@ class LockableModel:
 
 
 class Project(models.Model, LockableModel):
+    PUBLIC = 'public'
+    UNLISTED = 'unlisted'
+    INVITE = 'invite'
+    SHARING_CHOICES = (
+        (PUBLIC, 'Public'),
+        (UNLISTED, 'Unlisted'),
+        (INVITE, 'Invite Only')
+    )
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(null=True, blank=True)
     sync_enabled = models.BooleanField(default=True)
     seafile_uuid = models.UUIDField(null=True, blank=True, help_text="ID of project from Seafile (optional)")
+    sharing = models.CharField(max_length=10, default=INVITE, choices=SHARING_CHOICES)
     locks = GenericRelation(Lock)
 
     def __str__(self):
@@ -80,20 +89,27 @@ class Project(models.Model, LockableModel):
 class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     projects = models.ManyToManyField(Project)
+    subscribed_projects = models.ManyToManyField(Project)
 
-    def has_access_to(self, obj):
+    def check_object_access(self, obj, projects):
         if isinstance(obj, Project):
             try:
-                return self.projects.get(id=obj.id)
+                return projects.get(id=obj.id)
             except Project.DoesNotExist:
                 return False
         elif isinstance(obj, Song):
             try:
-                return self.projects.get(id=obj.project.id)
+                return projects.get(id=obj.project.id)
             except Project.DoesNotExist:
                 return False
         else:
             raise NotImplementedError()
+
+    def has_member_access(self, obj):
+        return self.check_object_access(obj, self.projects)
+
+    def has_subscriber_access(self, obj):
+        return self.check_object_access(obj, self.subscribed_projects)
 
     def __str__(self):
         return self.user.first_name or self.user.username

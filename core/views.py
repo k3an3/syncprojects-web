@@ -42,7 +42,7 @@ class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView
 
     def test_func(self, **kwargs):
         project = Project.objects.get(pk=self.kwargs['pk'])
-        return self.request.user.coreuser.has_access_to(project)
+        return self.request.user.coreuser.has_member_access(project)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

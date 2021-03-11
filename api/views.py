@@ -64,7 +64,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['put', 'delete'])
     def lock(self, request, pk=None):
         project = self.get_object()
-        if not self.request.user.coreuser.has_access_to(project):
+        if not self.request.user.coreuser.has_member_access(project):
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         if 'song' in request.data:
             song = Song.objects.get(id=request.data['song'], project=project)
@@ -133,7 +133,7 @@ def peaks(request):
         song = Song.objects.get(name=request.data['id'])
     except Song.DoesNotExist:
         return Response({}, status=status.HTTP_404_NOT_FOUND)
-    if not request.user.coreuser.has_access_to(song):
+    if not request.user.coreuser.has_member_access(song):
         return Response({}, status=status.HTTP_403_FORBIDDEN)
     try:
         return Response({

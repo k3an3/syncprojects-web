@@ -22,8 +22,13 @@ class Sync(models.Model):
 
 class ClientUpdate(models.Model):
     version = models.CharField(max_length=20, unique=True)
-    updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)
+    _updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)
     package = models.FileField(upload_to='updates/')
 
     def __str__(self):
         return f"Update v{self.version}"
+
+    def updater(self) -> str:
+        if self._updater:
+            return self._updater
+        return ClientUpdate.objects.filter(_updater__isnull=False)[0]
