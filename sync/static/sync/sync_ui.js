@@ -38,6 +38,7 @@ sync_button.addEventListener('click', async event => {
         result = await startSync(signed);
     }
     console.log(result);
+    
 });
 
 async function checkConnection() {

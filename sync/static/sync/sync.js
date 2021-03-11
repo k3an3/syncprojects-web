@@ -44,3 +44,5 @@ async function getProjects() {
 async function startSync(data) {
     return await localRequest('sync', 'POST', data);
 }
+
+let taskStore = window.localStorage;
