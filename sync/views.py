@@ -8,7 +8,7 @@ from sync.utils import get_signed_data
 @login_required
 def send_sync_token(request):
     return render(request, 'sync/login.html',
-                  {'auth_data': get_signed_data(get_tokens_for_user(request.user), request.user)})
+                  {'auth_data': get_signed_data(get_tokens_for_user(request.user))})
 
 
 @login_required
