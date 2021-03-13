@@ -7,9 +7,5 @@
         <p>Logging you in...</p>
     </main>
     <script src="{% static 'sync/sync.js' %}"></script>
-    <script>
-        localRequest('auth', 'POST', {'data': "{{ auth_data }}"}).then(data => {
-            document.location = "{% url 'sync:client-login-success' %}";
-        });
-    </script>
+    <script src="{% static 'sync/auth.js' %}"></script>
 {% endblock %}

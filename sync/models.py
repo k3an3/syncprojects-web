@@ -21,6 +21,15 @@ class Sync(models.Model):
         return f"{self.user} sync at {self.sync_time}"
 
 
+class ClientConfig(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    last_updated = models.DateTimeField(default=timezone.now)
+    sync_root = models.TextField(help_text="Absolute path to the root directory where your song project files will be "
+                                           "synced.")
+    flat_layout = models.BooleanField(default=False, help_text="Whether to keep all song project files in one folder, "
+                                                               "or separate them by project.")
+
+
 class ClientUpdate(models.Model):
     version = models.CharField(max_length=20, unique=True)
     updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)

@@ -44,9 +44,9 @@ sync_button.addEventListener('click', async event => {
 async function checkConnection() {
     const result = await ping().catch((error) => {
         console.error("Failed to connect to syncprojects client: " + error);
-        sync_button.true = false;
+        sync_button.disabled = true;
         sync_button.className = "btn btn-sm btn-outline-danger";
-        sync_button.textContent = "Not Connected";
+        sync_button.textContent = "Sync: Not Connected";
     });
     if (result != null && result.result == "pong") {
         console.log("Got PONG from server: " + result.task_id);
@@ -56,6 +56,7 @@ async function checkConnection() {
     }
 }
 
+// noinspection JSIgnoredPromiseFromCall
 checkConnection();
 setInterval(checkConnection, 15000);
 
