@@ -1,4 +1,4 @@
-async function localRequest(path, method = 'POST', data) {
+async function localRequest(path, method = 'GET', data) {
     const response = await fetch("http://localhost:5000/api/" + path, {
         method: method,
         mode: 'cors',
@@ -29,7 +29,7 @@ async function APIRequest(path, method = 'GET', data) {
 }
 
 async function ping() {
-    return await localRequest('ping', 'GET');
+    return await localRequest('ping');
 }
 
 async function signData(data) {
@@ -45,4 +45,14 @@ async function startSync(data) {
     return await localRequest('sync', 'POST', data);
 }
 
+async function getResults() {
+    return await localRequest('results');
+}
+
+Storage.prototype.setObj = function (key, obj) {
+    return this.setItem(key, JSON.stringify(obj))
+}
+Storage.prototype.getObj = function (key) {
+    return JSON.parse(this.getItem(key))
+}
 let taskStore = window.localStorage;
