@@ -6,7 +6,7 @@ function getContext() {
     let matches = window.location.pathname.match(proj_re);
     if (matches == null)
         return {'project': null, 'song': null};
-    let result = {'project': matches.groups.project, 'song': matches.groups.song};
+    let result = {'project': parseInt(matches.groups.project), 'song': parseInt(matches.groups.song)};
     return result;
 }
 
