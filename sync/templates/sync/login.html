@@ -7,5 +7,17 @@
         <p>Logging you in...</p>
     </main>
     <script src="{% static 'sync/sync.js' %}"></script>
-    <script src="{% static 'sync/auth.js' %}"></script>
+    <script>
+        async function do_login() {
+            await localRequest('auth', 'POST', {'data': "{{ auth_data }}"}).then(_ => {
+                window.location.href = "{% url 'sync:client-login-success' %}";
+            }).catch(error => {
+                alert(error);
+            });
+        }
+
+        do_login();
+    </script>
+    {# comment #}
+    <script src="{% static 'sync/auth.js' %}"></script>{# endcomment #}
 {% endblock %}
