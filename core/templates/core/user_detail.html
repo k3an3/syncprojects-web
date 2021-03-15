@@ -5,7 +5,12 @@
 {% endblock %}
 
 {% block header %}
-    <h1 class="h2">{{ user.get_full_name }}
+    <h1 class="h2">
+    {% if user.coreuser.is_private %}
+        {{ user.get_short_name }}
+    {% else %}
+        {{ user.get_full_name }}
+    {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         {% if request.user == user %}
             <div class="btn-group me-2">
@@ -31,7 +36,7 @@
 {% endblock %}
 
 {% block content %}
-    
+
 {% endblock %}
 
 {% block script %}
