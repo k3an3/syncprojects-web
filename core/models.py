@@ -66,6 +66,7 @@ class Project(models.Model, LockableModel):
         (INVITE, 'Invite Only')
     )
     name = models.CharField(max_length=100)
+    bio = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(null=True, blank=True)
     sync_enabled = models.BooleanField(default=True)
@@ -90,6 +91,15 @@ class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     projects = models.ManyToManyField(Project)
     subscribed_projects = models.ManyToManyField(Project, related_name="subscribed_projects")
+    profile_picture = models.ImageField(null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
+    instruments = models.TextField(null=True, blank=True)
+    genres_musical_taste = models.TextField(null=True, blank=True, verbose_name="Genres and Musical Taste")
+    open_to_collaboration = models.BooleanField(default=False)
+    private = models.BooleanField(default=True,
+                                  help_text="Profiles of private accounts will have their details hidden.")
+
+    # TODO: social_links
 
     def check_object_access(self, obj, projects):
         if isinstance(obj, Project):

@@ -45,3 +45,9 @@ class ClientUpdate(models.Model):
             return ClientUpdate.objects.filter(~Q(updater=''))[0].updater.url
         except IndexError:
             return None
+
+
+class ChangelogEntry(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    entry = models.TextField()
+    date_created = models.DateTimeField(default=timezone.now)

@@ -8,7 +8,7 @@
     </main>
     <script src="{% static 'sync/sync.js' %}"></script>
     <script>
-        async function do_login() {
+        async function doLogin() {
             await localRequest('auth', 'POST', {'data': "{{ auth_data }}"}).then(_ => {
                 window.location.href = "{% url 'sync:client-login-success' %}";
             }).catch(error => {
@@ -16,7 +16,7 @@
             });
         }
 
-        do_login();
+        doLogin();
     </script>
     {# comment #}
     <script src="{% static 'sync/auth.js' %}"></script>{# endcomment #}

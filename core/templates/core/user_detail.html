@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block head %}
+{% endblock %}
+
+{% block header %}
+    <h1 class="h2">{{ user.get_full_name }}
+    <div class="btn-toolbar mb-2 mb-md-0">
+        {% if request.user == user %}
+            <div class="btn-group me-2">
+                <a href="{% url 'core:user-update' request.user.id %}" class="btn btn-sm btn-outline-secondary">Edit
+                    User</a>
+                <a href="{% url 'core:user-delete' request.user.id %}" class="btn btn-sm btn-outline-danger">Delete
+                    User</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% if user.coreuser.profile_picture %}
+        <div class="nav flex-column">
+            <img src="{{ user.coreuser.profile_picture.url }}" width="75%"
+                 style="padding-left: 10px; object-fit: cover; object-position: center">
+        </div>
+    {% endif %}
+
+    {% include 'core/sidebar.html' %}
+
+{% endblock %}
+
+{% block content %}
+    
+{% endblock %}
+
+{% block script %}
+    {% include 'sync/script.html' %}
+{% endblock %}

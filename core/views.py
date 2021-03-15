@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views import generic, View
 
 from core.models import Project, Song
-from core.permissions import UserHasObjectPermissionMixin
+from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -12,7 +12,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         return self.request.user.coreuser.projects.order_by('-name')
 
 
-class ProjectDetailView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.DetailView):
+class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixin, generic.DetailView):
     model = Project
 
     def get_context_data(self, **kwargs):
@@ -31,13 +31,13 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class ProjectUpdateView(generic.UpdateView):
+class ProjectUpdateView(UserIsMemberPermissionMixin, generic.UpdateView):
     model = Project
     fields = ['name', 'image', 'sync_enabled', 'seafile_uuid']
     template_name_suffix = '_update_form'
 
 
-class ProjectDeleteView(LoginRequiredMixin, UserHasObjectPermissionMixin, generic.DeleteView):
+class ProjectDeleteView(LoginRequiredMixin, UserIsMemberPermissionMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy('core:index')
 
@@ -60,7 +60,7 @@ class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView
         return super().form_valid(form)
 
 
-class SongLookupBaseView(LoginRequiredMixin, UserHasObjectPermissionMixin):
+class SongLookupBaseView(LoginRequiredMixin):
     model = Song
 
     def get_object(self, queryset=None):
@@ -72,24 +72,24 @@ class SongLookupBaseView(LoginRequiredMixin, UserHasObjectPermissionMixin):
         return context
 
 
-class SongDetailView(SongLookupBaseView, generic.DetailView):
+class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, generic.DetailView):
     pass
 
 
-class SongUpdateView(SongLookupBaseView, generic.UpdateView):
+class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
     model = Song
     fields = ['name', 'url', 'sync_enabled', 'directory_name']
     template_name_suffix = '_update_form'
 
 
-class ClearSongPeaksView(SongLookupBaseView, View):
+class ClearSongPeaksView(SongLookupBaseView, UserIsMemberPermissionMixin, View):
     def get(self, *args, **kwargs):
         song = self.get_object()
         song.clear_peaks()
         return redirect('core:song-detail', song.project.id, song.id)
 
 
-class SongDeleteView(SongLookupBaseView, generic.DeleteView):
+class SongDeleteView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.DeleteView):
     model = Song
 
     def get_success_url(self):
