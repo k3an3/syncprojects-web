@@ -89,8 +89,8 @@ class Project(models.Model, LockableModel):
 
 class CoreUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    projects = models.ManyToManyField(Project)
-    subscribed_projects = models.ManyToManyField(Project, related_name="subscribed_projects")
+    projects = models.ManyToManyField(Project, blank=True)
+    subscribed_projects = models.ManyToManyField(Project, blank=True, related_name="subscribed_projects")
     profile_picture = models.ImageField(null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
     instruments = models.TextField(null=True, blank=True)
