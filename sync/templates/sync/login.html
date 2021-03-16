@@ -12,12 +12,12 @@
             await localRequest('auth', 'POST', {'data': "{{ auth_data }}"}).then(_ => {
                 window.location.href = "{% url 'sync:client-login-success' %}";
             }).catch(error => {
-                alert(error);
+                alert("Oops! Something went wrong; try again?");
+                console.log(error);
             });
         }
 
         doLogin();
     </script>
-    {# comment #}
-    <script src="{% static 'sync/auth.js' %}"></script>{# endcomment #}
+    {# <script src="{% static 'sync/auth.js' %}"></script> #}
 {% endblock %}
