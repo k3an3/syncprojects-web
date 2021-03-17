@@ -59,4 +59,10 @@ Storage.prototype.setObj = function (key, obj) {
 Storage.prototype.getObj = function (key) {
     return JSON.parse(this.getItem(key))
 }
+
+Object.prototype.isEmpty = function () {
+    for (let prop in this) if (this.hasOwnProperty(prop)) return false;
+    return true;
+};
+
 let taskStore = window.localStorage;

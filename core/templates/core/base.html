@@ -11,9 +11,6 @@
         <title>Syncprojects Dashboard</title>
     {% endblock %}
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/dashboard/">
-
-
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
@@ -82,14 +79,15 @@
         {% endblock %}
 
         {% block main %}
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         {% endblock %}
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                {% block header %}
-                {% endblock %}
-            </div>
-            {% block content %}
+        <div class="alert fade alert-fixed" role="alert" id="alert"></div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            {% block header %}
             {% endblock %}
+        </div>
+        {% block content %}
+        {% endblock %}
         </main>
     </div>
 </div>
