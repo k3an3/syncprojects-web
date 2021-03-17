@@ -6,18 +6,8 @@
         <img class="mb-4" src="{% static 'img/syncprojects.png' %}" alt="Syncprojects"/>
         <p>Logging you in...</p>
     </main>
+    <input type="hidden" id="auth_token" value="{{ auth_data }}">
+    <input type="hidden" id="redirect_url" value="{% url 'sync:client-login-success' %}">
     <script src="{% static 'sync/sync.js' %}"></script>
-    <script>
-        async function doLogin() {
-            await localRequest('auth', 'POST', {'data': "{{ auth_data }}"}).then(_ => {
-                window.location.href = "{% url 'sync:client-login-success' %}";
-            }).catch(error => {
-                alert("Oops! Something went wrong; try again?");
-                console.log(error);
-            });
-        }
-
-        doLogin();
-    </script>
-    {# <script src="{% static 'sync/auth.js' %}"></script> #}
+    <script src="{% static 'sync/auth.js' %}"></script>
 {% endblock %}

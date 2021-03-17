@@ -5,7 +5,7 @@
     <h1 class="h2">{{ project.name }} Dashboard</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            {% include 'sync/button.html' %}
+            {% include 'sync/buttons.html' %}
         </div>
         <div class="btn-group me-2">
             <a href="{% url 'core:song-create' project.id %}" class="btn btn-sm btn-outline-primary">New Song</a>

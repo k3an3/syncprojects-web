@@ -45,6 +45,10 @@ async function startSync(data) {
     return await localRequest('sync', 'POST', data);
 }
 
+async function workOn(data) {
+    return await localRequest('workon', 'POST', data);
+}
+
 async function getResults() {
     return await localRequest('results');
 }

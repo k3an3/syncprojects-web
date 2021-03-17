@@ -1,5 +1,6 @@
 const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const sync_button = document.querySelector('#sync_button');
+const daw_button = document.querySelector('#daw_button');
 let sync_in_progress = false;
 let ping_failed = true;
 
@@ -10,6 +11,31 @@ function getContext() {
     let result = {'project': parseInt(matches.groups.project), 'song': parseInt(matches.groups.song) || null};
     return result;
 }
+
+daw_button.addEventListener('click', async event => {
+    sync_button.textContent = "Syncing..."
+    sync_button.disabled = true;
+    let context = getContext();
+    console.log("Got context");
+    console.log(context);
+    let result = null;
+    sync_in_progress = true;
+    let msg = {'song': {'song': context.song, 'project': context.project}};
+    console.log("Working on song")
+    console.log(msg);
+    let signed = await signData(msg);
+    console.log("Signed data");
+    console.log(signed);
+    result = await workOn(signed);
+    console.log("Got result");
+    console.log(result);
+    let tasks = taskStore.getObj('tasks');
+    if (tasks == null)
+        tasks = [result.task_id];
+    else
+        tasks.push(result.task_id);
+    taskStore.setObj('tasks', tasks);
+});
 
 sync_button.addEventListener('click', async event => {
     sync_button.textContent = "Syncing..."
@@ -63,6 +89,7 @@ async function checkConnection() {
         ping_failed = true;
         console.error("Failed to connect to syncprojects client: " + error);
         sync_button.disabled = true;
+        daw_button.disabled = true;
         sync_button.className = "btn btn-sm btn-outline-danger";
         sync_button.textContent = "Sync: Not Connected";
     });
@@ -73,10 +100,12 @@ async function checkConnection() {
             sync_button.className = "btn btn-sm btn-primary";
             sync_button.textContent = "Syncing...";
             sync_button.disabled = true;
+            daw_button.disabled = true;
         } else {
             sync_button.className = "btn btn-sm btn-primary";
             sync_button.textContent = "Sync";
             sync_button.disabled = false;
+            daw_button.disabled = false;
         }
     }
 }
