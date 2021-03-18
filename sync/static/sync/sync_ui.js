@@ -15,14 +15,6 @@ function getContext() {
     return result;
 }
 
-function showAlert(msg, klass = "info") {
-    let this_alert = new bootstrap.Alert(alert);
-    alert.innerHTML = msg;
-    alert.classList = "alert alert-fixed fade in alert-" + klass;
-    setTimeout(function () {
-        alert.classList.remove("in");
-    }, 5000);
-}
 
 function pushTask(task_id, data) {
     let tasks = taskStore.getObj('tasks');
@@ -182,14 +174,19 @@ function handleResults(data) {
 }
 
 async function checkTasks(force_check = false) {
-    if ((!ping_failed || force_check) && taskStore.getObj('tasks') != null && !taskStore.getObj('tasks').isEmpty()) {
+    if (!isMobile() && (!ping_failed || force_check) && taskStore.getObj('tasks') != null && !taskStore.getObj('tasks').isEmpty()) {
         handleResults(await getResults());
     }
 }
 
 // noinspection JSIgnoredPromiseFromCall
-checkConnection();
+if (!isMobile()) {
+    if (daw_button != null)
+        daw_button.removeAttribute('hidden');
+    sync_button.removeAttribute('hidden');
+    checkConnection();
+    setInterval(checkConnection, 15000);
+}
 // noinspection JSIgnoredPromiseFromCall
 checkTasks(true);
-setInterval(checkConnection, 15000);
 setInterval(checkTasks, 1000);
