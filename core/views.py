@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic, View
 
-from core.models import Project, Song
+from core.models import Project, Song, CoreUser
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 
 
@@ -23,6 +23,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['songs'] = self.get_object().songs()
+        context['member'] = self.request.user.coreuser.has_member_access(self.get_object())
         return context
 
 
@@ -78,7 +79,10 @@ class SongLookupBaseView(LoginRequiredMixin):
 
 
 class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, generic.DetailView):
-    pass
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['member'] = self.request.user.coreuser.has_member_access(self.get_object())
+        return context
 
 
 class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
@@ -99,3 +103,10 @@ class SongDeleteView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.De
 
     def get_success_url(self):
         return reverse_lazy('core:project-detail', args=[self.object.project.pk])
+
+
+class UserDetailView(LoginRequiredMixin, generic.DetailView):
+    model = CoreUser
+
+    def get_object(self, queryset=None):
+        return CoreUser.objects.get(id=self.kwargs['pk']) if 'pk' in self.kwargs else self.request.user.coreuser

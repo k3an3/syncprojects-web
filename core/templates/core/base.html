@@ -62,7 +62,12 @@
             &nbsp;
         {% endif %}
         <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'logout' %}">Sign out {{ request.user.coreuser }}</a>
+            <a class="nav-link"
+               href="{% url 'core:user-profile' %}">{% firstof user.get_short_name user.get_username %}</a>
+        </li>
+        &nbsp;
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{% url 'logout' %}">Sign out </a>
         </li>
     </ul>
 </header>

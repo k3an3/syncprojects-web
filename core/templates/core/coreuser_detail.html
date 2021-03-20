@@ -1,32 +1,43 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% block title %}
+    {% if user == coreuser.user %}
+        <title>User Profile</title>
+    {% else %}
+        <title>{{ coreuser }}'s Profile</title>
+    {% endif %}
+{% endblock %}
 
 {% block head %}
 {% endblock %}
 
 {% block header %}
     <h1 class="h2">
-    {% if user.coreuser.is_private %}
-        {{ user.get_short_name }}
-    {% else %}
-        {{ user.get_full_name }}
-    {% endif %}
+        {% if coreuser.is_private %}
+            {{ coreuser.user.get_short_name }}
+        {% else %}
+            {{ coreuser.user.get_full_name }}
+        {% endif %}
+    </h1>
+    <h6>({{ coreuser.user.email }})</h6>
     <div class="btn-toolbar mb-2 mb-md-0">
-        {% if request.user == user %}
+        {% if user == coreuser.user %}
             <div class="btn-group me-2">
+                {% comment %}
                 <a href="{% url 'core:user-update' request.user.id %}" class="btn btn-sm btn-outline-secondary">Edit
                     User</a>
                 <a href="{% url 'core:user-delete' request.user.id %}" class="btn btn-sm btn-outline-danger">Delete
                     User</a>
+            {% endcomment %}
             </div>
         {% endif %}
     </div>
 {% endblock %}
 
 {% block sidebar %}
-    {% if user.coreuser.profile_picture %}
+    {% if coreuser.profile_picture %}
         <div class="nav flex-column">
-            <img src="{{ user.coreuser.profile_picture.url }}" width="75%"
+            <img src="{{ coreuser.profile_picture.url }}" width="75%"
                  style="padding-left: 10px; object-fit: cover; object-position: center">
         </div>
     {% endif %}

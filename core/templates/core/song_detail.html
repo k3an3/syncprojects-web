@@ -67,12 +67,14 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary">Redraw Waveform</button>
             </a>
         </div>
+        {% if member %}
         <div class="btn-group me-2">
             <a href="{% url 'core:song-update' project.id song.id %}" class="btn btn-sm btn-outline-secondary">Edit
                 Song</a>
             <a href="{% url 'core:song-delete' project.id song.id %}" class="btn btn-sm btn-outline-danger">Delete
                 Song</a>
         </div>
+        {% endif %}
     </div>
 {% endblock %}
 

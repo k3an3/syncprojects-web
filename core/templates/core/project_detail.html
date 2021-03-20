@@ -7,6 +7,7 @@
         <div class="btn-group me-2">
             {% include 'sync/buttons.html' %}
         </div>
+        {% if member %}
         <div class="btn-group me-2">
             <a href="{% url 'core:song-create' project.id %}" class="btn btn-sm btn-outline-primary">New Song</a>
             <a href="{% url 'core:project-update' project.id %}" class="btn btn-sm btn-outline-secondary">Edit
@@ -14,6 +15,7 @@
             <a href="{% url 'core:project-delete' project.id %}" class="btn btn-sm btn-outline-danger">Delete
                 Project</a>
         </div>
+        {% endif %}
 
         <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
             <span data-feather="calendar"></span>
