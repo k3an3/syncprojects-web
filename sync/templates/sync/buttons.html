@@ -1,4 +1,6 @@
-<button class="btn btn-sm btn-outline-danger" id="sync_button" disabled hidden>Sync: Not Connected</button>
-{% if song %}
-    <button class="btn btn-sm btn-secondary" id="daw_button" disabled hidden>Open in DAW</button>
+{% if member or not project %}
+    <button class="btn btn-sm btn-outline-danger" id="sync_button" disabled hidden>Sync: Not Connected</button>
+    {% if song %}
+        <button class="btn btn-sm btn-secondary" id="daw_button" disabled hidden>Open in DAW</button>
+    {% endif %}
 {% endif %}
