@@ -15,3 +15,9 @@ class ClientUpdateModelTests(TestCase):
     def test_update_reuse_updater(self):
         update2 = ClientUpdate.objects.create(version='2.0', package=SimpleUploadedFile('packager2', b''))
         self.assertTrue('updater_test123' in update2.latest_updater())
+
+    def test_update_reuse_updater_1(self):
+        update2 = ClientUpdate.objects.create(version='2.0', package=SimpleUploadedFile('packager2', b''),
+                                              updater=SimpleUploadedFile('updater_test456', b''))
+        update3 = ClientUpdate.objects.create(version='2.1', package=SimpleUploadedFile('packager2', b''))
+        self.assertTrue('updater_test456' in update3.latest_updater())

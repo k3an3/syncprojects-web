@@ -42,7 +42,7 @@ class ClientUpdate(models.Model):
         if self.updater:
             return self.updater.url
         try:
-            return ClientUpdate.objects.filter(~Q(updater=''))[0].updater.url
+            return ClientUpdate.objects.filter(~Q(updater='')).order_by('-id')[0].updater.url
         except IndexError:
             return None
 
