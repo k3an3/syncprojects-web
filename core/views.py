@@ -11,6 +11,11 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         return self.request.user.coreuser.projects.order_by('-name')
 
+    def get_context_data(self, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['subscribed_projects_list'] = self.request.user.coreuser.subscribed_projects.all()
+        return context
+
 
 class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixin, generic.DetailView):
     model = Project
