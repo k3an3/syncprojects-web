@@ -3,16 +3,21 @@
 
 {% block header %}
     <h1 class="h2">{{ project.name }} Dashboard</h1>
+    {% if member %}
+        <span class="badge bg-primary">Member</span>
+    {% else %}
+        <span class="badge bg-success">Follower</span>
+    {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
             {% include 'sync/buttons.html' %}
         </div>
         {% if member %}
-        <div class="btn-group me-2">
-            <a href="{% url 'core:song-create' project.id %}" class="btn btn-sm btn-outline-primary">New Song</a>
-            <a href="{% url 'core:project-update' project.id %}" class="btn btn-sm btn-outline-secondary">Edit
-                Project</a>
-            <a href="{% url 'core:project-delete' project.id %}" class="btn btn-sm btn-outline-danger">Delete
+            <div class="btn-group me-2">
+                <a href="{% url 'core:song-create' project.id %}" class="btn btn-sm btn-outline-primary">New Song</a>
+                <a href="{% url 'core:project-update' project.id %}" class="btn btn-sm btn-outline-secondary">Edit
+                    Project</a>
+                <a href="{% url 'core:project-delete' project.id %}" class="btn btn-sm btn-outline-danger">Delete
                 Project</a>
         </div>
         {% endif %}
@@ -64,8 +69,8 @@
             </tbody>
         </table>
     {% else %}
-        <div class="alert alert-primary"><strong>No Songs here!</strong> Get started and <a
-                href="{% url 'core:song-create' project.id %}">create one</a></div>
+        <div class="alert alert-primary"><strong>No Songs here!</strong>{% if member %}Get started and <a
+                href="{% url 'core:song-create' project.id %}">create one</a>{% endif %}</div>
     {% endif %}
 {% endblock %}
 
