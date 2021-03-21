@@ -154,9 +154,12 @@ function handleResults(data) {
     data.results.forEach(result => {
         console.log("processing");
         console.log(result);
+        let task = null;
         switch (result.status) {
             case "progress":
-                let task = popTask(result.task_id);
+                task = popTask(result.task_id);
+                console.log("Got task");
+                console.log(task);
                 switch (task) {
                     case 'sync':
                         syncResultHandler(result);
@@ -165,6 +168,10 @@ function handleResults(data) {
                         console.warn("Unexpected task handler " + task);
                         break;
                 }
+                break;
+            case "error":
+                task = popTask(result.task_id);
+                showAlert("Oops! " + result.msg, "danger")
                 break;
             default:
                 console.warn("Unhandled task status " + result.status);
