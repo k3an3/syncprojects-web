@@ -36,6 +36,10 @@ function popTask(task_id) {
     return result;
 }
 
+function getTask(task_id) {
+    return taskStore.getObj('tasks')[task_id];
+}
+
 if (daw_button != null)
     daw_button.addEventListener('click', async _ => {
         daw_button.textContent = "Opening..."
@@ -116,6 +120,13 @@ function disableDawButton(status = true) {
         daw_button.disabled = status;
 }
 
+function enableSyncButton() {
+    sync_button.className = "btn btn-sm btn-primary";
+    sync_button.textContent = "Sync";
+    sync_button.disabled = false;
+    disableDawButton(false);
+}
+
 async function checkConnection() {
     const result = await ping().catch(_ => {
         ping_failed = true;
@@ -134,16 +145,28 @@ async function checkConnection() {
             sync_button.disabled = true;
             disableDawButton();
         } else {
-            sync_button.className = "btn btn-sm btn-primary";
-            sync_button.textContent = "Sync";
-            sync_button.disabled = false;
-            disableDawButton(false);
+            enableSyncButton();
         }
     }
 }
 
 function syncResultHandler(data) {
+    console.log(data);
     sync_modal.show();
+}
+
+function saveSyncProgress(data) {
+    console.log("Ok... saving progress...");
+    console.log(data);
+    let stored = taskStore.getObj('sync-' + data.task_id);
+    if (stored == null || stored.isEmpty()) {
+        console.log("data item doesn't exist in storage");
+        stored = [];
+        console.log(stored);
+    }
+    console.log(stored);
+    stored.push(data.completed);
+    taskStore.setObj('sync-' + data.task_id);
 }
 
 function handleResults(data) {
@@ -155,12 +178,16 @@ function handleResults(data) {
     data.results.forEach(result => {
         console.log("processing");
         console.log(result);
-        let task = null;
+        let task = getTask(result.task_id);
+        if (task == null)
+            return;
+        console.log("Got task");
+        console.log(task);
         switch (result.status) {
-            case "progress":
-                task = popTask(result.task_id);
-                console.log("Got task");
-                console.log(task);
+            case "complete":
+                showToast("Sync", task[0].toUpperCase() + task.substr(1) + " complete", "success");
+                popTask(result.task_id);
+                enableSyncButton();
                 switch (task) {
                     case 'sync':
                         syncResultHandler(result);
@@ -170,9 +197,15 @@ function handleResults(data) {
                         break;
                 }
                 break;
+            case "progress":
+                saveSyncProgress(result);
+                break;
             case "error":
                 task = popTask(result.task_id);
                 showToast("Sync", "Oops! " + result.msg, "danger");
+                break;
+            case "warn":
+                showToast("Sync", "Note: " + result.msg, "warning");
                 break;
             default:
                 console.warn("Unhandled task status " + result.status);
@@ -200,4 +233,4 @@ if (!isMobile()) {
 }
 // noinspection JSIgnoredPromiseFromCall
 checkTasks(true);
-setInterval(checkTasks, 1000);
+setInterval(checkTasks, 3000);

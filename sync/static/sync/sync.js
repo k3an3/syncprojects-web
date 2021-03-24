@@ -57,7 +57,11 @@ Storage.prototype.setObj = function (key, obj) {
     return this.setItem(key, JSON.stringify(obj))
 }
 Storage.prototype.getObj = function (key) {
-    return JSON.parse(this.getItem(key))
+    try {
+        return JSON.parse(this.getItem(key))
+    } catch (e) {
+        return {};
+    }
 }
 
 Object.prototype.isEmpty = function () {
