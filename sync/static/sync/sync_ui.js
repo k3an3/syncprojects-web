@@ -11,8 +11,7 @@ function getContext() {
     let matches = window.location.pathname.match(proj_re);
     if (matches == null)
         return {'project': null, 'song': null};
-    let result = {'project': parseInt(matches.groups.project), 'song': parseInt(matches.groups.song) || null};
-    return result;
+    return {'project': parseInt(matches.groups.project), 'song': parseInt(matches.groups.song) || null};
 }
 
 
@@ -38,13 +37,13 @@ function popTask(task_id) {
 }
 
 if (daw_button != null)
-    daw_button.addEventListener('click', async event => {
+    daw_button.addEventListener('click', async _ => {
         daw_button.textContent = "Opening..."
         sync_button.disabled = true;
         let context = getContext();
         console.log("Got context");
         console.log(context);
-        let result = null;
+        let result;
         sync_in_progress = true;
         let msg = {'song': {'song': context.song, 'project': context.project}};
         console.log("Working on song")
@@ -55,21 +54,21 @@ if (daw_button != null)
         result = await workOn(signed);
         console.log("Got initial response");
         console.log(result);
-        if (result.result == "started") {
+        if (result.result === "started") {
             pushTask(result.task_id, 'workon');
-            showAlert("Syncing and opening song in DAW...");
+            showToast("Sync", "Syncing and opening song in DAW...");
         } else {
             console.warn("Unknown response.");
         }
     });
 
-sync_button.addEventListener('click', async event => {
+sync_button.addEventListener('click', async _ => {
     sync_button.textContent = "Syncing..."
     sync_button.disabled = true;
     let context = getContext();
     console.log("Got context");
     console.log(context);
-    let result = null;
+    let result;
     sync_in_progress = true;
     if (context.project == null) {
         // Sync all projects
@@ -102,8 +101,8 @@ sync_button.addEventListener('click', async event => {
     }
     console.log("Got initial response");
     console.log(result);
-    if (result.result == "started") {
-        showAlert("Syncing...");
+    if (result.result === "started") {
+        showToast("Sync", "Syncing...", "primary");
         pushTask(result.task_id, 'sync');
     } else {
         console.warn("Unknown response.");
@@ -116,9 +115,9 @@ function disableDawButton(status = true) {
 }
 
 async function checkConnection() {
-    const result = await ping().catch((error) => {
+    const result = await ping().catch(_ => {
         ping_failed = true;
-        console.error("Failed to connect to syncprojects client: " + error);
+        //console.error("Failed to connect to syncprojects client: " + error);
         sync_button.disabled = true;
         disableDawButton();
         sync_button.className = "btn btn-sm btn-outline-danger";
@@ -171,7 +170,7 @@ function handleResults(data) {
                 break;
             case "error":
                 task = popTask(result.task_id);
-                showAlert("Oops! " + result.msg, "danger")
+                showToast("Sync", "Oops! " + result.msg, "danger");
                 break;
             default:
                 console.warn("Unhandled task status " + result.status);
@@ -182,7 +181,10 @@ function handleResults(data) {
 
 async function checkTasks(force_check = false) {
     if (!isMobile() && (!ping_failed || force_check) && taskStore.getObj('tasks') != null && !taskStore.getObj('tasks').isEmpty()) {
-        handleResults(await getResults());
+        let results = await getResults().catch(_ => {
+        });
+        if (results != null)
+            handleResults(results);
     }
 }
 
