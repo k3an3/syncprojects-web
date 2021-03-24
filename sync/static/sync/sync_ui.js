@@ -63,6 +63,7 @@ if (daw_button != null)
     });
 
 sync_button.addEventListener('click', async _ => {
+    showToast("Sync", "Starting sync...");
     sync_button.textContent = "Syncing..."
     sync_button.disabled = true;
     let context = getContext();
@@ -102,9 +103,10 @@ sync_button.addEventListener('click', async _ => {
     console.log("Got initial response");
     console.log(result);
     if (result.result === "started") {
-        showToast("Sync", "Syncing...", "primary");
+        showToast("Sync", "Sync started");
         pushTask(result.task_id, 'sync');
     } else {
+        showToast("Sync", "Something went wrong! Contact support.", "danger");
         console.warn("Unknown response.");
     }
 });

@@ -35,9 +35,6 @@ function showAlert(msg, klass = "info") {
 }
 
 function showToast(title, content, type = "primary", icon = "") {
-    if (icon != null) {
-        //icon = `<img class="rounded me-2" src="${icon}" />`;
-    }
     new BsToast({
         title: title,
         subtitle: 'now',
