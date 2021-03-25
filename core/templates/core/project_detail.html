@@ -69,7 +69,7 @@
             </tbody>
         </table>
     {% else %}
-        <div class="alert alert-primary"><strong>No Songs here!</strong>{% if member %}Get started and <a
+        <div class="alert alert-primary"><strong>No Songs here!</strong>{% if member %} Get started and <a
                 href="{% url 'core:song-create' project.id %}">create one</a>{% endif %}</div>
     {% endif %}
 {% endblock %}

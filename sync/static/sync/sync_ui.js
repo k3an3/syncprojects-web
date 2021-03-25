@@ -2,9 +2,9 @@ const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const sync_button = document.querySelector('#sync_button');
 const daw_button = document.querySelector('#daw_button');
 const sync_modal = new bootstrap.Modal(document.querySelector("#sync_modal"), {});
+const sync_modal_body = document.querySelector("#sync-modal-body");
 const progress = document.querySelector("#sync_progress");
 const alert = document.querySelector('#alert');
-let sync_in_progress = false;
 let ping_failed = true;
 
 function getContext() {
@@ -48,7 +48,7 @@ if (daw_button != null)
         console.log("Got context");
         console.log(context);
         let result;
-        sync_in_progress = true;
+        taskStore.setObj('sync_in_progress', true);
         let msg = {'song': {'song': context.song, 'project': context.project}};
         console.log("Working on song")
         console.log(msg);
@@ -74,7 +74,7 @@ sync_button.addEventListener('click', async _ => {
     console.log("Got context");
     console.log(context);
     let result;
-    sync_in_progress = true;
+    taskStore.setObj('sync_in_progress', true);
     if (context.project == null) {
         // Sync all projects
         let projects = await getProjects();
@@ -139,7 +139,7 @@ async function checkConnection() {
     if (result != null && result.result == "pong") {
         ping_failed = false;
         console.debug("Got PONG from server: " + result.task_id);
-        if (sync_in_progress) {
+        if (taskStore.getObj('sync_in_progress')) {
             sync_button.className = "btn btn-sm btn-primary";
             sync_button.textContent = "Syncing...";
             sync_button.disabled = true;
@@ -151,22 +151,54 @@ async function checkConnection() {
 }
 
 function syncResultHandler(data) {
-    console.log(data);
+    console.log("displaying sync results, fetched from storage");
+    let html = `<p class="text-muted"><small>(${data.task_id})</small></p>`;
+    let results = taskStore.getObj('sync-' + data.task_id);
+    results.forEach(project_result => {
+        console.log(project_result);
+        html += `<h3>${project_result.project}</h3>`;
+        if (project_result.songs != null && project_result.songs.length) {
+            html += '<span class="badge bg-success">Success</span>';
+            html += '<ul class="list-group">'
+            let bg = "primary";
+            project_result.songs.forEach(song_result => {
+                html += '<li class="list-group-item d-flex justify-content-between align-items-start">';
+                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.name}</div>${song_result.action}</div>`;
+                html += `<span class="badge bg-${bg} rounded-pill>${song_result.result}</span>`;
+            });
+            html += '</ul>';
+        } else if (project_result.lock) {
+            html += '<span class="badge bg-danger">Failed</span>';
+            let since = "";
+            let reason = "";
+            let unlock = "";
+            if (project_result.lock.since != null)
+                since = " since " + project_result.lock.since;
+            if (project_result.lock.reason != null)
+                reason = " Reason: " + project_result.lock.reason + ".";
+            if (project_result.lock.locked_by === "self")
+                unlock = " Soon, you will be able to work around this yourself... In the meantime, contact support.";
+            html += `<p class="text-danger">Locked by ${project_result.lock.locked_by}${since}.${reason}${unlock}</p>`;
+        } else {
+            html += '<span class="badge bg-warning">None</span>';
+            html += '<p class="text-muted">No results.</p>';
+        }
+    });
+    taskStore.removeItem('sync-' + data.task_id);
+    console.log(results);
+    sync_modal_body.innerHTML = html;
     sync_modal.show();
 }
 
-function saveSyncProgress(data) {
+function saveSyncProgress(task_id, data) {
     console.log("Ok... saving progress...");
     console.log(data);
-    let stored = taskStore.getObj('sync-' + data.task_id);
+    let stored = taskStore.getObj('sync-' + task_id);
     if (stored == null || stored.isEmpty()) {
-        console.log("data item doesn't exist in storage");
         stored = [];
-        console.log(stored);
     }
-    console.log(stored);
-    stored.push(data.completed);
-    taskStore.setObj('sync-' + data.task_id);
+    stored.push(data);
+    taskStore.setObj('sync-' + task_id, stored);
 }
 
 function handleResults(data) {
@@ -179,17 +211,21 @@ function handleResults(data) {
         console.log("processing");
         console.log(result);
         let task = getTask(result.task_id);
-        if (task == null)
+        if (task == null) {
+            console.warn("Task was null, bailing...");
             return;
+        }
         console.log("Got task");
         console.log(task);
         switch (result.status) {
             case "complete":
+                console.log("Handle sync completion");
                 showToast("Sync", task[0].toUpperCase() + task.substr(1) + " complete", "success");
                 popTask(result.task_id);
-                enableSyncButton();
                 switch (task) {
                     case 'sync':
+                        taskStore.setObj('sync_in_progress', false);
+                        enableSyncButton();
                         syncResultHandler(result);
                         break;
                     default:
@@ -198,14 +234,16 @@ function handleResults(data) {
                 }
                 break;
             case "progress":
-                saveSyncProgress(result);
+                saveSyncProgress(result.task_id, result.completed);
                 break;
             case "error":
                 task = popTask(result.task_id);
                 showToast("Sync", "Oops! " + result.msg, "danger");
+                taskStore.setObj('sync_in_progress', false);
                 break;
             case "warn":
                 showToast("Sync", "Note: " + result.msg, "warning");
+                saveSyncProgress(result.task_id, result.failed)
                 break;
             default:
                 console.warn("Unhandled task status " + result.status);
@@ -215,7 +253,7 @@ function handleResults(data) {
 }
 
 async function checkTasks(force_check = false) {
-    if (!isMobile() && (!ping_failed || force_check) && taskStore.getObj('tasks') != null && !taskStore.getObj('tasks').isEmpty()) {
+    if (force_check || (!isMobile() && (!ping_failed) && taskStore.getObj('tasks') != null && !taskStore.getObj('tasks').isEmpty())) {
         let results = await getResults().catch(_ => {
         });
         if (results != null)
@@ -228,6 +266,8 @@ if (!isMobile()) {
     if (daw_button != null)
         daw_button.removeAttribute('hidden');
     sync_button.removeAttribute('hidden');
+    if (!taskStore.getObj('sync_in_progress'))
+        sync_button.removeAttribute('disabled');
     checkConnection();
     setInterval(checkConnection, 15000);
 }
