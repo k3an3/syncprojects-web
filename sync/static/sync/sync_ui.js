@@ -107,7 +107,7 @@ sync_button.addEventListener('click', async _ => {
     console.log("Got initial response");
     console.log(result);
     if (result.result === "started") {
-        showToast("Sync", "Sync started");
+        showToast("Sync", "Sync started <span class=\"fas fa-check\"></span>");
         pushTask(result.task_id, 'sync');
     } else {
         showToast("Sync", "Something went wrong! Contact support.", "danger");
@@ -122,7 +122,7 @@ function disableDawButton(status = true) {
 
 function enableSyncButton() {
     sync_button.className = "btn btn-sm btn-primary";
-    sync_button.textContent = "Sync";
+    sync_button.innerHTML = "Sync <span class=\"fas fa-sync\"></span>";
     sync_button.disabled = false;
     disableDawButton(false);
 }
@@ -157,6 +157,14 @@ let sync_action_mapping = {
     error: "An error occured during sync."
 }
 
+let action_icon_mapping = {
+    local: 'cloud-upload-alt',
+    remote: 'cloud-download-alt',
+    null: '',
+    error: 'exclamation-triangle',
+
+}
+
 function syncResultHandler(data) {
     console.log("displaying sync results, fetched from storage");
     let html = `<p class="text-muted"><small>(${data.task_id})</small></p>`;
@@ -173,8 +181,11 @@ function syncResultHandler(data) {
                     bg = "danger";
                 }
                 html += '<li class="list-group-item d-flex justify-content-between align-items-start">';
-                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}</div>${sync_action_mapping[song_result.action]}</div>`;
-                html += `<span class="badge bg-${bg} rounded-pill">${song_result.result}</span>`;
+                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}&nbsp;<span class="fas fa-${action_icon_mapping[song_result.action]}"></span></div>${sync_action_mapping[song_result.action]}</div>`;
+                if (song_result.action != null) {
+                    console.log(song_result)
+                    html += `<span class="badge bg-${bg} rounded-pill">${song_result.result}</span>`;
+                }
             });
             html += '</ul>';
         } else if (project_result.lock) {
@@ -230,7 +241,7 @@ function handleResults(data) {
         switch (result.status) {
             case "complete":
                 console.log("Handle sync completion");
-                showToast("Sync", task[0].toUpperCase() + task.substr(1) + " complete", "success");
+                showToast("Sync", task[0].toUpperCase() + task.substr(1) + " complete <span class=\"fas fa-check\"></span>", "success");
                 popTask(result.task_id);
                 switch (task) {
                     case 'sync':
@@ -283,4 +294,4 @@ if (!isMobile()) {
 }
 // noinspection JSIgnoredPromiseFromCall
 checkTasks(true);
-setInterval(checkTasks, 3000);
+setInterval(checkTasks, 1000);
