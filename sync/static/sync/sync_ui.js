@@ -163,7 +163,7 @@ function syncResultHandler(data) {
             let bg = "primary";
             project_result.songs.forEach(song_result => {
                 html += '<li class="list-group-item d-flex justify-content-between align-items-start">';
-                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.name}</div>${song_result.action}</div>`;
+                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}</div>${song_result.action}</div>`;
                 html += `<span class="badge bg-${bg} rounded-pill>${song_result.result}</span>`;
             });
             html += '</ul>';
