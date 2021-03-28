@@ -194,7 +194,7 @@ function saveSyncProgress(task_id, data) {
     console.log("Ok... saving progress...");
     console.log(data);
     let stored = taskStore.getObj('sync-' + task_id);
-    if (stored == null || stored.isEmpty()) {
+    if (stored == null || isEmpty(stored)) {
         stored = [];
     }
     stored.push(data);
@@ -253,7 +253,7 @@ function handleResults(data) {
 }
 
 async function checkTasks(force_check = false) {
-    if (force_check || (!isMobile() && (!ping_failed) && taskStore.getObj('tasks') != null && !taskStore.getObj('tasks').isEmpty())) {
+    if (force_check || (!isMobile() && (!ping_failed) && taskStore.getObj('tasks') != null && !isEmpty(taskStore.getObj('tasks')))) {
         let results = await getResults().catch(_ => {
         });
         if (results != null)

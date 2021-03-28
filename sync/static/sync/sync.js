@@ -64,9 +64,9 @@ Storage.prototype.getObj = function (key) {
     }
 }
 
-Object.prototype.isEmpty = function () {
-    for (let prop in this) if (this.hasOwnProperty(prop)) return false;
+function isEmpty(obj) {
+    for (let prop in obj) if (obj.hasOwnProperty(prop)) return false;
     return true;
-};
+}
 
 let taskStore = window.localStorage;
