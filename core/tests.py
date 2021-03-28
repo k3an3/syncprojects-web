@@ -1,12 +1,12 @@
 from datetime import timedelta
 
 from django.contrib.auth.models import User
-from django.test import TestCase, SimpleTestCase
+from django.test import TestCase, RequestFactory
 from django.utils import timezone
 from django.views.generic import TemplateView
 
 from core.models import Project, Song, Lock
-from core.permissions import UserIsMemberPermissionMixin
+from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 
 
 class ProjectModelTests(TestCase):
@@ -112,12 +112,74 @@ class SongModelTests(TestCase):
         self.assertFalse(self.song.is_locked())
 
 
-# TODO
-class PermissionsTests(SimpleTestCase):
-    class DummyView(UserIsMemberPermissionMixin, TemplateView):
-        pass
+class DummyViewFactory:
+    @staticmethod
+    def make(cls):
+        class Dummy(cls, TemplateView):
+            template_name = 'any_template.html'  # TemplateView requires this attribute
 
+            def __init__(self, obj, user):
+                super().__init__()
+                self.obj = obj
+                self.get_object = lambda: self.obj
+                self.request = RequestFactory().get('/nonexistent')
+                self.request.user = user
+
+        return Dummy
+
+
+class UserIsMemberTests(TestCase):
     def setUp(self):
-        self.project_1 = Project.objects.create(name="test1")
-        self.song = Song.objects.create(name='foo', project=self.project_1)
+        self.view = DummyViewFactory.make(UserIsMemberPermissionMixin)
+        self.project = Project.objects.create(name="test1")
+        self.song = Song.objects.create(name='foo', project=self.project)
         self.user = User.objects.create(username="tester")
+
+    def test_user_is_not_project_member(self):
+        self.assertFalse(self.view(self.project, self.user).test_func())
+
+    def test_user_is_project_member(self):
+        self.user.coreuser.projects.add(self.project)
+        self.assertTrue(self.view(self.project, self.user).test_func())
+
+    def test_user_is_not_song_member(self):
+        self.assertFalse(self.view(self.song, self.user).test_func())
+
+    def test_user_is_song_member(self):
+        self.user.coreuser.projects.add(self.project)
+        self.assertTrue(self.view(self.song, self.user).test_func())
+
+
+class UserIsFollowerOrMemberTests(TestCase):
+    def setUp(self):
+        self.view = DummyViewFactory.make(UserIsFollowerOrMemberPermissionMixin)
+        self.project = Project.objects.create(name="test1")
+        self.song = Song.objects.create(name='foo', project=self.project)
+        self.user = User.objects.create(username="tester")
+
+    def test_no_access(self):
+        self.assertFalse(self.view(self.project, self.user).test_func())
+
+    def test_has_follower_access(self):
+        self.user.coreuser.subscribed_projects.add(self.project)
+        self.assertTrue(self.view(self.project, self.user).test_func())
+
+    def test_has_member_access(self):
+        self.user.coreuser.projects.add(self.project)
+        self.assertTrue(self.view(self.project, self.user).test_func())
+
+    def test_no_song_access(self):
+        self.assertFalse(self.view(self.song, self.user).test_func())
+
+    def test_no_song_access_as_follower(self):
+        self.user.coreuser.subscribed_projects.add(self.project)
+        self.assertFalse(self.view(self.song, self.user).test_func())
+
+    def test_allowed_song_access_as_follower(self):
+        self.user.coreuser.subscribed_projects.add(self.project)
+        self.song.shared_with_followers = True
+        self.assertTrue(self.view(self.song, self.user).test_func())
+
+    def test_song_access_as_member(self):
+        self.user.coreuser.projects.add(self.project)
+        self.assertTrue(self.view(self.song, self.user).test_func())
