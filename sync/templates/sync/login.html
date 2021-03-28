@@ -8,6 +8,6 @@
     </main>
     <input type="hidden" id="auth_token" value="{{ auth_data }}">
     <input type="hidden" id="redirect_url" value="{% url 'sync:client-login-success' %}">
-    <script src="{% static 'sync/sync.js' %}"></script>
+    <script src="{% static 'sync/api.js' %}"></script>
     <script src="{% static 'sync/auth.js' %}"></script>
 {% endblock %}

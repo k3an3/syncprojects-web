@@ -149,4 +149,5 @@ def peaks(request):
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([CsrfExemptSessionAuthentication])
 def sign_data(request):
-    return Response({'data': get_signed_data(request.data)})
+    data = request.data.copy()
+    return Response({'data': get_signed_data(data, request.user)})

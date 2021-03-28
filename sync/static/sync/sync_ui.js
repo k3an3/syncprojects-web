@@ -42,6 +42,7 @@ function getTask(task_id) {
 
 if (daw_button != null)
     daw_button.addEventListener('click', async _ => {
+        progress.removeAttribute('hidden');
         daw_button.textContent = "Opening..."
         sync_button.disabled = true;
         let context = getContext();
@@ -52,10 +53,7 @@ if (daw_button != null)
         let msg = {'song': {'song': context.song, 'project': context.project}};
         console.log("Working on song")
         console.log(msg);
-        let signed = await signData(msg);
-        console.log("Signed data");
-        console.log(signed);
-        result = await workOn(signed);
+        result = await workOn(msg);
         console.log("Got initial response");
         console.log(result);
         if (result.result === "started") {
@@ -67,8 +65,9 @@ if (daw_button != null)
     });
 
 sync_button.addEventListener('click', async _ => {
-    showToast("Sync", "Starting sync...");
-    sync_button.textContent = "Syncing..."
+    showToast("Sync", "Starting sync... <span class=\"fas fa-hourglass-start\"></span>");
+    progress.removeAttribute('hidden');
+    sync_button.innerHTML = "Syncing... <span class=\"fas fa-hourglass-start\"></span>";
     sync_button.disabled = true;
     let context = getContext();
     console.log("Got context");
@@ -81,28 +80,19 @@ sync_button.addEventListener('click', async _ => {
         let msg = {'projects': projects}
         console.log("Syncing projects");
         console.log(msg);
-        let signed = await signData(msg);
-        console.log("Signed data");
-        console.log(signed);
-        result = await startSync(signed);
+        result = await startSync(msg);
     } else if (context.song == null) {
         // Sync single project
         let msg = {'projects': [context.project]};
         console.log("Syncing project");
         console.log(msg);
-        let signed = await signData(msg);
-        console.log("Signed data");
-        console.log(signed);
-        result = await startSync(signed);
+        result = await startSync(msg);
     } else {
         // Sync single song
         let msg = {'songs': [{'song': context.song, 'project': context.project}]};
         console.log("Syncing song")
         console.log(msg);
-        let signed = await signData(msg);
-        console.log("Signed data");
-        console.log(signed);
-        result = await startSync(signed);
+        result = await startSync(msg);
     }
     console.log("Got initial response");
     console.log(result);
@@ -141,7 +131,7 @@ async function checkConnection() {
         console.debug("Got PONG from server: " + result.task_id);
         if (taskStore.getObj('sync_in_progress')) {
             sync_button.className = "btn btn-sm btn-primary";
-            sync_button.textContent = "Syncing...";
+            sync_button.innerHTML = "Syncing... <span class=\"fas fa-hourglass-start\"></span>";
             sync_button.disabled = true;
             disableDawButton();
         } else {
@@ -232,15 +222,18 @@ function handleResults(data) {
         console.log("processing");
         console.log(result);
         let task = getTask(result.task_id);
-        if (task == null) {
+        // TODO gross
+        if (task == null && !(result.status === "tasks")) {
             console.warn("Task was null, bailing...");
             return;
         }
         console.log("Got task");
         console.log(task);
+        // TODO: this switch seems backwards... Check task type first, then handle level
         switch (result.status) {
             case "complete":
                 console.log("Handle sync completion");
+                progress.setAttribute("hidden", "hidden");
                 showToast("Sync", task[0].toUpperCase() + task.substr(1) + " complete <span class=\"fas fa-check\"></span>", "success");
                 popTask(result.task_id);
                 switch (task) {
@@ -259,12 +252,21 @@ function handleResults(data) {
                 break;
             case "error":
                 task = popTask(result.task_id);
+                progress.setAttribute("hidden", "hidden");
                 showToast("Sync", "Oops! " + result.msg, "danger");
                 taskStore.setObj('sync_in_progress', false);
                 break;
             case "warn":
                 showToast("Sync", "Note: " + result.msg, "warning");
                 saveSyncProgress(result.task_id, result.failed)
+                break;
+            case "tasks":
+                if (result.tasks == null || result.tasks.length == 0) {
+                    console.log("Clearing out tasks...");
+                    enableSyncButton();
+                    clearTasks();
+                    taskStore.setObj('sync_in_progress', false);
+                }
                 break;
             default:
                 console.warn("Unhandled task status " + result.status);
@@ -289,8 +291,14 @@ if (!isMobile()) {
     sync_button.removeAttribute('hidden');
     if (!taskStore.getObj('sync_in_progress'))
         sync_button.removeAttribute('disabled');
+    // noinspection JSIgnoredPromiseFromCall
     checkConnection();
     setInterval(checkConnection, 15000);
+}
+if (taskStore.getObj('sync_in_progress')) {
+    // noinspection JSIgnoredPromiseFromCall
+    progress.removeAttribute('hidden');
+    getTasks();
 }
 // noinspection JSIgnoredPromiseFromCall
 checkTasks(true);

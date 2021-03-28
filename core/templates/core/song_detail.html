@@ -62,11 +62,13 @@
         <div class="btn-group me-2">
             {% include 'sync/buttons.html' %}
         </div>
+        {% if user.is_superuser %}
         <div class="btn-group me-2">
             <a href="{% url 'core:song-clear-peaks' project.id song.id %}">
                 <button type="button" class="btn btn-sm btn-outline-secondary">Redraw Waveform</button>
             </a>
         </div>
+        {% endif %}
         {% if member %}
         <div class="btn-group me-2">
             <a href="{% url 'core:song-update' project.id song.id %}" class="btn btn-sm btn-outline-secondary">Edit
