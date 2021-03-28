@@ -139,8 +139,8 @@ class Song(models.Model, LockableModel):
     last_mtime = models.DateTimeField(null=True, blank=True)
     peaks = models.TextField(null=True, blank=True)
     locks = GenericRelation(Lock)
+    shared_with_followers = models.BooleanField(default=False)
 
-    # TODO: Songs themselves should have locks. Replicate or move functionality from projects
     def __str__(self):
         return self.name
 

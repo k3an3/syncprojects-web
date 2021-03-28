@@ -1,9 +1,12 @@
 from datetime import timedelta
+
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, SimpleTestCase
 from django.utils import timezone
+from django.views.generic import TemplateView
 
 from core.models import Project, Song, Lock
+from core.permissions import UserIsMemberPermissionMixin
 
 
 class ProjectModelTests(TestCase):
@@ -107,3 +110,14 @@ class SongModelTests(TestCase):
         Lock.objects.create(object=self.song, user=self.user, end_time=timezone.now() + timedelta(seconds=15))
         self.song.unlock()
         self.assertFalse(self.song.is_locked())
+
+
+# TODO
+class PermissionsTests(SimpleTestCase):
+    class DummyView(UserIsMemberPermissionMixin, TemplateView):
+        pass
+
+    def setUp(self):
+        self.project_1 = Project.objects.create(name="test1")
+        self.song = Song.objects.create(name='foo', project=self.project_1)
+        self.user = User.objects.create(username="tester")
