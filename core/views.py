@@ -23,7 +23,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['songs'] = [song for song in self.get_object().songs() if
-                            self.request.user.coreuser.has_member_access or song.shared_with_followers]
+                            self.request.user.coreuser.has_member_access(song) or song.shared_with_followers]
         context['member'] = self.request.user.coreuser.has_member_access(self.get_object())
         return context
 
@@ -51,7 +51,7 @@ class ProjectDeleteView(LoginRequiredMixin, UserIsMemberPermissionMixin, generic
 
 class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     model = Song
-    fields = ['name', 'url', 'sync_enabled', 'directory_name']
+    fields = ['name', 'url', 'sync_enabled', 'directory_name', 'shared_with_followers']
 
     def test_func(self, **kwargs):
         project = Project.objects.get(pk=self.kwargs['pk'])
@@ -88,7 +88,7 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
 
 class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
     model = Song
-    fields = ['name', 'url', 'sync_enabled', 'directory_name']
+    fields = ['name', 'url', 'sync_enabled', 'directory_name', 'shared_with_followers']
     template_name_suffix = '_update_form'
 
 

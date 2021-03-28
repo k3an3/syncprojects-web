@@ -8,7 +8,7 @@ admin.site.register(Lock)
 
 
 class SongAdmin(admin.ModelAdmin):
-    fields = ['name', 'url', 'project', 'directory_name', 'sync_enabled']
+    fields = ['name', 'url', 'project', 'directory_name', 'sync_enabled', 'shared_with_followers']
 
 
 class CoreUserInline(admin.StackedInline):

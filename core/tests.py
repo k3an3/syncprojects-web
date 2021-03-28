@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 
 from core.models import Project, Song, Lock
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
+from core.views import ProjectDetailView
 
 
 class ProjectModelTests(TestCase):
@@ -114,18 +115,43 @@ class SongModelTests(TestCase):
 
 class DummyViewFactory:
     @staticmethod
-    def make(cls):
-        class Dummy(cls, TemplateView):
+    def make(mixin):
+        class Dummy(mixin, TemplateView):
             template_name = 'any_template.html'  # TemplateView requires this attribute
 
             def __init__(self, obj, user):
                 super().__init__()
-                self.obj = obj
-                self.get_object = lambda: self.obj
+                self.object = obj
+                self.get_object = lambda: self.object
                 self.request = RequestFactory().get('/nonexistent')
                 self.request.user = user
 
         return Dummy
+
+
+class ProjectDetailViewTests(TestCase):
+    def setUp(self):
+        self.view = DummyViewFactory.make(ProjectDetailView)
+        self.project = Project.objects.create(name="test1")
+        self.song_1 = Song.objects.create(name='foo', project=self.project)
+        self.song_2 = Song.objects.create(name='foo2', project=self.project)
+        self.user = User.objects.create(username="tester")
+
+    def test_no_access(self):
+        self.assertFalse(self.view(self.project, self.user).get_context_data()['songs'])
+        self.assertFalse(self.view(self.project, self.user).get_context_data()['member'])
+
+    def test_song_list_member(self):
+        self.user.coreuser.projects.add(self.project)
+        self.assertEqual(self.view(self.project, self.user).get_context_data()['songs'], [self.song_1, self.song_2])
+        self.assertTrue(self.view(self.project, self.user).get_context_data()['member'])
+
+    def test_partial_song_list_follower(self):
+        self.user.coreuser.subscribed_projects.add(self.project)
+        self.song_2.shared_with_followers = True
+        self.song_2.save()
+        self.assertFalse(self.view(self.project, self.user).get_context_data()['member'])
+        self.assertEqual(self.view(self.project, self.user).get_context_data()['songs'], [self.song_2])
 
 
 class UserIsMemberTests(TestCase):

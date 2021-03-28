@@ -101,7 +101,8 @@ class CoreUser(models.Model):
 
     # TODO: social_links
 
-    def check_object_access(self, obj, projects):
+    @staticmethod
+    def check_object_access(obj, projects):
         if isinstance(obj, Project):
             try:
                 return projects.get(id=obj.id)
