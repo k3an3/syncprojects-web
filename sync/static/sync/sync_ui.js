@@ -150,6 +150,13 @@ async function checkConnection() {
     }
 }
 
+let sync_action_mapping = {
+    local: "Your changes were sent to the server.",
+    remote: "New changes were received from the server.",
+    null: "No actions were taken.",
+    error: "An error occured during sync."
+}
+
 function syncResultHandler(data) {
     console.log("displaying sync results, fetched from storage");
     let html = `<p class="text-muted"><small>(${data.task_id})</small></p>`;
@@ -160,11 +167,14 @@ function syncResultHandler(data) {
         if (project_result.songs != null && project_result.songs.length) {
             html += '<span class="badge bg-success">Success</span>';
             html += '<ul class="list-group">'
-            let bg = "primary";
             project_result.songs.forEach(song_result => {
+                let bg = "success";
+                if (song_result.result == "error") {
+                    bg = "danger";
+                }
                 html += '<li class="list-group-item d-flex justify-content-between align-items-start">';
-                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}</div>${song_result.action}</div>`;
-                html += `<span class="badge bg-${bg} rounded-pill>${song_result.result}</span>`;
+                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}</div>${sync_action_mapping[song_result.action]}</div>`;
+                html += `<span class="badge bg-${bg} rounded-pill">${song_result.result}</span>`;
             });
             html += '</ul>';
         } else if (project_result.lock) {
