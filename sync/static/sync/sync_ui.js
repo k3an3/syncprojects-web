@@ -341,6 +341,9 @@ function handleResults(data) {
                 progress.setAttribute("hidden", "hidden");
                 enableSyncButton();
                 disableDawButton(false);
+                if (result.msg == null) {
+                    result.msg = "An unhandled error occurred in the client. Contact support";
+                }
                 showToast("Sync", "Oops! " + result.msg, "danger");
                 taskStore.setObj('sync_in_progress', false);
                 break;
