@@ -56,6 +56,10 @@ async function workOn(data) {
     return await localRequest('workon', 'POST', data);
 }
 
+async function workDone(data) {
+    return await localRequest('workdone', 'POST', data);
+}
+
 async function getResults() {
     return await localRequest('results');
 }

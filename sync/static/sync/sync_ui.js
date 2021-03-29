@@ -42,25 +42,49 @@ function getTask(task_id) {
 
 if (daw_button != null)
     daw_button.addEventListener('click', async _ => {
-        progress.removeAttribute('hidden');
-        daw_button.textContent = "Opening..."
-        sync_button.disabled = true;
-        let context = getContext();
-        console.log("Got context");
-        console.log(context);
-        let result;
-        taskStore.setObj('sync_in_progress', true);
-        let msg = {'song': {'song': context.song, 'project': context.project}};
-        console.log("Working on song")
-        console.log(msg);
-        result = await workOn(msg);
-        console.log("Got initial response");
-        console.log(result);
-        if (result.result === "started") {
-            pushTask(result.task_id, 'workon');
-            showToast("Sync", "Syncing and opening song in DAW...");
+        if (!isSongCheckedOut()) {
+            showToast("Sync", "Syncing and opening song in DAW... <span class=\"fas fa-hourglass-start\"></span>");
+            progress.removeAttribute('hidden');
+            daw_button.innerHTML = "Opening... <span class=\"fas fa-hourglass-start\"></span>";
+            daw_button.disabled = true;
+            sync_button.disabled = true;
+            let context = getContext();
+            console.log("Got context");
+            console.log(context);
+            let result;
+            taskStore.setObj('sync_in_progress', true);
+            let msg = {'song': {'song': context.song, 'project': context.project}};
+            console.log("Working on song")
+            console.log(msg);
+            result = await workOn(msg);
+            console.log("Got initial response");
+            console.log(result);
+            if (result.result === "started") {
+                showToast("Sync", "Sync started <span class=\"fas fa-check\"></span>");
+                pushTask(result.task_id, 'workon');
+            } else {
+                console.warn("Unknown response.");
+            }
         } else {
-            console.warn("Unknown response.");
+            showToast("Sync", "Syncing and checking song back in... <span class=\"fas fa-hourglass-start\"></span>");
+            progress.removeAttribute('hidden');
+            daw_button.innerHTML = "Checking in... <span class=\"fas fa-hourglass-start\"></span>";
+            daw_button.disabled = true;
+            sync_button.disabled = true;
+            let context = getContext();
+            taskStore.setObj('sync_in_progress', true);
+            let msg = {'song': {'song': context.song, 'project': context.project}};
+            console.log("Work done on song")
+            console.log(msg);
+            let result = await workDone(msg);
+            console.log("Got initial response");
+            console.log(result);
+            if (result.result === "started") {
+                showToast("Sync", "Sync started <span class=\"fas fa-check\"></span>");
+                pushTask(result.task_id, 'workdone');
+            } else {
+                console.warn("Unknown response.");
+            }
         }
     });
 
@@ -106,8 +130,13 @@ sync_button.addEventListener('click', async _ => {
 });
 
 function disableDawButton(status = true) {
-    if (daw_button != null)
+    if (daw_button != null) {
         daw_button.disabled = status;
+        if (!status) {
+            daw_button.innerHTML = "Open in DAW";
+            daw_button.className = "btn btn-sm btn-secondary";
+        }
+    }
 }
 
 function enableSyncButton() {
@@ -115,6 +144,7 @@ function enableSyncButton() {
     sync_button.innerHTML = "Sync <span class=\"fas fa-sync\"></span>";
     sync_button.disabled = false;
     disableDawButton(false);
+    handleSongCheckedOut();
 }
 
 async function checkConnection() {
@@ -140,19 +170,22 @@ async function checkConnection() {
     }
 }
 
-let sync_action_mapping = {
+const sync_action_mapping = {
     local: "Your changes were sent to the server.",
     remote: "New changes were received from the server.",
     null: "No actions were taken.",
-    error: "An error occured during sync."
+    error: "An error occured during sync.",
+    disabled: "Sync is disabled for this song.",
+    locked: "The song is locked by another sync.",
 }
 
-let action_icon_mapping = {
+const action_icon_mapping = {
     local: 'cloud-upload-alt',
     remote: 'cloud-download-alt',
     null: '',
+    disabled: '',
+    locked: 'lock',
     error: 'exclamation-triangle',
-
 }
 
 function syncResultHandler(data) {
@@ -172,7 +205,7 @@ function syncResultHandler(data) {
                 }
                 html += '<li class="list-group-item d-flex justify-content-between align-items-start">';
                 html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}&nbsp;<span class="fas fa-${action_icon_mapping[song_result.action]}"></span></div>${sync_action_mapping[song_result.action]}</div>`;
-                if (song_result.action != null) {
+                if (song_result.action != null && song_result.action != 'disabled') {
                     console.log(song_result)
                     html += `<span class="badge bg-${bg} rounded-pill">${song_result.result}</span>`;
                 }
@@ -202,6 +235,7 @@ function syncResultHandler(data) {
 }
 
 function saveSyncProgress(task_id, data) {
+    showToast("Sync", `Sync for project "${data.project}" complete <span class=\"fas fa-check\"></span>`);
     console.log("Ok... saving progress...");
     console.log(data);
     let stored = taskStore.getObj('sync-' + task_id);
@@ -210,6 +244,46 @@ function saveSyncProgress(task_id, data) {
     }
     stored.push(data);
     taskStore.setObj('sync-' + task_id, stored);
+}
+
+function setSongCheckedOut() {
+    let context = getContext();
+    let checked_out = taskStore.getObj('checked_out');
+    if (checked_out == null || isEmpty(checked_out))
+        checked_out = [];
+    checked_out.push(context.song);
+    taskStore.setObj('checked_out', checked_out);
+}
+
+function setSongCheckedIn() {
+    let context = getContext();
+    let checked_out = taskStore.getObj('checked_out');
+    checked_out.splice(checked_out.indexOf(context.song, 1));
+    taskStore.setObj('checked_out', checked_out);
+}
+
+function isSongCheckedOut() {
+    let context = getContext();
+    if (context.song != null) {
+        let checked_out = taskStore.getObj('checked_out');
+        if (checked_out == null)
+            return false;
+        return checked_out.includes(context.song);
+    }
+    return false;
+}
+
+function handleSongCheckedOut() {
+    if (isSongCheckedOut()) {
+        sync_button.disabled = true;
+        daw_button.innerHTML = "Check in <span class=\"fas fa-clipboard-check\"></span>";
+        daw_button.className = "btn btn-sm btn-primary";
+    }
+}
+
+const task_name_map = {
+    'workon': "Check out",
+    'workdone': "Check in"
 }
 
 function handleResults(data) {
@@ -223,7 +297,7 @@ function handleResults(data) {
         console.log(result);
         let task = getTask(result.task_id);
         // TODO gross
-        if (task == null && !(result.status === "tasks")) {
+        if (task == null) {
             console.warn("Task was null, bailing...");
             return;
         }
@@ -234,13 +308,25 @@ function handleResults(data) {
             case "complete":
                 console.log("Handle sync completion");
                 progress.setAttribute("hidden", "hidden");
-                showToast("Sync", task[0].toUpperCase() + task.substr(1) + " complete <span class=\"fas fa-check\"></span>", "success");
+                let name = task_name_map[task];
+                if (name == null)
+                    name = task[0].toUpperCase() + task.substr(1);
+                showToast("Sync", name + " complete <span class=\"fas fa-check\"></span>", "success");
                 popTask(result.task_id);
                 switch (task) {
                     case 'sync':
                         taskStore.setObj('sync_in_progress', false);
                         enableSyncButton();
+                        disableDawButton(false);
                         syncResultHandler(result);
+                        break;
+                    case 'workon':
+                        taskStore.setObj('sync_in_progress', false);
+                        setSongCheckedOut();
+                        break;
+                    case 'workdone':
+                        taskStore.setObj('sync_in_progress', false);
+                        setSongCheckedIn();
                         break;
                     default:
                         console.warn("Unexpected task handler " + task);
@@ -253,11 +339,13 @@ function handleResults(data) {
             case "error":
                 task = popTask(result.task_id);
                 progress.setAttribute("hidden", "hidden");
+                enableSyncButton();
+                disableDawButton(false);
                 showToast("Sync", "Oops! " + result.msg, "danger");
                 taskStore.setObj('sync_in_progress', false);
                 break;
             case "warn":
-                showToast("Sync", "Note: " + result.msg, "warning");
+                showToast("Sync", "Note: " + result.msg + " <span class=\"fas fa-exclamation-triangle\"></span>", "warning");
                 saveSyncProgress(result.task_id, result.failed)
                 break;
             case "tasks":
@@ -265,6 +353,7 @@ function handleResults(data) {
                     console.log("Clearing out tasks...");
                     enableSyncButton();
                     clearTasks();
+                    progress.setAttribute("hidden", "hidden");
                     taskStore.setObj('sync_in_progress', false);
                 }
                 break;
@@ -284,22 +373,27 @@ async function checkTasks(force_check = false) {
     }
 }
 
-// noinspection JSIgnoredPromiseFromCall
+async function handleSyncInProgress() {
+    if (taskStore.getObj('sync_in_progress')) {
+        // noinspection JSIgnoredPromiseFromCall
+        progress.removeAttribute('hidden');
+        let result = await getTasks();
+        pushTask(result.task_id, 'tasks');
+    }
+}
+
 if (!isMobile()) {
     if (daw_button != null)
         daw_button.removeAttribute('hidden');
     sync_button.removeAttribute('hidden');
-    if (!taskStore.getObj('sync_in_progress'))
+    if (!taskStore.getObj('sync_in_progress')) {
         sync_button.removeAttribute('disabled');
-    // noinspection JSIgnoredPromiseFromCall
+        disableDawButton(false);
+    }
     checkConnection();
     setInterval(checkConnection, 15000);
 }
-if (taskStore.getObj('sync_in_progress')) {
-    // noinspection JSIgnoredPromiseFromCall
-    progress.removeAttribute('hidden');
-    getTasks();
-}
-// noinspection JSIgnoredPromiseFromCall
+
+handleSyncInProgress();
 checkTasks(true);
 setInterval(checkTasks, 1000);
