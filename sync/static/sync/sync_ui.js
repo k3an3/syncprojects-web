@@ -192,6 +192,10 @@ function syncResultHandler(data) {
     console.log("displaying sync results, fetched from storage");
     let html = `<p class="text-muted"><small>(${data.task_id})</small></p>`;
     let results = taskStore.getObj('sync-' + data.task_id);
+    if (results == null) {
+        console.warn("Results were null. Skipping...");
+        return;
+    }
     results.forEach(project_result => {
         console.log(project_result);
         html += `<h3>${project_result.project}</h3>`;
