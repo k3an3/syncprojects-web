@@ -7,7 +7,7 @@ class AdminOrSelfOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        return True  # request.user.is_superuser or request.user == obj
+        return request.user.is_superuser or request.user == obj
 
 
 class UserHasProjectAccess(permissions.BasePermission):
@@ -16,4 +16,4 @@ class UserHasProjectAccess(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        return request.user.coreuser.has_member_access(obj)
+        return request.user.has_member_access(obj)

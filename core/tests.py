@@ -1,6 +1,4 @@
 from datetime import timedelta
-
-from django.contrib.auth.models import User
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
 from django.views.generic import TemplateView
@@ -8,6 +6,7 @@ from django.views.generic import TemplateView
 from core.models import Project, Song, Lock
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 from core.views import ProjectDetailView
+from users.models import User
 
 
 class ProjectModelTests(TestCase):
@@ -28,7 +27,7 @@ class ProjectModelTests(TestCase):
         self.assertTrue(self.project.is_locked_by_user(self.user))
 
     def test_locked_by_other(self):
-        Lock.objects.create(object=self.project, user=User.objects.create(username="other"))
+        Lock.objects.create(object=self.project, user=User.objects.create(email="other"))
         self.assertFalse(self.project.is_locked_by_user(self.user))
 
     def test_lock_expired(self):
@@ -56,18 +55,18 @@ class CoreUserModelTests(TestCase):
         self.user = User.objects.create(username="tester")
 
     def test_membership(self):
-        self.user.coreuser.projects.add(self.project_1)
-        self.assertTrue(self.user.coreuser.has_member_access(self.project_1))
-        self.assertFalse(self.user.coreuser.has_member_access(self.project_2))
+        self.user.projects.add(self.project_1)
+        self.assertTrue(self.user.has_member_access(self.project_1))
+        self.assertFalse(self.user.has_member_access(self.project_2))
 
     def test_membership_song(self):
-        self.user.coreuser.projects.add(self.project_1)
-        self.assertTrue(self.user.coreuser.has_member_access(self.song_1))
-        self.assertFalse(self.user.coreuser.has_member_access(self.song_2))
+        self.user.projects.add(self.project_1)
+        self.assertTrue(self.user.has_member_access(self.song_1))
+        self.assertFalse(self.user.has_member_access(self.song_2))
 
     def test_membership_unhandled_type(self):
         with self.assertRaises(NotImplementedError):
-            self.user.coreuser.has_member_access("asdf")
+            self.user.has_member_access("asdf")
 
 
 class SongModelTests(TestCase):
@@ -94,7 +93,7 @@ class SongModelTests(TestCase):
         self.assertTrue(self.song.is_locked_by_user(self.user))
 
     def test_locked_by_other(self):
-        Lock.objects.create(object=self.song, user=User.objects.create(username="other"))
+        Lock.objects.create(object=self.song, user=User.objects.create(email="other_2"))
         self.assertFalse(self.song.is_locked_by_user(self.user))
 
     def test_lock_expired(self):
@@ -142,12 +141,12 @@ class ProjectDetailViewTests(TestCase):
         self.assertFalse(self.view(self.project, self.user).get_context_data()['member'])
 
     def test_song_list_member(self):
-        self.user.coreuser.projects.add(self.project)
+        self.user.projects.add(self.project)
         self.assertEqual(self.view(self.project, self.user).get_context_data()['songs'], [self.song_1, self.song_2])
         self.assertTrue(self.view(self.project, self.user).get_context_data()['member'])
 
     def test_partial_song_list_follower(self):
-        self.user.coreuser.subscribed_projects.add(self.project)
+        self.user.subscribed_projects.add(self.project)
         self.song_2.shared_with_followers = True
         self.song_2.save()
         self.assertFalse(self.view(self.project, self.user).get_context_data()['member'])
@@ -165,14 +164,14 @@ class UserIsMemberTests(TestCase):
         self.assertFalse(self.view(self.project, self.user).test_func())
 
     def test_user_is_project_member(self):
-        self.user.coreuser.projects.add(self.project)
+        self.user.projects.add(self.project)
         self.assertTrue(self.view(self.project, self.user).test_func())
 
     def test_user_is_not_song_member(self):
         self.assertFalse(self.view(self.song, self.user).test_func())
 
     def test_user_is_song_member(self):
-        self.user.coreuser.projects.add(self.project)
+        self.user.projects.add(self.project)
         self.assertTrue(self.view(self.song, self.user).test_func())
 
 
@@ -187,25 +186,25 @@ class UserIsFollowerOrMemberTests(TestCase):
         self.assertFalse(self.view(self.project, self.user).test_func())
 
     def test_has_follower_access(self):
-        self.user.coreuser.subscribed_projects.add(self.project)
+        self.user.subscribed_projects.add(self.project)
         self.assertTrue(self.view(self.project, self.user).test_func())
 
     def test_has_member_access(self):
-        self.user.coreuser.projects.add(self.project)
+        self.user.projects.add(self.project)
         self.assertTrue(self.view(self.project, self.user).test_func())
 
     def test_no_song_access(self):
         self.assertFalse(self.view(self.song, self.user).test_func())
 
     def test_no_song_access_as_follower(self):
-        self.user.coreuser.subscribed_projects.add(self.project)
+        self.user.subscribed_projects.add(self.project)
         self.assertFalse(self.view(self.song, self.user).test_func())
 
     def test_allowed_song_access_as_follower(self):
-        self.user.coreuser.subscribed_projects.add(self.project)
+        self.user.subscribed_projects.add(self.project)
         self.song.shared_with_followers = True
         self.assertTrue(self.view(self.song, self.user).test_func())
 
     def test_song_access_as_member(self):
-        self.user.coreuser.projects.add(self.project)
+        self.user.projects.add(self.project)
         self.assertTrue(self.view(self.song, self.user).test_func())

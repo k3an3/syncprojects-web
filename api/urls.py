@@ -2,12 +2,11 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-from api.views import UserViewSet, GroupViewSet, ProjectViewSet, fetch_user_tokens, update_webhook, peaks, \
+from api.views import UserViewSet, ProjectViewSet, fetch_user_tokens, update_webhook, peaks, \
     ClientUpdateViewSet, sign_data
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, 'user')
-router.register(r'groups', GroupViewSet)
 router.register(r'updates', ClientUpdateViewSet, 'update')
 router.register(r'projects', ProjectViewSet, 'project')
 

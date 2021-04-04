@@ -1,10 +1,10 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}
-    {% if user == coreuser.user %}
+    {% if profile_user == user %}
         <title>User Profile</title>
     {% else %}
-        <title>{{ coreuser }}'s Profile</title>
+        <title>{{ profile_user }}'s Profile</title>
     {% endif %}
 {% endblock %}
 
@@ -13,15 +13,15 @@
 
 {% block header %}
     <h1 class="h2">
-        {% if coreuser.is_private %}
-            {{ coreuser.user.get_short_name }}
+        {% if profile_user.is_private %}
+            {{ profile_user.get_short_name }}
         {% else %}
-            {{ coreuser.user.get_full_name }}
+            {{ profile_user.get_full_name }}
         {% endif %}
     </h1>
-    <h6>({{ coreuser.user.email }})</h6>
+    <h6>({{ profile_user.email }})</h6>
     <div class="btn-toolbar mb-2 mb-md-0">
-        {% if user == coreuser.user %}
+        {% if user == profile_user %}
             <div class="btn-group me-2">
                 {% comment %}
                 <a href="{% url 'core:user-update' request.user.id %}" class="btn btn-sm btn-outline-secondary">Edit
@@ -35,9 +35,9 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% if coreuser.profile_picture %}
+    {% if profile_user.profile_picture %}
         <div class="nav flex-column">
-            <img src="{{ coreuser.profile_picture.url }}" width="75%"
+            <img src="{{ profile_user.profile_picture.url }}" width="75%"
                  style="padding-left: 10px; object-fit: cover; object-position: center">
         </div>
     {% endif %}

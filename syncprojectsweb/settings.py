@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'sync.apps.SyncConfig',
+    'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,6 +55,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'syncprojectsweb.urls'
+AUTH_USER_MODEL = 'users.User'
 
 TEMPLATES = [
     {

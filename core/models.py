@@ -1,30 +1,16 @@
 import base64
-
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 
-
-# noinspection PyUnusedLocal
-@receiver(post_save, sender=get_user_model())
-def create_core_user(sender, instance, created, **kwargs):
-    # Mainly needed when under test, may also be needed for registration.
-    # Consider moving to tests.py if not needed here
-    if created:
-        try:
-            instance.coreuser
-        except User.coreuser.RelatedObjectDoesNotExist:
-            CoreUser.objects.create(user=instance)
+from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
 class Lock(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     start_time = models.DateTimeField(default=timezone.now)
     end_time = models.DateTimeField(null=True, blank=True)
     reason = models.CharField(max_length=100, null=True, blank=True)
@@ -85,45 +71,6 @@ class Project(models.Model, LockableModel):
 
     def get_absolute_url(self):
         return reverse('core:project-detail', kwargs={'pk': self.pk})
-
-
-class CoreUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    projects = models.ManyToManyField(Project, blank=True)
-    subscribed_projects = models.ManyToManyField(Project, blank=True, related_name="subscribed_projects")
-    profile_picture = models.ImageField(null=True, blank=True)
-    bio = models.TextField(null=True, blank=True)
-    instruments = models.TextField(null=True, blank=True)
-    genres_musical_taste = models.TextField(null=True, blank=True, verbose_name="Genres and Musical Taste")
-    open_to_collaboration = models.BooleanField(default=False)
-    private = models.BooleanField(default=True,
-                                  help_text="Profiles of private accounts will have their details hidden.")
-
-    # TODO: social_links
-
-    @staticmethod
-    def check_object_access(obj, projects):
-        if isinstance(obj, Project):
-            try:
-                return projects.get(id=obj.id)
-            except Project.DoesNotExist:
-                return False
-        elif isinstance(obj, Song):
-            try:
-                return projects.get(id=obj.project.id)
-            except Project.DoesNotExist:
-                return False
-        else:
-            raise NotImplementedError()
-
-    def has_member_access(self, obj):
-        return self.check_object_access(obj, self.projects)
-
-    def has_subscriber_access(self, obj):
-        return self.check_object_access(obj, self.subscribed_projects)
-
-    def __str__(self):
-        return self.user.first_name or self.user.username
 
 
 class Song(models.Model, LockableModel):

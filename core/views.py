@@ -3,17 +3,17 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic, View
 
-from core.models import Project, Song, CoreUser
+from core.models import Project, Song
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
-        return self.request.user.coreuser.projects.order_by('-name')
+        return self.request.user.projects.order_by('-name')
 
     def get_context_data(self, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['subscribed_projects_list'] = self.request.user.coreuser.subscribed_projects.all()
+        context['subscribed_projects_list'] = self.request.user.subscribed_projects.all()
         return context
 
 
@@ -23,8 +23,8 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['songs'] = [song for song in self.get_object().songs() if
-                            self.request.user.coreuser.has_member_access(song) or song.shared_with_followers]
-        context['member'] = self.request.user.coreuser.has_member_access(self.get_object())
+                            self.request.user.has_member_access(song) or song.shared_with_followers]
+        context['member'] = self.request.user.has_member_access(self.get_object())
         return context
 
 
@@ -34,7 +34,7 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         obj = form.save()
-        self.request.user.coreuser.projects.add(obj)
+        self.request.user.projects.add(obj)
         return super().form_valid(form)
 
 
@@ -55,7 +55,7 @@ class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView
 
     def test_func(self, **kwargs):
         project = Project.objects.get(pk=self.kwargs['pk'])
-        return self.request.user.coreuser.has_member_access(project)
+        return self.request.user.has_member_access(project)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,7 +82,7 @@ class SongLookupBaseView(LoginRequiredMixin):
 class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['member'] = self.request.user.coreuser.has_member_access(self.get_object())
+        context['member'] = self.request.user.has_member_access(self.get_object())
         return context
 
 
@@ -106,8 +106,3 @@ class SongDeleteView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.De
         return reverse_lazy('core:project-detail', args=[self.object.project.pk])
 
 
-class UserDetailView(LoginRequiredMixin, generic.DetailView):
-    model = CoreUser
-
-    def get_object(self, queryset=None):
-        return CoreUser.objects.get(id=self.kwargs['pk']) if 'pk' in self.kwargs else self.request.user.coreuser

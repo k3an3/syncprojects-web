@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from core.models import Project, Song, Lock
@@ -7,14 +7,8 @@ from sync.models import Sync, ClientUpdate
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = User
-        fields = ['url', 'username', 'email', 'groups']
-
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ['url', 'name']
+        model = get_user_model()
+        fields = ['url', 'username']
 
 
 class LockSerializer(serializers.ModelSerializer):
