@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+
 from django.http import JsonResponse
 from rest_framework import permissions, status
 from rest_framework import viewsets
@@ -59,6 +60,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         if 'song' in request.data:
             song = Song.objects.get(id=request.data['song'], project=project)
+            if not song.project.is_locked_by_user(request.user) and (lock := song.project.is_locked()):
+                return Response({'status': 'locked',
+                                 'locked_by': lock.user.username,
+                                 'until': lock.end_time,
+                                 'since': lock.start_time
+                                 })
+            Lock.objects.create(object=song.project, user=request.user, reason=f"transient {song.name=}")
             obj = song
         else:
             obj = project
@@ -74,17 +82,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                  'since': lock.start_time
                                  })
             else:
-                return Response(LockSerializer(
+                resp = Response(LockSerializer(
                     Lock.objects.create(
                         object=obj,
                         user=request.user,
                         reason=request.data.get('reason'),
                         end_time=request.data.get('until'),
                     )).data)
+                if 'song' in request.data:
+                    song.project.unlock()
+                return resp
         elif request.method == 'DELETE':
             if obj.is_locked_by_user(request.user) or request.data.get('force') and request.user.is_superuser:
                 # success
                 obj.unlock()
+                if 'song' in request.data:
+                    song.project.unlock()
                 return Response({'result': 'success'})
             elif lock := obj.is_locked():
                 # locked by someone else
