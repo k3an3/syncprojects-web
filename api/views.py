@@ -7,8 +7,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
-from api.permissions import UserHasProjectAccess, AdminOrSelfOnly
-from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer
+from api.permissions import UserHasProjectAccess, AdminOrSelfOnly, IsAdminOrReadOnly
+from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
 from sync.models import ClientUpdate
@@ -41,8 +41,19 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ClientUpdateViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ClientUpdateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
     queryset = ClientUpdate.objects.all()
+
+
+class SyncViewSet(viewsets.ModelViewSet):
+    serializer_class = SyncSerializer
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
+
+    def get_queryset(self):
+        return self.request.user.sync_set.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

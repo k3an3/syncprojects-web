@@ -1,5 +1,4 @@
 import timeago
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -7,10 +6,11 @@ from django.db.models import Q
 from django.utils import timezone
 
 from core.models import Project, Song
+from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
 class Sync(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     sync_time = models.DateTimeField(default=timezone.now)
     songs = models.ManyToManyField(Song)
@@ -23,7 +23,7 @@ class Sync(models.Model):
 
 
 class ClientConfig(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     last_updated = models.DateTimeField(default=timezone.now)
     sync_root = models.TextField(help_text="Absolute path to the root directory where your song project files will be "
                                            "synced.")
@@ -49,6 +49,6 @@ class ClientUpdate(models.Model):
 
 
 class ChangelogEntry(models.Model):
-    user = models.ForeignKey(get_user_model(), null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     entry = models.TextField()
     date_created = models.DateTimeField(default=timezone.now)

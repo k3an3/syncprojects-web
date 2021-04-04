@@ -1,4 +1,5 @@
 import base64
+
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -101,3 +102,7 @@ class Song(models.Model, LockableModel):
 
     def get_absolute_url(self):
         return reverse('core:song-detail', kwargs={'proj': self.project.id, 'song': self.id})
+
+    @property
+    def revision(self) -> int:
+        return len(self.sync_set.all())

@@ -3,12 +3,13 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from api.views import UserViewSet, ProjectViewSet, fetch_user_tokens, update_webhook, peaks, \
-    ClientUpdateViewSet, sign_data
+    ClientUpdateViewSet, sign_data, SyncViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, 'user')
 router.register(r'updates', ClientUpdateViewSet, 'update')
 router.register(r'projects', ProjectViewSet, 'project')
+router.register(r'syncs', SyncViewSet, 'sync')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from core.models import Project, Song
+from sync.models import Sync
 
 
 class User(AbstractUser):
@@ -36,6 +37,8 @@ class User(AbstractUser):
                 return projects.get(id=obj.project.id)
             except Project.DoesNotExist:
                 return False
+        elif isinstance(obj, Sync):
+            return obj.project in projects.all()
         else:
             raise NotImplementedError()
 

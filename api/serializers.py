@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework import serializers
 
 from core.models import Project, Song, Lock
@@ -18,6 +19,15 @@ class LockSerializer(serializers.ModelSerializer):
 
 
 class SyncSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
+    sync_time = serializers.DateTimeField(
+        read_only=True,
+        default=timezone.now()
+    )
+
     class Meta:
         model = Sync
         fields = "__all__"
@@ -29,7 +39,7 @@ class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = ["id", "name", "created_at", "updated_at", "sync_enabled", "directory_name", "last_mtime", "project",
-                  "is_locked"]
+                  "is_locked", "revision"]
 
 
 class ProjectSerializer(serializers.ModelSerializer):

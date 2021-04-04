@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.permissions import SAFE_METHODS
 
 
 class AdminOrSelfOnly(permissions.BasePermission):
@@ -17,3 +18,16 @@ class UserHasProjectAccess(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return request.user.has_member_access(obj)
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """
+    The request is authenticated as an admin user, or is a read-only request by an authenticated user.
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.method in SAFE_METHODS or
+            request.user and
+            request.user.is_superuser
+        )
