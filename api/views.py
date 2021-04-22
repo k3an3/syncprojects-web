@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from api.permissions import UserHasProjectAccess, AdminOrSelfOnly, IsAdminOrReadOnly
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song, Lock
+from core.models import Song, Lock, Project
 from sync.models import ClientUpdate
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET
@@ -61,16 +61,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
 
     def get_queryset(self):
-        return self.request.user.projects.all()
+        collab_projects = self.request.user.collab_songs.all().select_related('project').all()
+        return self.request.user.projects.all() | collab_projects
 
     # noinspection PyUnusedLocal
     @action(detail=True, methods=['put', 'delete'])
     def lock(self, request, pk=None):
         project = self.get_object()
-        if not self.request.user.has_member_access(project):
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
         if 'song' in request.data:
             song = Song.objects.get(id=request.data['song'], project=project)
+            if not self.request.user.can_sync(song):
+                return Response({}, status=status.HTTP_403_FORBIDDEN)
             if not song.project.is_locked_by_user(request.user) and (lock := song.project.is_locked()):
                 return Response({'status': 'locked',
                                  'locked_by': lock.user.username,
@@ -80,6 +81,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
             Lock.objects.create(object=song.project, user=request.user, reason=f"transient {song.name=}")
             obj = song
         else:
+            if not self.request.user.has_member_access(project):
+                return Response({}, status=status.HTTP_403_FORBIDDEN)
             obj = project
 
         if request.method == 'PUT':

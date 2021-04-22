@@ -83,6 +83,7 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['member'] = self.request.user.has_member_access(self.get_object())
+        context['can_sync'] = self.request.user.can_sync(self.get_object())
         return context
 
 
