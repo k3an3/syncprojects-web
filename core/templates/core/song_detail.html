@@ -58,16 +58,23 @@
 
 {% block header %}
     <h1 class="h2">{{ song.name }}</h1>
+    {% if member %}
+        <span class="badge bg-primary">Member</span>
+    {% elif can_sync %}
+        <span class="badge bg-info">Collaborator</span>
+    {% else %}
+        <span class="badge bg-success">Follower</span>
+    {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
             {% include 'sync/buttons.html' %}
         </div>
         {% if user.is_superuser %}
-        <div class="btn-group me-2">
-            <a href="{% url 'core:song-clear-peaks' project.id song.id %}">
-                <button type="button" class="btn btn-sm btn-outline-secondary">Redraw Waveform</button>
-            </a>
-        </div>
+            <div class="btn-group me-2">
+                <a href="{% url 'core:song-clear-peaks' project.id song.id %}">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Redraw Waveform</button>
+                </a>
+            </div>
         {% endif %}
         {% if member %}
         <div class="btn-group me-2">

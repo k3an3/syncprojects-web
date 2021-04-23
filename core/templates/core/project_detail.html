@@ -48,7 +48,9 @@
             <thead>
             <tr>
                 <th scope="col">Songs</th>
-                <th scope="col"></th>
+                <th scope="col">Audio</th>
+                <th scope="col">
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -62,6 +64,11 @@
                             </audio>
                         {% else %}
                             <span class="text-muted">No audio</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not member and song in collab %}
+                            <span class="badge bg-info">Collaborator</span>
                         {% endif %}
                     </td>
                 </tr>

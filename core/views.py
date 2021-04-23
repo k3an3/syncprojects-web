@@ -23,8 +23,11 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['songs'] = [song for song in self.get_object().songs() if
-                            self.request.user.has_member_access(song) or song.shared_with_followers]
+                            self.request.user.has_member_access(song) or
+                            song.shared_with_followers or
+                            self.request.user.can_sync(song)]
         context['member'] = self.request.user.has_member_access(self.get_object())
+        context['collab'] = self.request.user.collab_songs.filter(project=self.get_object())
         return context
 
 
