@@ -44,12 +44,18 @@ class SongSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     is_locked = serializers.BooleanField(read_only=True)
-    songs = SongSerializer(many=True, read_only=True)
+    songs = serializers.SerializerMethodField()
     syncs = SyncSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
         fields = "__all__"
+
+    def get_songs(self, project):
+        request = self.context.get('request')
+        if request.user.has_member_access(project):
+            return SongSerializer(project.songs(), many=True, read_only=True).data
+        return SongSerializer(request.user.collab_songs.filter(project=project), many=True, read_only=True).data
 
 
 class ClientUpdateSerializer(serializers.ModelSerializer):

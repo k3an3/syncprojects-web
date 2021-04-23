@@ -21,7 +21,7 @@ class UserAdmin(BaseUserAdmin):
                               'open_to_collaboration',
                               'private')}),
                  ('Projects',
-                  {'fields': ('projects', 'subscribed_projects')})
+                  {'fields': ('projects', 'subscribed_projects', 'collab_songs')})
                  )
 
 

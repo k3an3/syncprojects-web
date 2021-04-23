@@ -20,6 +20,19 @@ class UserHasProjectAccess(permissions.BasePermission):
         return request.user.has_member_access(obj)
 
 
+class UserHasProjectReadAccess(permissions.BasePermission):
+    """
+    Custom permission to only allow subscribers read access, or the ability to lock & sync if they have access.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return bool(
+            (request.method in SAFE_METHODS or view.action == 'lock') and
+            request.user.has_subscriber_access(obj) or
+            request.user.has_member_access(obj)
+        )
+
+
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
     The request is authenticated as an admin user, or is a read-only request by an authenticated user.

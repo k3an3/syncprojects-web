@@ -8,8 +8,8 @@ from sync.models import Sync
 class User(AbstractUser):
     email = models.EmailField(max_length=254, unique=True)
     projects = models.ManyToManyField(Project, blank=True)
-    subscribed_projects = models.ManyToManyField(Project, blank=True, related_name="subscribed_projects")
-    collab_songs = models.ManyToManyField(Song, blank=True, related_name="collaborating_songs")
+    subscribed_projects = models.ManyToManyField(Project, blank=True, related_name="subscribed_users")
+    collab_songs = models.ManyToManyField(Song, blank=True, related_name="collaborating_users")
     profile_picture = models.ImageField(null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
     instruments = models.TextField(null=True, blank=True)
@@ -50,7 +50,7 @@ class User(AbstractUser):
         return self.check_object_access(obj, self.subscribed_projects)
 
     def can_sync(self, obj):
-        return self.has_member_access(obj) or obj in self.collab_songs
+        return self.has_member_access(obj) or obj in self.collab_songs.all()
 
     def __str__(self):
         return self.first_name or self.username

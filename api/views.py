@@ -7,10 +7,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
-from api.permissions import UserHasProjectAccess, AdminOrSelfOnly, IsAdminOrReadOnly
+from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectReadAccess
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song, Lock, Project
+from core.models import Song, Lock
 from sync.models import ClientUpdate
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET
@@ -47,7 +47,7 @@ class ClientUpdateViewSet(viewsets.ReadOnlyModelViewSet):
 
 class SyncViewSet(viewsets.ModelViewSet):
     serializer_class = SyncSerializer
-    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectReadAccess]
 
     def get_queryset(self):
         return self.request.user.sync_set.all()
@@ -58,11 +58,10 @@ class SyncViewSet(viewsets.ModelViewSet):
 
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
-    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectReadAccess]
 
     def get_queryset(self):
-        collab_projects = self.request.user.collab_songs.all().select_related('project').all()
-        return self.request.user.projects.all() | collab_projects
+        return self.request.user.projects.all() | self.request.user.subscribed_projects.all()
 
     # noinspection PyUnusedLocal
     @action(detail=True, methods=['put', 'delete'])
@@ -151,7 +150,7 @@ def peaks(request):
         song = Song.objects.get(name=request.data['id'])
     except Song.DoesNotExist:
         return Response({}, status=status.HTTP_404_NOT_FOUND)
-    if not request.user.has_member_access(song):
+    if not request.user.has_member_access(song) and not request.user.is_superuser:
         return Response({}, status=status.HTTP_403_FORBIDDEN)
     try:
         return Response({

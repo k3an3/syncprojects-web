@@ -1,5 +1,5 @@
 {% load static %}
-{% if member or not project %}
+{% if member or can_sync or not project %}
     <script src="{% static 'sync/api.js' %}"></script>
     <script src="{% static 'sync/sync_ui.js' %}"></script>
 {% endif %}

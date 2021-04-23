@@ -93,7 +93,10 @@ class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.Up
     template_name_suffix = '_update_form'
 
 
-class ClearSongPeaksView(SongLookupBaseView, UserIsMemberPermissionMixin, View):
+class ClearSongPeaksView(SongLookupBaseView, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
+
     def get(self, *args, **kwargs):
         song = self.get_object()
         song.clear_peaks()
@@ -105,5 +108,3 @@ class SongDeleteView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.De
 
     def get_success_url(self):
         return reverse_lazy('core:project-detail', args=[self.object.project.pk])
-
-
