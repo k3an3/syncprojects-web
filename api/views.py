@@ -61,7 +61,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, UserHasProjectReadAccess]
 
     def get_queryset(self):
-        return self.request.user.projects.all() | self.request.user.subscribed_projects.all()
+        return (self.request.user.projects.all() | self.request.user.subscribed_projects.all()).distinct()
 
     # noinspection PyUnusedLocal
     @action(detail=True, methods=['put', 'delete'])
