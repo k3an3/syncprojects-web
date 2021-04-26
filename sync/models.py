@@ -50,5 +50,7 @@ class ClientUpdate(models.Model):
 
 class ChangelogEntry(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
-    entry = models.TextField()
+    text = models.TextField()
     date_created = models.DateTimeField(default=timezone.now)
+    song = models.ForeignKey(Song, on_delete=models.CASCADE)
+    sync = models.ForeignKey(Sync, null=True, on_delete=models.SET_NULL)

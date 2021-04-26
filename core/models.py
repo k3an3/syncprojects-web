@@ -89,6 +89,7 @@ class Song(models.Model, LockableModel):
     peaks = models.TextField(null=True, blank=True)
     locks = GenericRelation(Lock)
     shared_with_followers = models.BooleanField(default=False)
+    studio_hash = models.CharField(max_length=256, null=True, blank=True)
 
     def __str__(self):
         return self.name

@@ -11,7 +11,7 @@ class AdminOrSelfOnly(permissions.BasePermission):
         return request.user.is_superuser or request.user == obj
 
 
-class UserHasProjectAccess(permissions.BasePermission):
+class UserHasProjectMemberAccess(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
     """
@@ -20,7 +20,7 @@ class UserHasProjectAccess(permissions.BasePermission):
         return request.user.has_member_access(obj)
 
 
-class UserHasProjectReadAccess(permissions.BasePermission):
+class UserHasProjectAccess(permissions.BasePermission):
     """
     Custom permission to only allow subscribers read access, or the ability to lock & sync if they have access.
     """
