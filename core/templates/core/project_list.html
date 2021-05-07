@@ -28,8 +28,8 @@
     {% if project_list or subscribed_projects_list %}
         <div class="row align-items-start">
             {% for project in project_list %}
-                <div class="col">
-                    <div class="card" style="width: 18rem;">
+                <div class="col-sm-12 col-lg-2">
+                    <div class="card">
                         <a href="{% url 'core:project-detail' project.id %}">
                             {% if project.image %}
                                 <img style="object-fit: cover;" height="192px" src="{{ project.image.url }}"
