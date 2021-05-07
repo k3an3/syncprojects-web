@@ -7,13 +7,15 @@ const progress = document.querySelector("#sync_progress");
 const alert = document.querySelector('#alert');
 let ping_failed = true;
 
+if (taskStore.getObj('changelog_todo') == null)
+    taskStore.setObj('changelog_todo', []);
+
 function getContext() {
     let matches = window.location.pathname.match(proj_re);
     if (matches == null)
         return {'project': null, 'song': null};
     return {'project': parseInt(matches.groups.project), 'song': parseInt(matches.groups.song) || null};
 }
-
 
 function pushTask(task_id, data) {
     let tasks = taskStore.getObj('tasks');
@@ -172,7 +174,7 @@ async function checkConnection() {
 
 const sync_action_mapping = {
     local: "Your changes were sent to the server.",
-    remote: "New changes were received from the server.",
+    remote: "New changes were received from the server:",
     null: "No actions were taken.",
     error: "An error occured during sync.",
     disabled: "Sync is disabled for this song.",
@@ -187,6 +189,13 @@ const action_icon_mapping = {
     locked: 'lock',
     error: 'exclamation-triangle',
 }
+
+function appendChangelogTodo(name) {
+    let td = taskStore.getObj('changelog_todo');
+    td.push(name);
+    taskStore.setObj(td);
+}
+
 
 function syncResultHandler(data) {
     console.log("displaying sync results, fetched from storage");
@@ -203,12 +212,30 @@ function syncResultHandler(data) {
             html += '<span class="badge bg-success">Success</span>';
             html += '<ul class="list-group">'
             project_result.songs.forEach(song_result => {
+                let after_action = "";
+                if (song_result.action == "remote") {
+                    after_action = ` <a data-bs-toggle="collapse" href="#collapse-${song_result.id}" role="button" aria-expanded="false" aria-controls="collapse-${song_result.id}">View Changes</a>`;
+                    after_action += `<div class="collapse" id="collapse-${song_result.id}">
+  <div class="card card-body">
+    ${song_result.changes || 'No changes found.'} 
+  </div>
+</div>`;
+                } else if (song_result.action == "local") {
+                    // TODO
+                    // appendChangelogTodo(song_result.song);
+                    after_action = `<textarea class="form-control" id="changelog-${song_result.id}" placeholder="What did you change..."></textarea>
+   <button class="btn btn-primary btn-sm" class="changelog-submit" id="changelog-btn-${song_result.id}">Submit</button>
+</div>`;
+                    document.querySelector(`#changelog-btn-${song_result.id}`).addEventListener('click', element => {
+                        submitChangelog(getContext().project, song_result.id, document.querySelector(`changelog-${song_result.id}`).textContent);
+                    });
+                }
                 let bg = "success";
                 if (song_result.result == "error") {
                     bg = "danger";
                 }
                 html += '<li class="list-group-item d-flex justify-content-between align-items-start">';
-                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}&nbsp;<span class="fas fa-${action_icon_mapping[song_result.action]}"></span></div>${sync_action_mapping[song_result.action]}</div>`;
+                html += `<div class="ms-2 me-auto"><div class="fw-bold">${song_result.song}&nbsp;<span class="fas fa-${action_icon_mapping[song_result.action]}"></span></div>${sync_action_mapping[song_result.action]}${after_action}</div>`;
                 if (song_result.action != null && song_result.action != 'disabled') {
                     console.log(song_result)
                     html += `<span class="badge bg-${bg} rounded-pill">${song_result.result}</span>`;

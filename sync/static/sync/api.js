@@ -68,6 +68,11 @@ async function getTasks() {
     return await localRequest('tasks', 'POST', {});
 }
 
+async function submitChangelog(project, song, text) {
+    // TODO
+    //return await APIRequest('');
+}
+
 Storage.prototype.setObj = function (key, obj) {
     return this.setItem(key, JSON.stringify(obj))
 }
