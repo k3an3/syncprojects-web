@@ -53,4 +53,4 @@ class ChangelogEntry(models.Model):
     text = models.TextField()
     date_created = models.DateTimeField(default=timezone.now)
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
-    sync = models.ForeignKey(Sync, null=True, on_delete=models.SET_NULL)
+    sync = models.ForeignKey(Sync, null=True, on_delete=models.SET_NULL, related_name='changelog')

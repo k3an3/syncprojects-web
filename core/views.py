@@ -28,6 +28,8 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
                             self.request.user.can_sync(song)]
         context['member'] = self.request.user.has_member_access(self.get_object())
         context['collab'] = self.request.user.collab_songs.filter(project=self.get_object())
+        if context['member']:
+            context['syncs'] = self.get_object().sync_set.all().order_by('-id')[:10]
         return context
 
 
@@ -87,6 +89,8 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
         context = super().get_context_data(**kwargs)
         context['member'] = self.request.user.has_member_access(self.get_object())
         context['can_sync'] = self.request.user.can_sync(self.get_object())
+        if context['can_sync']:
+            context['syncs'] = self.get_object().sync_set.all().order_by('-id')[:10]
         return context
 
 

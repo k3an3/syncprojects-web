@@ -1,0 +1,29 @@
+{% if member %}
+    <div class="col-3 float-end">
+        <div class="card">
+            <h4 class="text-center">Recent Syncs</h4>
+            {% if syncs %}
+                {% for sync in syncs %}
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="text-primary"><a
+                                    href="{% url 'users:user-profile' sync.user.id %}">{{ sync.user }}</a></span> {{ sync.last_sync_str }}
+                            <span class="text-muted">({{ sync.sync_time }})</span>
+                        </div>
+                        <div class="card-body">
+                        <span class="text-muted">
+                            {% if sync.changelog.text %}
+                                {{ sync.changelog.text }}
+                            {% else %}
+                                No changelog was provided.
+                            {% endif %}
+                        </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <span class="text-muted text-center">No syncs yet. Get to work!</span>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

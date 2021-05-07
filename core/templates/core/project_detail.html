@@ -18,8 +18,8 @@
                 <a href="{% url 'core:project-update' project.id %}" class="btn btn-sm btn-outline-secondary">Edit
                     Project</a>
                 <a href="{% url 'core:project-delete' project.id %}" class="btn btn-sm btn-outline-danger">Delete
-                Project</a>
-        </div>
+                    Project</a>
+            </div>
         {% endif %}
 
         <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -44,41 +44,45 @@
 {% block content %}
     {% include 'sync/sync.html' %}
     {% if songs %}
-        <table class="table table-borderless">
-            <thead>
-            <tr>
-                <th scope="col">Songs</th>
-                <th scope="col">Audio</th>
-                <th scope="col">
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for song in songs %}
+        <div class="col-5">
+            <table class="table table-borderless">
+                <thead>
                 <tr>
-                    <td><a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a></td>
-                    <td>
-                        {% if song.url %}
-                            <audio controls preload="metadata" src="{{ song.url }}"> Your browser does not support the
-                                <code>audio</code> element.
-                            </audio>
-                        {% else %}
-                            <span class="text-muted">No audio</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if not member and song in collab %}
-                            <span class="badge bg-info">Collaborator</span>
-                        {% endif %}
-                    </td>
+                    <th scope="col">Songs</th>
+                    <th scope="col">Audio</th>
+                    <th scope="col">
+                    </th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for song in songs %}
+                    <tr>
+                        <td><a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a></td>
+                        <td>
+                            {% if song.url %}
+                                <audio controls preload="metadata" src="{{ song.url }}"> Your browser does not support
+                                    the
+                                    <code>audio</code> element.
+                                </audio>
+                            {% else %}
+                                <span class="text-muted">No audio</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not member and song in collab %}
+                                <span class="badge bg-info">Collaborator</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <div class="alert alert-primary"><strong>No Songs here!</strong>{% if member %} Get started and <a
                 href="{% url 'core:song-create' project.id %}">create one</a>{% endif %}</div>
     {% endif %}
+    {% include 'sync/recent_syncs.html' %}
 {% endblock %}
 
 {% block script %}

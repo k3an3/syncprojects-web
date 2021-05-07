@@ -54,3 +54,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.first_name or self.username
+
+    def get_profile(self):
+        return (
+            ('Bio', self.bio),
+            ('Instruments', self.instruments),
+            ('Genres/Musical Taste', self.genres_musical_taste),
+        )

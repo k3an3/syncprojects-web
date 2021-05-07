@@ -77,12 +77,12 @@
             </div>
         {% endif %}
         {% if member %}
-        <div class="btn-group me-2">
-            <a href="{% url 'core:song-update' project.id song.id %}" class="btn btn-sm btn-outline-secondary">Edit
-                Song</a>
-            <a href="{% url 'core:song-delete' project.id song.id %}" class="btn btn-sm btn-outline-danger">Delete
-                Song</a>
-        </div>
+            <div class="btn-group me-2">
+                <a href="{% url 'core:song-update' project.id song.id %}" class="btn btn-sm btn-outline-secondary">Edit
+                    Song</a>
+                <a href="{% url 'core:song-delete' project.id song.id %}" class="btn btn-sm btn-outline-danger">Delete
+                    Song</a>
+            </div>
         {% endif %}
     </div>
 {% endblock %}
@@ -102,36 +102,39 @@
 {% block content %}
     {% include 'sync/sync.html' %}
     {% if song.url %}
-        <div id="awp-wrapper">
-            <div class="awp-player-thumb-wrapper">
-                <div class="awp-player-thumb"></div>
-                <div class="awp-playback-toggle"><i class="fa fa-play"></i></div>
-            </div>
-            <div class="awp-player-holder">
-                <div class="awp-waveform-wrap">
-                    <div class="awp-waveform awp-hidden"></div>
-                    <div class="awp-waveform-img awp-hidden"><!-- image waveform backup -->
-                        <div class="awp-waveform-img-load"></div>
-                        <div class="awp-waveform-img-progress-wrap">
-                            <div class="awp-waveform-img-progress"></div>
+        <div class="col-6">
+            <div id="awp-wrapper">
+                <div class="awp-player-thumb-wrapper">
+                    <div class="awp-player-thumb"></div>
+                    <div class="awp-playback-toggle"><i class="fa fa-play"></i></div>
+                </div>
+                <div class="awp-player-holder">
+                    <div class="awp-waveform-wrap">
+                        <div class="awp-waveform awp-hidden"></div>
+                        <div class="awp-waveform-img awp-hidden"><!-- image waveform backup -->
+                            <div class="awp-waveform-img-load"></div>
+                            <div class="awp-waveform-img-progress-wrap">
+                                <div class="awp-waveform-img-progress"></div>
+                            </div>
                         </div>
+                        <span class="awp-waveform-preloader"></span>
                     </div>
-                    <span class="awp-waveform-preloader"></span>
                 </div>
             </div>
-        </div>
-        <div id="awp-playlist-list">
-            <ul id="playlist-audio1">
-                <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.encode_url }}"
-                    data-artist="{{ song.project.name }}" data-title="{{ song.name }}"
-                    data-thumb="{{ song.project.image.url }}"></li>
-            </ul>
+            <div id="awp-playlist-list">
+                <ul id="playlist-audio1">
+                    <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.encode_url }}"
+                        data-artist="{{ song.project.name }}" data-title="{{ song.name }}"
+                        data-thumb="{{ song.project.image.url }}"></li>
+                </ul>
+            </div>
         </div>
     {% else %}
         <div class="alert alert-dismissable alert-secondary"><strong>No audio!</strong> There is currently not an audio
             URL defined for this song. Add one to enable the player and other features.
         </div>
     {% endif %}
+    {% include 'sync/recent_syncs.html' %}
 {% endblock %}
 
 {% block script %}

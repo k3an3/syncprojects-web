@@ -47,7 +47,22 @@
 {% endblock %}
 
 {% block content %}
-
+    {% if not profile_user.is_private %}
+        {% for title, text in profile_user.get_profile %}
+            <div class="col-3 float-start" style="margin-right: 5px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ text }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <span class="text-muted">This user prefers to keep an air of mystery about them.</span>
+    {% endif %}
 {% endblock %}
 
 {% block script %}
