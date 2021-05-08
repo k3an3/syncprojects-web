@@ -8,7 +8,8 @@ from rest_framework.decorators import api_view, action, permission_classes, auth
 from rest_framework.response import Response
 
 from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectAccess
-from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer
+from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
+    ChangelogEntrySerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
 from sync.models import ClientUpdate
@@ -54,6 +55,11 @@ class SyncViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def retrieve(self, request, pk=None):
+        sync = super().retrieve(request, pk)
+        sync.data['changelog'] = self.get_
+        return Response(sync.data)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
