@@ -44,3 +44,14 @@ class IsAdminOrReadOnly(permissions.BasePermission):
             request.user and
             request.user.is_superuser
         )
+
+
+class CreateOrReadOnly(permissions.BasePermission):
+    """
+    User should be able to create a record, but not update or delete it unless superuser.
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.method in ('GET', 'POST') or request.user.is_superuser
+        )

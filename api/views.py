@@ -7,12 +7,12 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
-from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectAccess
+from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectAccess, CreateOrReadOnly
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
     ChangelogEntrySerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
-from sync.models import ClientUpdate
+from sync.models import ClientUpdate, ChangelogEntry, Sync
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, ACCESS_ID, BACKEND_SECRET_KEY
 from users.models import User
@@ -48,18 +48,40 @@ class ClientUpdateViewSet(viewsets.ReadOnlyModelViewSet):
 
 class SyncViewSet(viewsets.ModelViewSet):
     serializer_class = SyncSerializer
-    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess, CreateOrReadOnly]
 
     def get_queryset(self):
+        song = self.request.query_params.get('song')
+        revision = self.request.query_params.get('since_revision')
+        if not song and not revision:
+            return Sync.objects.none()
+        syncs = Sync.objects.all()
         return self.request.user.sync_set.all()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
     def retrieve(self, request, pk=None):
+        raise SystemError
         sync = super().retrieve(request, pk)
-        sync.data['changelog'] = self.get_
+        sync.data['changelogs'] = ChangelogEntrySerializer(self.get_object().changelog, many=True, read_only=True).data
         return Response(sync.data)
+
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['put'])
+    def changelog(self, request, pk=None):
+        sync = self.get_object()
+        if not self.request.user.can_sync(sync):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        if 'changelogs' in request.data:
+            results = []
+            for changelog in request.data['changelogs']:
+                song = Song.objects.get(id=changelog['song'])
+                if not self.request.user.can_sync(song):
+                    return Response({}, status=status.HTTP_403_FORBIDDEN)
+                results.append(ChangelogEntry.objects.create(user=self.request.user, sync=sync, song=song).id)
+            return Response({'created': results})
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

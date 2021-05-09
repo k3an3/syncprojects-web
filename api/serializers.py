@@ -18,6 +18,12 @@ class LockSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ChangelogEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChangelogEntry
+        fields = ["id", "text", "song"]
+
+
 class SyncSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
         read_only=True,
@@ -27,14 +33,14 @@ class SyncSerializer(serializers.ModelSerializer):
         read_only=True,
         default=timezone.now()
     )
+    changelog = ChangelogEntrySerializer(read_only=True, many=True)
 
     class Meta:
         model = Sync
-        fields = "__all__"
+        fields = ["user", "sync_time", "changelog"]
 
     def get_changelogs(self, sync):
-        request = self.context.get('request')
-        return ChangelogEntrySerializer(sync.songs(), many=True, read_only=True).data
+        return ChangelogEntrySerializer(sync.changelog, many=True).data
 
 
 class SongSerializer(serializers.ModelSerializer):
@@ -74,9 +80,3 @@ class ClientUpdateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         url = client_update.latest_updater()
         return request.build_absolute_uri(url)
-
-
-class ChangelogEntrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ChangelogEntry
-        fields = "__all__"
