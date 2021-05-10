@@ -196,6 +196,14 @@ function appendChangelogTodo(name) {
     taskStore.setObj(td);
 }
 
+document.addEventListener('click', e => {
+    console.log(e);
+    if (e.target && e.target.classList.contains("view-changes")) {
+    } else if (e.target && e.target.classList.contains("changelog-submit")) {
+        let id = e.target.id.split('-')[2]
+        submitChangelog(getContext().project, parseInt(id), document.querySelector(`changelog-${id}`).textContent);
+    }
+});
 
 function syncResultHandler(data) {
     console.log("displaying sync results, fetched from storage");
@@ -228,7 +236,7 @@ function syncResultHandler(data) {
                     // TODO
                     // appendChangelogTodo(song_result.song);
                     after_action = `<textarea class="form-control" id="changelog-${song_result.id}" placeholder="What did you change..."></textarea>
-   <button class="btn btn-primary btn-sm" class="changelog-submit" id="changelog-btn-${song_result.id}">Submit</button>
+   <button class="btn btn-primary btn-sm changelog-submit" id="changelog-btn-${song_result.id}">Submit</button>
 </div>`;
                 }
                 let bg = "success";
