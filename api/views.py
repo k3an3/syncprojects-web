@@ -52,17 +52,15 @@ class SyncViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         song = self.request.query_params.get('song')
-        revision = self.request.query_params.get('since_revision')
-        if not song and not revision:
+        revision = int(self.request.query_params.get('since_revision', 0))
+        if not song:
             return Sync.objects.none()
-        syncs = Sync.objects.all()
-        return self.request.user.sync_set.all()
+        return Sync.objects.filter(songs=song)[revision:]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
     def retrieve(self, request, pk=None):
-        raise SystemError
         sync = super().retrieve(request, pk)
         sync.data['changelogs'] = ChangelogEntrySerializer(self.get_object().changelog, many=True, read_only=True).data
         return Response(sync.data)

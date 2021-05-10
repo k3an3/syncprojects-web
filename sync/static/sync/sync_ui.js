@@ -214,12 +214,16 @@ function syncResultHandler(data) {
             project_result.songs.forEach(song_result => {
                 let after_action = "";
                 if (song_result.action == "remote") {
-                    after_action = ` <a data-bs-toggle="collapse" href="#collapse-${song_result.id}" role="button" aria-expanded="false" aria-controls="collapse-${song_result.id}">View Changes</a>`;
+                    let revision = song_result.revision || 0;
+                    after_action = ` <a class="view-changes" data-bs-toggle="collapse" id="#collapse-${song_result.id}-rev-${revision}-btn" href="#collapse-${song_result.id}" role="button" aria-expanded="false" aria-controls="collapse-${song_result.id}">View Changes</a>`;
                     after_action += `<div class="collapse" id="collapse-${song_result.id}">
   <div class="card card-body">
     ${song_result.changes || 'No changes found.'} 
   </div>
 </div>`;
+                    document.querySelector(".view_changes").addEventListener('click', (e) => {
+                        console.log(this);
+                    });
                 } else if (song_result.action == "local") {
                     // TODO
                     // appendChangelogTodo(song_result.song);

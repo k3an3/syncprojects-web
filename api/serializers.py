@@ -37,7 +37,7 @@ class SyncSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sync
-        fields = ["user", "sync_time", "changelog"]
+        fields = ["user", "sync_time", "changelog", "project"]
 
     def get_changelogs(self, sync):
         return ChangelogEntrySerializer(sync.changelog, many=True).data
