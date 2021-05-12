@@ -3,7 +3,7 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from api.views import UserViewSet, ProjectViewSet, fetch_user_tokens, update_webhook, peaks, \
-    ClientUpdateViewSet, sign_data, SyncViewSet
+    ClientUpdateViewSet, sign_data, SyncViewSet, get_backend_creds
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, 'user')
@@ -22,5 +22,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('webauth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('webhook/update/', update_webhook, name='update_webhook')
+    path('webhook/update/', update_webhook, name='update_webhook'),
+    path('backend_creds/', get_backend_creds, name='backend_creds'),
 ]
