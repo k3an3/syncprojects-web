@@ -226,9 +226,6 @@ function syncResultHandler(data) {
                     after_action = `<textarea class="form-control" id="changelog-${song_result.id}" placeholder="What did you change..."></textarea>
    <button class="btn btn-primary btn-sm" class="changelog-submit" id="changelog-btn-${song_result.id}">Submit</button>
 </div>`;
-                    document.querySelector(`#changelog-btn-${song_result.id}`).addEventListener('click', element => {
-                        submitChangelog(getContext().project, song_result.id, document.querySelector(`changelog-${song_result.id}`).textContent);
-                    });
                 }
                 let bg = "success";
                 if (song_result.result == "error") {

@@ -13,7 +13,7 @@ from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_pea
 from core.models import Song, Lock
 from sync.models import ClientUpdate
 from sync.utils import get_signed_data
-from syncprojectsweb.settings import GOGS_SECRET
+from syncprojectsweb.settings import GOGS_SECRET, ACCESS_ID, BACKEND_SECRET_KEY
 from users.models import User
 
 
@@ -167,3 +167,9 @@ def peaks(request):
 def sign_data(request):
     data = request.data.copy()
     return Response({'data': get_signed_data(data, request.user)})
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_backend_creds(request):
+    return Response({'access_id': ACCESS_ID, 'secret_key': BACKEND_SECRET_KEY})
