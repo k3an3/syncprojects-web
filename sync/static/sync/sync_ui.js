@@ -201,7 +201,10 @@ document.addEventListener('click', e => {
     if (e.target && e.target.classList.contains("view-changes")) {
     } else if (e.target && e.target.classList.contains("changelog-submit")) {
         let id = e.target.id.split('-')[2]
-        submitChangelog(getContext().project, parseInt(id), document.querySelector(`changelog-${id}`).textContent);
+        submitChangelog(parseInt(id), document.querySelector(`#changelog-${id}`).value);
+        showToast("Success", "Submitted changelog.", "success");
+        e.target.setAttribute("hidden", "hidden");
+        document.querySelector(`#changelog-${id}`).disabled = true;
     }
 });
 
@@ -366,6 +369,7 @@ function handleResults(data) {
                         break;
                     case 'workdone':
                         taskStore.setObj('sync_in_progress', false);
+                        syncResultHandler(result);
                         setSongCheckedIn();
                         break;
                     default:

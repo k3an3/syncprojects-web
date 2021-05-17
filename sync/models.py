@@ -54,3 +54,6 @@ class ChangelogEntry(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
     sync = models.ForeignKey(Sync, null=True, on_delete=models.SET_NULL, related_name='changelog')
+
+    def __repr__(self):
+        return f"{self.date_created.isoformat()} by {self.user} on {self.song}"

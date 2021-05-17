@@ -5,6 +5,7 @@ from django.views import generic, View
 
 from core.models import Project, Song
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
+from sync.models import ChangelogEntry
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -29,7 +30,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
         context['member'] = self.request.user.has_member_access(self.get_object())
         context['collab'] = self.request.user.collab_songs.filter(project=self.get_object())
         if context['member']:
-            context['syncs'] = self.get_object().sync_set.all().order_by('-id')[:10]
+            context['syncs'] = self.get_object().sync_set.all().order_by('-id')[:]
         return context
 
 
@@ -90,7 +91,14 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
         context['member'] = self.request.user.has_member_access(self.get_object())
         context['can_sync'] = self.request.user.can_sync(self.get_object())
         if context['can_sync']:
-            context['syncs'] = self.get_object().sync_set.all().order_by('-id')[:10]
+            syncs = []
+            for sync in self.get_object().sync_set.all().order_by('-id')[:10]:
+                try:
+                    changelog = sync.changelog.get(song=self.get_object().id)
+                except ChangelogEntry.DoesNotExist:
+                    changelog = None
+                syncs.append((sync, changelog))
+            context['syncs'] = syncs
         return context
 
 

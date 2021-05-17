@@ -68,18 +68,16 @@ class SyncViewSet(viewsets.ModelViewSet):
     # noinspection PyUnusedLocal
     @action(detail=True, methods=['put'])
     def changelog(self, request, pk=None):
-        sync = self.get_object()
-        if not self.request.user.can_sync(sync):
+        # TODO: validate
+        song = Song.objects.get(id=pk)
+        if not self.request.user.can_sync(song):
             return Response({}, status=status.HTTP_403_FORBIDDEN)
-        if 'changelogs' in request.data:
-            results = []
-            for changelog in request.data['changelogs']:
-                song = Song.objects.get(id=changelog['song'])
-                if not self.request.user.can_sync(song):
-                    return Response({}, status=status.HTTP_403_FORBIDDEN)
-                results.append(ChangelogEntry.objects.create(user=self.request.user, sync=sync, song=song).id)
-            return Response({'created': results})
-        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+        sync = song.sync_set.all().last()
+        result = ChangelogEntry.objects.create(user=self.request.user,
+                                               sync=sync,
+                                               song=song,
+                                               text=request.data['text'])
+        return Response({'created': result.id})
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -189,7 +187,7 @@ def peaks(request):
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
-@authentication_classes([CsrfExemptSessionAuthentication])
+# @authentication_classes([CsrfExemptSessionAuthentication])
 def sign_data(request):
     data = request.data.copy()
     return Response({'data': get_signed_data(data, request.user)})

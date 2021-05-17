@@ -1,4 +1,5 @@
 {% if member or can_sync or not project %}
+    {% csrf_token %}
     <div class="modal" tabindex="-1" id="sync_modal">
         <div class="modal-dialog">
             <div class="modal-content">

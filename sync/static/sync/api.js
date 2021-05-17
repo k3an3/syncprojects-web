@@ -1,3 +1,5 @@
+const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
 async function localRequest(path, method = 'GET', data = {}, sign = true) {
     let body = null;
     if (method === 'POST') {
@@ -26,7 +28,8 @@ async function APIRequest(path, method = 'GET', data) {
         mode: 'same-origin',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrf_token,
         },
         redirect: 'error',
         body: JSON.stringify(data)
@@ -68,9 +71,14 @@ async function getTasks() {
     return await localRequest('tasks', 'POST', {});
 }
 
-async function submitChangelog(project, song, text) {
-    // TODO
-    //return await APIRequest('');
+async function submitChangelog(song, text) {
+    if (text === "") {
+        showToast("Error", "Changelog must not be blank.", "danger");
+        return;
+    }
+    return await APIRequest('syncs/' + song + '/changelog/', 'PUT', {
+        text: text
+    });
 }
 
 Storage.prototype.setObj = function (key, obj) {

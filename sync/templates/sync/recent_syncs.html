@@ -3,7 +3,7 @@
         <div class="card">
             <h4 class="text-center">Recent Syncs</h4>
             {% if syncs %}
-                {% for sync in syncs %}
+                {% for sync, changelog in syncs %}
                     <div class="card">
                         <div class="card-header">
                             <span class="text-primary"><a
@@ -11,13 +11,14 @@
                             <span class="text-muted">({{ sync.sync_time }})</span>
                         </div>
                         <div class="card-body">
-                        <span class="text-muted">
-                            {% if sync.changelog.text %}
-                                {{ sync.changelog.text }}
+                            {% if changelog.text %}
+                                <span>
+                                {{ changelog.text }}
                             {% else %}
+                                <span class="text-muted">
                                 No changelog was provided.
                             {% endif %}
-                        </span>
+                            </span>
                         </div>
                     </div>
                 {% endfor %}
