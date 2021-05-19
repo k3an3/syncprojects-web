@@ -3,25 +3,55 @@
         <div class="card">
             <h4 class="text-center">Recent Syncs</h4>
             {% if syncs %}
-                {% for sync, changelog in syncs %}
-                    <div class="card">
-                        <div class="card-header">
+                {% if song %}
+                    {% for sync, changelog in syncs %}
+                        <div class="card">
+                            <div class="card-header">
                             <span class="text-primary"><a
                                     href="{% url 'users:user-profile' sync.user.id %}">{{ sync.user }}</a></span> {{ sync.last_sync_str }}
-                            <span class="text-muted">({{ sync.sync_time }})</span>
+                                <span class="text-muted">({{ sync.sync_time }})</span>
+                            </div>
+                            <div class="card-body">
+                                {% if changelog.text %}
+                                    <span>
+                                    {{ changelog.text }}
+                                {% else %}
+                                    <span class="text-muted">
+                                    No changelog was provided.
+                                {% endif %}
+                                </span>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            {% if changelog.text %}
-                                <span>
-                                {{ changelog.text }}
-                            {% else %}
-                                <span class="text-muted">
-                                No changelog was provided.
-                            {% endif %}
-                            </span>
+                    {% endfor %}
+                {% else %}
+                    {% for sync in syncs %}
+                        <div class="card">
+                            <div class="card-header">
+                            <span class="text-primary"><a
+                                    href="{% url 'users:user-profile' sync.user.id %}">{{ sync.user }}</a></span> {{ sync.last_sync_str }}
+                                <span class="text-muted">({{ sync.sync_time }})</span>
+                            </div>
+                            <div class="card-body">
+                                {% for changelog in sync.changelog.all %}
+                                    {% if changelog.text %}
+                                        <p><span class="text-primary">{{ changelog.song.name }}:</span>
+                                        <p>
+                                            {{ changelog.text|truncatechars:40 }}
+                                            {% if changelog.text.len > 40 %}
+                                                ...
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if not sync.changelog.all %}
+                                    <span class="text-muted">
+                                        No changelogs were provided.
+                                </span>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% endif %}
             {% else %}
                 <span class="text-muted text-center">No syncs yet. Get to work!</span>
             {% endif %}

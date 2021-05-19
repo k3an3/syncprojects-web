@@ -264,7 +264,7 @@ function syncResultHandler(data) {
             if (project_result.lock.reason != null)
                 reason = " Reason: " + project_result.lock.reason + ".";
             if (project_result.lock.locked_by === "self")
-                unlock = " Soon, you will be able to work around this yourself... In the meantime, contact support.";
+                unlock = " Someday, you will be able to work around this yourself... In the meantime, contact support.";
             html += `<p class="text-danger">Locked by ${project_result.lock.locked_by}${since}.${reason}${unlock}</p>`;
         } else {
             html += '<span class="badge bg-warning">None</span>';
