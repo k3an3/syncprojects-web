@@ -23,6 +23,7 @@
     <div class="btn-toolbar mb-2 mb-md-0">
         {% if user == profile_user %}
             <div class="btn-group me-2">
+                <a href="{% url 'sync:client-login' %}" class="btn btn-sm btn-outline-secondary">Authorize Client</a>
                 {% comment %}
                 <a href="{% url 'core:user-update' request.user.id %}" class="btn btn-sm btn-outline-secondary">Edit
                     User</a>
