@@ -1,4 +1,5 @@
 import base64
+from datetime import timedelta
 
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
@@ -7,6 +8,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
+from core.s3 import get_client, get_presigned_url, PRESIGNED_URL_DURATION, get_song_names
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
@@ -79,6 +81,7 @@ class Song(models.Model, LockableModel):
     name = models.CharField(max_length=100)
     url = models.CharField(max_length=300, null=True, blank=True,
                            help_text="URL to audio file for this song (optional)")
+    url_last_fetched = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     sync_enabled = models.BooleanField(default=True)
@@ -106,3 +109,15 @@ class Song(models.Model, LockableModel):
     @property
     def revision(self) -> int:
         return len(self.sync_set.all())
+
+    @property
+    def signed_url(self):
+        now = timezone.now()
+        # TODO: only works if URL set
+        if self.url and (not self.url_last_fetched
+                         or now >= self.url_last_fetched + timedelta(seconds=PRESIGNED_URL_DURATION)):
+            if self.name in (names := get_song_names(get_client(), self.project.id)):
+                self.url = get_presigned_url(get_client(), f"{self.project.name}/{names[self.name]}")
+                self.url_last_fetched = now
+                self.save()
+        return self.url
