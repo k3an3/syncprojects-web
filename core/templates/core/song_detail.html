@@ -72,7 +72,10 @@
         {% if user.is_superuser %}
             <div class="btn-group me-2">
                 <a href="{% url 'core:song-clear-peaks' project.id song.id %}">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">Redraw Waveform</button>
+                    <button type="button" class="btn btn-sm btn-outline-warning">Redraw Waveform</button>
+                </a>
+                <a href="{% url 'core:song-regen-url' project.id song.id %}">
+                    <button type="button" class="btn btn-sm btn-outline-warning">Regen URL</button>
                 </a>
             </div>
         {% endif %}
@@ -123,9 +126,9 @@
             </div>
             <div id="awp-playlist-list">
                 <ul id="playlist-audio1">
-                    <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.encode_url }}"
+                    <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.signed_url }}"
                         data-artist="{{ song.project.name }}" data-title="{{ song.name }}"
-                        data-thumb="{{ song.project.image.url }}"></li>
+                        {% if song.project.image %}data-thumb="{{ song.project.image.url }}"{% endif %}></li>
                 </ul>
             </div>
         </div>

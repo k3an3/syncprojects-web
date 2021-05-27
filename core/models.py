@@ -116,8 +116,8 @@ class Song(models.Model, LockableModel):
         # TODO: only works if URL set
         if self.url and (not self.url_last_fetched
                          or now >= self.url_last_fetched + timedelta(seconds=PRESIGNED_URL_DURATION)):
-            if self.name in (names := get_song_names(get_client(), self.project.id)):
-                self.url = get_presigned_url(get_client(), f"{self.project.name}/{names[self.name]}")
+            if self.name in (names := get_song_names(get_client(), self.project)):
+                self.url = get_presigned_url(get_client(), names[self.name])
                 self.url_last_fetched = now
                 self.save()
         return self.url
