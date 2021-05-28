@@ -6,6 +6,7 @@ import boto3
 from syncprojectsweb.settings import BACKEND_ACCESS_ID, BACKEND_SECRET_KEY, BACKEND_BUCKET
 
 PRESIGNED_URL_DURATION = 3600 * 24 * 30
+FAILURE_RETRY_INTERVAL = 60 * 15
 
 
 def get_client():

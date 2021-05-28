@@ -8,7 +8,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from core.s3 import get_client, get_presigned_url, PRESIGNED_URL_DURATION, get_song_names
+from core.s3 import get_client, get_presigned_url, PRESIGNED_URL_DURATION, get_song_names, FAILURE_RETRY_INTERVAL
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
@@ -82,6 +82,7 @@ class Song(models.Model, LockableModel):
     url = models.CharField(max_length=300, null=True, blank=True,
                            help_text="URL to audio file for this song (optional)")
     url_last_fetched = models.DateTimeField(null=True, blank=True)
+    url_last_error = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     sync_enabled = models.BooleanField(default=True)
@@ -110,14 +111,22 @@ class Song(models.Model, LockableModel):
     def revision(self) -> int:
         return len(self.sync_set.all())
 
+    def should_fetch_url(self) -> bool:
+        now = timezone.now()
+        if not self.url_last_fetched:
+            if not self.url_last_error or now >= self.url_last_error + timedelta(seconds=FAILURE_RETRY_INTERVAL):
+                return True
+        elif now >= self.url_last_fetched + timedelta(seconds=PRESIGNED_URL_DURATION):
+            return True
+        return False
+
     @property
     def signed_url(self):
-        now = timezone.now()
-        # TODO: only works if URL set
-        if self.url and (not self.url_last_fetched
-                         or now >= self.url_last_fetched + timedelta(seconds=PRESIGNED_URL_DURATION)):
+        if self.should_fetch_url():
             if self.name in (names := get_song_names(get_client(), self.project)):
                 self.url = get_presigned_url(get_client(), names[self.name])
-                self.url_last_fetched = now
-                self.save()
+                self.url_last_fetched = timezone.now()
+            else:
+                self.url_last_error = timezone.now()
+            self.save()
         return self.url

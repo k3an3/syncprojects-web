@@ -97,7 +97,7 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
 
 class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
     model = Song
-    fields = ['name', 'url', 'sync_enabled', 'directory_name', 'shared_with_followers']
+    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers']
     template_name_suffix = '_update_form'
 
 

@@ -1,10 +1,12 @@
 from datetime import timedelta
+
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
 from django.views.generic import TemplateView
 
 from core.models import Project, Song, Lock
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
+from core.s3 import PRESIGNED_URL_DURATION, FAILURE_RETRY_INTERVAL
 from core.views import ProjectDetailView
 from users.models import User
 
@@ -110,6 +112,25 @@ class SongModelTests(TestCase):
         Lock.objects.create(object=self.song, user=self.user, end_time=timezone.now() + timedelta(seconds=15))
         self.song.unlock()
         self.assertFalse(self.song.is_locked())
+
+    def test_signed_url_default(self):
+        self.assertTrue(self.song.should_fetch_url())
+
+    def test_signed_url_too_recent(self):
+        self.song.url_last_fetched = timezone.now()
+        self.assertFalse(self.song.should_fetch_url())
+
+    def test_signed_url_should_1(self):
+        self.song.url_last_fetched = timezone.now() - timedelta(seconds=PRESIGNED_URL_DURATION)
+        self.assertTrue(self.song.should_fetch_url())
+
+    def test_signed_url_error_too_recent(self):
+        self.song.url_last_error = timezone.now()
+        self.assertFalse(self.song.should_fetch_url())
+
+    def test_signed_url_error_should(self):
+        self.song.url_last_error = timezone.now() - timedelta(seconds=FAILURE_RETRY_INTERVAL)
+        self.assertTrue(self.song.should_fetch_url())
 
 
 class DummyViewFactory:
