@@ -24,6 +24,7 @@
         {% if user == profile_user %}
             <div class="btn-group me-2">
                 <a href="{% url 'sync:client-login' %}" class="btn btn-sm btn-outline-secondary">Authorize Client</a>
+                <button id="sync-disable" class="btn btn-sm btn-outline-secondary">Disable sync for browser</button>
                 {% comment %}
                 <a href="{% url 'core:user-update' request.user.id %}" class="btn btn-sm btn-outline-secondary">Edit
                     User</a>
@@ -64,8 +65,4 @@
     {% else %}
         <span class="text-muted">This user prefers to keep an air of mystery about them.</span>
     {% endif %}
-{% endblock %}
-
-{% block script %}
-    {% include 'sync/script.html' %}
 {% endblock %}

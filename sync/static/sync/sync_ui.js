@@ -429,18 +429,23 @@ async function handleSyncInProgress() {
     }
 }
 
-if (!isMobile()) {
-    if (daw_button != null)
-        daw_button.removeAttribute('hidden');
-    sync_button.removeAttribute('hidden');
-    if (!taskStore.getObj('sync_in_progress')) {
-        sync_button.removeAttribute('disabled');
-        disableDawButton(false);
-    }
-    checkConnection();
-    setInterval(checkConnection, 15000);
-}
+if (taskStore.getObj('sync-disabled')) {
+    console.debug("Sync is disabled.")
 
-handleSyncInProgress();
-checkTasks(true);
-setInterval(checkTasks, 1000);
+} else {
+    if (!isMobile()) {
+        if (daw_button != null)
+            daw_button.removeAttribute('hidden');
+        sync_button.removeAttribute('hidden');
+        if (!taskStore.getObj('sync_in_progress')) {
+            sync_button.removeAttribute('disabled');
+            disableDawButton(false);
+        }
+        checkConnection();
+        setInterval(checkConnection, 15000);
+    }
+
+    handleSyncInProgress();
+    checkTasks(true);
+    setInterval(checkTasks, 1000);
+}

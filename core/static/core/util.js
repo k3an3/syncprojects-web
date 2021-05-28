@@ -1,4 +1,6 @@
+// noinspection JSUnusedGlobalSymbols
 let console_ = console;
+// noinspection JSUnusedGlobalSymbols
 const toast_container = document.querySelector('#toast-container');
 
 if (!document.location.host.startsWith("localhost"))
@@ -25,6 +27,7 @@ function isMobile() {
     });
 }
 
+// noinspection JSUnusedGlobalSymbols
 function showAlert(msg, klass = "info") {
     new bootstrap.Alert(alert);
     alert.innerHTML = msg;
@@ -46,4 +49,35 @@ function showToast(title, content, type = "primary", icon = "") {
         img: {src: icon},
         icon: null,
     });
+}
+
+function showTime() {
+    let cur_time = awp_player.getCurrentTime();
+    let time = String(Math.round(cur_time / 60)).padStart(2, '0') + ":" + String(Math.round(cur_time) % 60).padStart(2, '0');
+    document.getElementById("MyClockDisplay").innerText = time;
+    document.getElementById("MyClockDisplay").textContent = time;
+
+    setTimeout(showTime, 1000);
+
+}
+
+let sync_disable = document.querySelector('#sync-disable');
+if (sync_disable != null) {
+    if (window.localStorage.getItem('sync-disabled') == 1) {
+        sync_disable.innerHTML = "Enable sync";
+    }
+    sync_disable.addEventListener('click', e => {
+        let current = window.localStorage.getItem('sync-disabled');
+        let result = current == '1' ? '0' : '1';
+        console.debug(`Setting sync to ${result} for this browser.`)
+        window.localStorage.setItem('sync-disabled', result);
+        if (result == '1') {
+            sync_disable.innerHTML = "Enable sync";
+        } else {
+            sync_disable.innerHTML = "Disable sync for browser";
+        }
+    });
+}
+
+if (awp_player != null) {
 }

@@ -57,7 +57,7 @@ class ProjectDeleteView(LoginRequiredMixin, UserIsMemberPermissionMixin, generic
 
 class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     model = Song
-    fields = ['name', 'url', 'sync_enabled', 'directory_name', 'shared_with_followers']
+    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers']
 
     def test_func(self, **kwargs):
         project = Project.objects.get(pk=self.kwargs['pk'])
