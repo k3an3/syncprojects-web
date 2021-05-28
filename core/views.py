@@ -116,3 +116,14 @@ class SongDeleteView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.De
 
     def get_success_url(self):
         return reverse_lazy('core:project-detail', args=[self.object.project.pk])
+
+
+class RegenSongURLView(SongLookupBaseView, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, *args, **kwargs):
+        song = self.get_object()
+        song.url_last_fetched = None
+        song.signed_url
+        return redirect('core:song-detail', song.project.id, song.id)

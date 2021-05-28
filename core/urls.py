@@ -15,4 +15,6 @@ urlpatterns = [
     path('projects/<int:proj>/songs/<int:song>/delete/', views.SongDeleteView.as_view(), name='song-delete'),
     path('projects/<int:proj>/songs/<int:song>/clear_peaks/', views.ClearSongPeaksView.as_view(),
          name='song-clear-peaks'),
+    path('projects/<int:proj>/songs/<int:song>/regen_url/', views.RegenSongURLView.as_view(),
+         name='song-regen-url'),
 ]

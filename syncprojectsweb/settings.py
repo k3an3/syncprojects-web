@@ -154,8 +154,9 @@ SYSTEMD_UNIT = "syncprojects"
 GOGS_SECRET = ""
 SEAFILE_API_URL = ""
 SEAFILE_TOKEN = ""
-ACCESS_ID = ""
+BACKEND_ACCESS_ID = ""
 BACKEND_SECRET_KEY = ""
+BACKEND_BUCKET = ""
 
 try:
     from local_settings import *

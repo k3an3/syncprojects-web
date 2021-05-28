@@ -9,12 +9,12 @@ from rest_framework.response import Response
 
 from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectAccess, CreateOrReadOnly
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
-    ChangelogEntrySerializer
+    ChangelogEntrySerializer, SongSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
 from sync.models import ClientUpdate, ChangelogEntry, Sync
 from sync.utils import get_signed_data
-from syncprojectsweb.settings import GOGS_SECRET, ACCESS_ID, BACKEND_SECRET_KEY
+from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
 from users.models import User
 
 
@@ -78,6 +78,22 @@ class SyncViewSet(viewsets.ModelViewSet):
                                                song=song,
                                                text=request.data['text'])
         return Response({'created': result.id})
+
+
+class SongViewSet(viewsets.ModelViewSet):
+    serializer_class = SongSerializer
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
+
+    def get_queryset(self):
+        songs = self.request.user.collab_songs.all()
+        for project in self.request.user.projects.all():
+            songs |= (project.songs())
+        return songs
+
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['get'])
+    def url(self, request, pk=None):
+        return JsonResponse({'url': self.get_object().get_signed_url()})
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -196,4 +212,4 @@ def sign_data(request):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_backend_creds(request):
-    return Response({'access_id': ACCESS_ID, 'secret_key': BACKEND_SECRET_KEY})
+    return Response({'access_id': BACKEND_ACCESS_ID, 'secret_key': BACKEND_SECRET_KEY})

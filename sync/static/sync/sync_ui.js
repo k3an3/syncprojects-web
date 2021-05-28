@@ -202,7 +202,7 @@ document.addEventListener('click', e => {
     } else if (e.target && e.target.classList.contains("changelog-submit")) {
         let id = e.target.id.split('-')[2]
         submitChangelog(parseInt(id), document.querySelector(`#changelog-${id}`).value);
-        showToast("Success", "Submitted changelog.", "success");
+        showToast("Success", "Submitted your changes.", "success");
         e.target.setAttribute("hidden", "hidden");
         document.querySelector(`#changelog-${id}`).disabled = true;
     }
