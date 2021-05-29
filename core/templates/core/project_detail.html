@@ -26,6 +26,12 @@
             <span data-feather="calendar"></span>
             All albums
         </button>
+        {% if subscriber %}
+            <form method="post" action="{% url 'core:project-unsubscribe' project.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">Unfollow</button>
+            </form>
+        {% endif %}
     </div>
 {% endblock %}
 

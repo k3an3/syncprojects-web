@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic, View
+from django.views.generic.detail import SingleObjectMixin
 
 from core.models import Project, Song
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
@@ -28,6 +29,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
                             song.shared_with_followers or
                             self.request.user.can_sync(song)]
         context['member'] = self.request.user.has_member_access(self.get_object())
+        context['subscriber'] = self.request.user.has_subscriber_access(self.get_object())
         context['collab'] = self.request.user.collab_songs.filter(project=self.get_object())
         if context['member']:
             context['syncs'] = self.get_object().sync_set.all().order_by('-id')[:10]
@@ -53,6 +55,17 @@ class ProjectUpdateView(UserIsMemberPermissionMixin, generic.UpdateView):
 class ProjectDeleteView(LoginRequiredMixin, UserIsMemberPermissionMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy('core:index')
+
+
+class ProjectUnsubscribeView(LoginRequiredMixin, UserPassesTestMixin, SingleObjectMixin, View):
+    model = Project
+
+    def test_func(self):
+        return self.request.user.has_subscriber_access(self.get_object())
+
+    def post(self, *args, **kwargs):
+        self.request.user.subscribed_projects.remove(self.get_object())
+        return redirect(reverse_lazy('core:index'))
 
 
 class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
