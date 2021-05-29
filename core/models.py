@@ -123,8 +123,8 @@ class Song(models.Model, LockableModel):
     @property
     def signed_url(self):
         if self.should_fetch_url():
-            if self.name in (names := get_song_names(get_client(), self.project)):
-                self.url = get_presigned_url(get_client(), names[self.name])
+            if self.name.lower() in (names := get_song_names(get_client(), self.project)):
+                self.url = get_presigned_url(get_client(), names[self.name.lower()])
                 self.url_last_fetched = timezone.now()
             else:
                 self.url_last_error = timezone.now()

@@ -37,4 +37,4 @@ def get_remote_files(client, prefix: str):
 
 def get_song_names(client, project: str) -> Set:
     files = get_remote_files(client, f"{project}/")
-    return {'.'.join(basename(f['Key']).split('.')[:-1]): f['Key'] for f in files}
+    return {'.'.join(basename(f['Key']).split('.')[:-1]).lower(): f['Key'] for f in files}
