@@ -107,6 +107,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['put', 'delete'])
     def lock(self, request, pk=None):
         project = self.get_object()
+        transient_lock = None
         if 'song' in request.data:
             song = Song.objects.get(id=request.data['song'], project=project)
             if not self.request.user.can_sync(song):
@@ -117,7 +118,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                  'until': lock.end_time,
                                  'since': lock.start_time
                                  })
-            Lock.objects.create(object=song.project, user=request.user, reason=f"transient {song.name=}")
+            transient_lock = Lock.objects.create(object=song.project, user=request.user,
+                                                 reason=f"transient {song.name=}")
             obj = song
         else:
             if not self.request.user.has_member_access(project):
@@ -127,8 +129,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if request.method == 'PUT':
             locked_by_user = obj.is_locked_by_user(request.user)
             if locked_by_user and not request.data.get('force'):
+                if transient_lock:
+                    transient_lock.delete()
                 return Response({'status': 'locked', 'locked_by': 'self'})
             elif not locked_by_user and (lock := obj.is_locked()):
+                if transient_lock:
+                    transient_lock.delete()
                 return Response({'status': 'locked',
                                  'locked_by': lock.user.username,
                                  'until': lock.end_time,
