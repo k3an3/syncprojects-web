@@ -457,12 +457,14 @@ function count_down() {
     }
 }
 
-undo_button.addEventListener('click', _ => {
-    final_undo_counter = FINAL_UNDO_TIME;
-    final_undo_button.setAttribute('disabled', 'disabled');
-    undo_modal.show();
-    count_down();
-});
+if (undo_button != null) {
+    undo_button.addEventListener('click', _ => {
+        final_undo_counter = FINAL_UNDO_TIME;
+        final_undo_button.setAttribute('disabled', 'disabled');
+        undo_modal.show();
+        count_down();
+    });
+}
 
 async function checkTasks(force_check = false) {
     if (force_check || (!isMobile() && (!ping_failed) && taskStore.getObj('tasks') != null && !isEmpty(taskStore.getObj('tasks')))) {
