@@ -2,5 +2,7 @@
     <button class="btn btn-sm btn-outline-danger" id="sync_button" disabled hidden>Sync: Not Connected</button>
     {% if song %}
         <button class="btn btn-sm btn-secondary" id="daw_button" disabled hidden>Open in DAW</button>
+        <button class="btn btn-sm btn-danger" id="undo_button" hidden>Undo Checkout <span class="fas fa-bomb"></span>
+        </button>
     {% endif %}
 {% endif %}

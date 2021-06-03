@@ -105,6 +105,7 @@
 {% block content %}
     {% include 'sync/sync.html' %}
     {% if song.url %}
+        <span id="song_url_present" hidden></span>
         <div class="col-lg-6 col-sm-12">
             <div id="awp-wrapper">
                 <div class="awp-player-thumb-wrapper">

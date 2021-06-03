@@ -15,6 +15,28 @@
             </div>
         </div>
     </div>
+    <div class="modal" tabindex="-1" id="undo_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Undo Checkout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="undo-modal-body">
+                    <h3>Are you sure?</h3>
+                    <p>All your local changes will be lost, and your files will be replaced by what's on the server.</p>
+                    <p>This process is irreversible! Make sure you haven't created anything great since you last checked
+                        in.</p>
+                </div>
+                <div class="modal-footer">
+                    <span id="undo_countdown"></span>
+                    <button type="button" class="btn btn-danger" id="final_undo_button" data-bs-dismiss="modal"
+                            disabled>Confirm Undo <span class="fas fa-bomb"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="progress" id="sync_progress" hidden>
         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"
              aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>

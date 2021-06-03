@@ -1,7 +1,11 @@
 const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const sync_button = document.querySelector('#sync_button');
 const daw_button = document.querySelector('#daw_button');
+const undo_button = document.querySelector('#undo_button');
+const final_undo_countdown = document.querySelector('#undo_countdown');
+const final_undo_button = document.querySelector('#final_undo_button');
 const sync_modal = new bootstrap.Modal(document.querySelector("#sync_modal"), {});
+const undo_modal = new bootstrap.Modal(document.querySelector("#undo_modal"), {});
 const sync_modal_body = document.querySelector("#sync-modal-body");
 const progress = document.querySelector("#sync_progress");
 const alert = document.querySelector('#alert');
@@ -134,6 +138,7 @@ sync_button.addEventListener('click', async _ => {
 function disableDawButton(status = true) {
     if (daw_button != null) {
         daw_button.disabled = status;
+        undo_button.setAttribute("hidden", "hidden");
         if (!status) {
             daw_button.innerHTML = "Open in DAW";
             daw_button.className = "btn btn-sm btn-secondary";
@@ -232,9 +237,11 @@ function syncResultHandler(data) {
     ${song_result.changes || 'No changes found.'} 
   </div>
 </div>`;
+                    /*
                     document.querySelector(".view_changes").addEventListener('click', (e) => {
                         console.log(this);
                     });
+                     */
                 } else if (song_result.action == "local") {
                     // TODO
                     // appendChangelogTodo(song_result.song);
@@ -321,6 +328,7 @@ function handleSongCheckedOut() {
         sync_button.disabled = true;
         daw_button.innerHTML = "Check in <span class=\"fas fa-clipboard-check\"></span>";
         daw_button.className = "btn btn-sm btn-primary";
+        undo_button.removeAttribute("hidden");
     }
 }
 
@@ -410,6 +418,51 @@ function handleResults(data) {
         }
     });
 }
+
+let FINAL_UNDO_TIME = 3;
+let final_undo_counter = FINAL_UNDO_TIME;
+
+final_undo_button.addEventListener('click', async _ => {
+    undo_button.setAttribute('hidden', 'hidden');
+    showToast("Sync", "Undoing checkout... <span class=\"fas fa-hourglass-start\"></span>");
+    progress.removeAttribute('hidden');
+    daw_button.innerHTML = "Undoing checkout... <span class=\"fas fa-hourglass-start\"></span>";
+    daw_button.disabled = true;
+    sync_button.disabled = true;
+    let context = getContext();
+    taskStore.setObj('sync_in_progress', true);
+    let msg = {'song': {'song': context.song, 'project': context.project}, 'undo': true};
+    console.log("Undo song checkout")
+    console.log(msg);
+    let result = await workDone(msg);
+    console.log("Got initial response");
+    console.log(result);
+    if (result.result === "started") {
+        showToast("Sync", "Sync started <span class=\"fas fa-check\"></span>");
+        pushTask(result.task_id, 'workdone');
+    } else {
+        console.warn("Unknown response.");
+    }
+});
+
+function count_down() {
+    final_undo_countdown.innerHTML = final_undo_counter;
+
+    if (final_undo_counter) {
+        setTimeout(count_down, 1000);
+        final_undo_counter--;
+    } else {
+        final_undo_button.removeAttribute('disabled');
+        final_undo_countdown.innerHTML = "";
+    }
+}
+
+undo_button.addEventListener('click', _ => {
+    final_undo_counter = FINAL_UNDO_TIME;
+    final_undo_button.setAttribute('disabled', 'disabled');
+    undo_modal.show();
+    count_down();
+});
 
 async function checkTasks(force_check = false) {
     if (force_check || (!isMobile() && (!ping_failed) && taskStore.getObj('tasks') != null && !isEmpty(taskStore.getObj('tasks')))) {
