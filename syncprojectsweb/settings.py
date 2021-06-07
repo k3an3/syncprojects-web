@@ -157,6 +157,7 @@ SEAFILE_TOKEN = ""
 BACKEND_ACCESS_ID = ""
 BACKEND_SECRET_KEY = ""
 BACKEND_BUCKET = ""
+USERNAME_FIELD = 'username'
 
 try:
     from local_settings import *

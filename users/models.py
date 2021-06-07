@@ -53,7 +53,7 @@ class User(AbstractUser):
         return self.has_member_access(obj) or obj in self.collab_songs.all()
 
     def __str__(self):
-        return self.first_name or self.username
+        return self.first_name or self.email
 
     def get_profile(self):
         return (
