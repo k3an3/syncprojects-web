@@ -79,5 +79,7 @@ if (sync_disable != null) {
     });
 }
 
+/*
 if (awp_player != null) {
 }
+ */

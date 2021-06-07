@@ -58,11 +58,11 @@
     <ul class="navbar-nav px-3 list-group-horizontal">
         {% if request.user.is_superuser %}
             <li class="nav-item text-nowrap">
-                <a class="nav-link" href="{% url 'admin:index' %}"><span class="text-primary">Admin</span></a>
+                <a class="nav-link" href="{% url 'admin:index' %}"><span class="text-warning">Admin</span></a>
             </li>
             &nbsp;
             <li class="nav-item text-nowrap">
-                <a class="nav-link" href="/api/v1/"><span class="text-warning">API</span></a>
+                <a class="nav-link" href="/api/v1/"><span class="text-danger">API</span></a>
             </li>
             &nbsp;
         {% endif %}
