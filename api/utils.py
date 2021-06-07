@@ -1,11 +1,9 @@
-import datetime
+import random
 import subprocess
 from json import JSONDecodeError
 
-import requests
 import sys
 from django.contrib.auth.models import User
-from pytz import UTC
 from requests import HTTPError
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -55,14 +53,8 @@ def awp_read_peaks(_, song):
 
 
 def check_song_updated(song):
-    r = requests.get(f"{SEAFILE_API_URL}repos/{song.project.seafile_uuid}/file/detail/",
-                     params={'p': f"{song.name}.mp3"},
-                     headers={'Authorization': f'Token {SEAFILE_TOKEN}'}).json()
-    mtime = datetime.datetime.utcfromtimestamp(r['mtime'])
-    old_mtime = song.last_mtime
-    song.last_mtime = mtime
-    song.save()
-    return not old_mtime or mtime.replace(tzinfo=UTC) > old_mtime
+    # TODO: replace
+    return random.randint(0, 1)
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):

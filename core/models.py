@@ -59,7 +59,6 @@ class Project(models.Model, LockableModel):
     created_at = models.DateTimeField(default=timezone.now)
     image = models.ImageField(null=True, blank=True)
     sync_enabled = models.BooleanField(default=True)
-    seafile_uuid = models.UUIDField(null=True, blank=True, help_text="ID of project from Seafile (optional)")
     sharing = models.CharField(max_length=10, default=INVITE, choices=SHARING_CHOICES)
     locks = GenericRelation(Lock)
 

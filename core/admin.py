@@ -11,7 +11,7 @@ class SongAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    fields = ['name', 'image', 'sync_enabled', 'seafile_uuid']
+    fields = ['name', 'image', 'sync_enabled']
     inlines = (UserProjectInline,)
 
 

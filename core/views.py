@@ -38,7 +38,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
 
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     model = Project
-    fields = ['name', 'image', 'sync_enabled', 'seafile_uuid']
+    fields = ['name', 'image', 'sync_enabled']
 
     def form_valid(self, form):
         obj = form.save()
@@ -48,7 +48,7 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
 
 class ProjectUpdateView(UserIsMemberPermissionMixin, generic.UpdateView):
     model = Project
-    fields = ['name', 'image', 'sync_enabled', 'seafile_uuid']
+    fields = ['name', 'image', 'sync_enabled']
     template_name_suffix = '_update_form'
 
 
