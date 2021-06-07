@@ -12,7 +12,7 @@ class UserProjectInline(admin.TabularInline):
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email', 'first_name', 'last_name', 'is_staff',)
+    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff',)
     add_fieldsets = ((None, {'classes': ('wide',), 'fields': ('email', 'password1', 'password2')}),)
     fieldsets = (*BaseUserAdmin.fieldsets,
                  ('Profile',
