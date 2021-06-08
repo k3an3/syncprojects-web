@@ -12,7 +12,7 @@ from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, C
     ChangelogEntrySerializer, SongSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
-from sync.models import ClientUpdate, ChangelogEntry, Sync
+from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
 from users.models import User
@@ -43,7 +43,17 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class ClientUpdateViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ClientUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
-    queryset = ClientUpdate.objects.all()
+
+    def get_queryset(self):
+        target = self.request.query_params.get('target')
+        if target:
+            try:
+                target = SupportedClientTarget.objects.get(target=target)
+            except SupportedClientTarget.DoesNotExist:
+                return ClientUpdate.objects.none()
+            return ClientUpdate.objects.filter(target=target)
+        else:
+            return ClientUpdate.objects.filter(target__isnull=True)
 
 
 class SyncViewSet(viewsets.ModelViewSet):

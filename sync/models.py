@@ -31,19 +31,27 @@ class ClientConfig(models.Model):
                                                                "or separate them by project.")
 
 
-class ClientUpdate(models.Model):
-    version = models.CharField(max_length=20, unique=True)
-    updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)
-    package = models.FileField(upload_to='updates/')
+class SupportedClientTarget(models.Model):
+    target = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        return f"Update v{self.version}"
+        return self.target
+
+
+class ClientUpdate(models.Model):
+    version = models.CharField(max_length=20)
+    updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)
+    package = models.FileField(upload_to='updates/')
+    target = models.ForeignKey(SupportedClientTarget, null=True, blank=True, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"Update v{self.version}-{self.target}"
 
     def latest_updater(self) -> str:
         if self.updater:
             return self.updater.url
         try:
-            return ClientUpdate.objects.filter(~Q(updater='')).order_by('-id')[0].updater.url
+            return ClientUpdate.objects.filter(~Q(updater=''), target=self.target).order_by('-id')[0].updater.url
         except IndexError:
             return None
 
