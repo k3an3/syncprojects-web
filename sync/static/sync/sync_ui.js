@@ -140,8 +140,8 @@ function disableDawButton(status = true) {
         daw_button.disabled = status;
         undo_button.setAttribute("hidden", "hidden");
         if (!status) {
-            daw_button.innerHTML = "Open in DAW";
-            daw_button.className = "btn btn-sm btn-secondary";
+            daw_button.innerHTML = "Sync & Open";
+            daw_button.className = "btn btn-sm btn-primary";
         }
     }
 }
