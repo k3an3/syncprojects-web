@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block sidebar_container %}{% endblock %}
+
+{% block header %}
+    <h1 class="h2">Download Syncprojects Client</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for target in supported_targets %}
+            <div class="col-md-2">
+                <div class="card" style="margin-top: 10px;">
+                    <div class="card-body">
+                        <a href="{{ target.latest_release.package.url }}"
+                           class="card-link">{{ target.target }}</a> {{ target.render_icon|safe }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

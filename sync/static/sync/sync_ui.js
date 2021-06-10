@@ -95,6 +95,10 @@ if (daw_button != null)
     });
 
 sync_button.addEventListener('click', async _ => {
+    if (ping_failed) {
+        document.location = "/sync/download";
+        return;
+    }
     showToast("Sync", "Starting sync... <span class=\"fas fa-hourglass-start\"></span>");
     progress.removeAttribute('hidden');
     sync_button.innerHTML = "Syncing... <span class=\"fas fa-hourglass-start\"></span>";
@@ -140,7 +144,7 @@ function disableDawButton(status = true) {
         daw_button.disabled = status;
         undo_button.setAttribute("hidden", "hidden");
         if (!status) {
-            daw_button.innerHTML = "Sync & Open";
+            daw_button.innerHTML = "Sync & Open <span class=\"fas fa-bacon\"></span>";
             daw_button.className = "btn btn-sm btn-success";
         }
     }
@@ -158,10 +162,10 @@ async function checkConnection() {
     const result = await ping().catch(_ => {
         ping_failed = true;
         //console.error("Failed to connect to syncprojects client: " + error);
-        sync_button.disabled = true;
+        //sync_button.disabled = true;
         disableDawButton();
-        sync_button.className = "btn btn-sm btn-outline-danger";
-        sync_button.textContent = "Sync: Not Connected";
+        sync_button.className = "btn btn-sm btn-success";
+        sync_button.innerHTML = "Download Sync Client <span class=\"fas fa-download\"></span>";
     });
     if (result != null && result.result == "pong") {
         ping_failed = false;

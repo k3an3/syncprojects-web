@@ -75,6 +75,12 @@ class Project(models.Model, LockableModel):
         return reverse('core:project-detail', kwargs={'pk': self.pk})
 
 
+class Album(models.Model):
+    name = models.CharField(max_length=100)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    cover = models.ImageField(null=True, blank=True)
+
+
 class Song(models.Model, LockableModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -92,6 +98,7 @@ class Song(models.Model, LockableModel):
     peaks = models.TextField(null=True, blank=True)
     locks = GenericRelation(Lock)
     shared_with_followers = models.BooleanField(default=False)
+    album = models.ForeignKey(Album, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

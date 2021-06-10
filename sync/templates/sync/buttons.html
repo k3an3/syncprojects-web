@@ -1,7 +1,9 @@
 {% if member or can_sync or not project %}
-    <button class="btn btn-sm btn-outline-danger" id="sync_button" disabled hidden>Sync: Not Connected</button>
+    <button class="btn btn-sm btn-success" id="sync_button" hidden>Download Sync Client <span
+            class="fas fa-download"></span></button>
     {% if song %}
-        <button class="btn btn-sm btn-success" id="daw_button" disabled hidden>Sync & Open</button>
+        <button class="btn btn-sm btn-success" id="daw_button" disabled hidden>Sync & Open <span
+                class="fas fa-bacon"></span></button>
         <button class="btn btn-sm btn-danger" id="undo_button" hidden>Undo Checkout <span class="fas fa-bomb"></span>
         </button>
     {% endif %}

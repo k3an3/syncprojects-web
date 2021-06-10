@@ -22,20 +22,18 @@ class Sync(models.Model):
         return f"{self.user} sync at {self.sync_time}"
 
 
-class ClientConfig(models.Model):
-    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    last_updated = models.DateTimeField(default=timezone.now)
-    sync_root = models.TextField(help_text="Absolute path to the root directory where your song project files will be "
-                                           "synced.")
-    flat_layout = models.BooleanField(default=False, help_text="Whether to keep all song project files in one folder, "
-                                                               "or separate them by project.")
-
-
 class SupportedClientTarget(models.Model):
     target = models.CharField(max_length=100, unique=True)
+    icon = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.target
+
+    def render_icon(self) -> str:
+        return f'<span class="fab fa-{self.icon}"></span>' if self.icon else ''
+
+    def latest_release(self):
+        return self.clientupdate_set.last()
 
 
 class ClientUpdate(models.Model):

@@ -6,4 +6,5 @@ app_name = 'sync'
 urlpatterns = [
     path('client_login/', views.send_sync_token, name='client-login'),
     path('client_login/success/', views.authorization_success, name='client-login-success'),
+    path('download/', views.DownloadIndexView.as_view(), name='download-index'),
 ]
