@@ -12,6 +12,7 @@
 {% block content %}
     <div class="row">
         {% for target in supported_targets %}
+            {% if target.latest_release %}
             <div class="col-md-2">
                 <div class="card" style="margin-top: 10px;">
                     <div class="card-body">
@@ -20,6 +21,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         {% endfor %}
     </div>
 {% endblock %}
