@@ -11,17 +11,24 @@
 
 {% block content %}
     <div class="row">
-        {% for target in supported_targets %}
-            {% if target.latest_release %}
-            <div class="col-md-2">
-                <div class="card" style="margin-top: 10px;">
-                    <div class="card-body">
-                        <a href="{{ target.latest_release.package.url }}"
-                           class="card-link">{{ target.target }}</a> {{ target.render_icon|safe }}
+        {% if supported_targets %}
+            {% for target in supported_targets %}
+                {% if target.latest_release %}
+                    <div class="col-md-2">
+                        <div class="card" style="margin-top: 10px;">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ target.name }} {{ target.render_icon|safe }}</h5>
+                                <a href="{{ target.latest_release.package.url }}"
+                                   class="card-link">Download {{ target.latest_release.version }}</a>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                No downloads available at this time!
             </div>
-            {% endif %}
-        {% endfor %}
+        {% endif %}
     </div>
 {% endblock %}

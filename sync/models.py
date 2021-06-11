@@ -25,9 +25,13 @@ class Sync(models.Model):
 class SupportedClientTarget(models.Model):
     target = models.CharField(max_length=100, unique=True)
     icon = models.CharField(max_length=50, null=True, blank=True)
+    friendly_name = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.target
+
+    def name(self) -> str:
+        return self.friendly_name or self.target
 
     def render_icon(self) -> str:
         return f'<span class="fab fa-{self.icon}"></span>' if self.icon else ''
@@ -43,7 +47,7 @@ class ClientUpdate(models.Model):
     target = models.ForeignKey(SupportedClientTarget, null=True, blank=True, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"Update v{self.version}-{self.target}"
+        return f"v{self.version}-{self.target}"
 
     def latest_updater(self) -> str:
         if self.updater:
