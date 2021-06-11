@@ -79,6 +79,11 @@ class Album(models.Model):
     name = models.CharField(max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     cover = models.ImageField(null=True, blank=True)
+    released = models.BooleanField(default=False)
+    release_date = models.DateField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Song(models.Model, LockableModel):
@@ -99,6 +104,7 @@ class Song(models.Model, LockableModel):
     locks = GenericRelation(Lock)
     shared_with_followers = models.BooleanField(default=False)
     album = models.ForeignKey(Album, null=True, blank=True, on_delete=models.SET_NULL)
+    album_order = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name

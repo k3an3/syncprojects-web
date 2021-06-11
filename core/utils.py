@@ -8,3 +8,10 @@ def get_syncs(obj, count: int = 10):
         except ChangelogEntry.DoesNotExist:
             changelog = None
         yield sync, changelog
+
+
+def safe_append(d: dict, key: str, item) -> None:
+    try:
+        d[key].append(item)
+    except KeyError:
+        d[key] = [item]

@@ -34,7 +34,9 @@
                             <div class="card-body">
                                 {% for changelog in sync.changelog.all %}
                                     {% if changelog.text %}
-                                        <p><span class="text-primary">{{ changelog.song.name }}:</span>
+                                        <p>
+                                            <a href="{% url 'core:song-detail' project.id changelog.song.id %}">{{ changelog.song.name }}:</a>
+                                        </p>
                                         <p>
                                             {{ changelog.text|truncatechars:40 }}
                                             {% if changelog.text.len > 40 %}

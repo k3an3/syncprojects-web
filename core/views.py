@@ -22,17 +22,41 @@ class IndexView(LoginRequiredMixin, generic.ListView):
 class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixin, generic.DetailView):
     model = Project
 
+    def _song_is_visible(self, song):
+        return (self.request.user.has_member_access(song)
+                or song.shared_with_followers
+                or self.request.user.can_sync(song))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['songs'] = [song for song in self.get_object().songs() if
-                            self.request.user.has_member_access(song) or
-                            song.shared_with_followers or
-                            self.request.user.can_sync(song)]
-        context['member'] = self.request.user.has_member_access(self.get_object())
-        context['subscriber'] = self.request.user.has_subscriber_access(self.get_object())
-        context['collab'] = self.request.user.collab_songs.filter(project=self.get_object())
+        project = self.get_object()
+        # Collect songs without albums
+        albums = [(None, [song for song in project.song_set.filter(album__isnull=True) if self._song_is_visible(song)])]
+        member = self.request.user.has_member_access(project)
+        if album_filter := self.request.GET.get('album'):
+            context['filtered'] = True
+            if not album_filter == 'unsorted':
+                album_set = project.album_set.filter(id=album_filter)
+                # Don't need unsorted if filtering
+                albums = []
+            else:
+                album_set = project.album_set.none()
+        else:
+            album_set = project.album_set.all()
+        for album in album_set:
+            songs = []
+            for song in album.song_set.order_by('-album_order'):
+                if self._song_is_visible(song):
+                    songs.append(song)
+            # Don't show albums that a subscriber has no song access to
+            if member or songs:
+                albums.append((album, songs))
+        context['albums'] = albums
+        context['member'] = member
+        context['subscriber'] = self.request.user.has_subscriber_access(project)
+        context['collab'] = self.request.user.collab_songs.filter(project=project)
         if context['member']:
-            context['syncs'] = self.get_object().sync_set.all().order_by('-id')[:10]
+            context['syncs'] = project.sync_set.all().order_by('-id')[:10]
         return context
 
 

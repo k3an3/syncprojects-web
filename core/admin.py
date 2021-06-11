@@ -1,13 +1,14 @@
 from django.contrib import admin
 
-from core.models import Project, Song, Lock
+from core.models import Project, Song, Lock, Album
 from users.admin import UserProjectInline
 
 admin.site.register(Lock)
+admin.site.register(Album)
 
 
 class SongAdmin(admin.ModelAdmin):
-    fields = ['name', 'url', 'project', 'directory_name', 'sync_enabled', 'shared_with_followers']
+    fields = ['name', 'url', 'project', 'album', 'directory_name', 'sync_enabled', 'shared_with_followers']
 
 
 class ProjectAdmin(admin.ModelAdmin):

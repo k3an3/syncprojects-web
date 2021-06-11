@@ -22,10 +22,30 @@
             </div>
         {% endif %}
 
-        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            All albums
-        </button>
+        {% if albums %}
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter albums
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    {% for album, _ in albums %}
+                        <li><a class="dropdown-item"
+                               href="{% url 'core:project-detail' project.id %}?album={{ album.id }}">{{ album.name }}</a>
+                        </li>
+                    {% endfor %}
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'core:project-detail' project.id %}?album=unsorted">Unsorted
+                        only</a></li>
+                    {% if filtered %}
+                        <li><a class="dropdown-item" href="{% url 'core:project-detail' project.id %}">Reset filter</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
         {% if subscriber %}
             <form method="post" action="{% url 'core:project-unsubscribe' project.id %}">
                 {% csrf_token %}
@@ -49,42 +69,67 @@
 
 {% block content %}
     {% include 'sync/sync.html' %}
-    {% if songs %}
-        <div class="col-lg-5">
-            <table class="table table-borderless">
-                <thead>
-                <tr>
-                    <th scope="col">Songs</th>
-                    <th scope="col">Audio</th>
-                    <th scope="col">
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for song in songs %}
+    {% if albums %}
+        {% for album, songs in albums %}
+            <div class="col-lg-5">
+                {% if album %}
+                    <h3 class="h3">
+                        {% if album.cover %}
+                            <img src="{{ album.cover.url }}" width="60px"/>
+                        {% endif %}
+                        {{ album.name }}</h3>
+                    {% if album.release_date %}
+                        <h6 class="text-muted">{% if album.released %}Released{% else %}Est.
+                            release{% endif %} {{ album.release_date }}</h6>
+                    {% else %}
+                        <h6 class="text-muted">{% if album.released %}Released{% else %}Unreleased{% endif %}</h6>
+                    {% endif %}
+                {% else %}
+                    <h3 class="h3">Unsorted</h3>
+                {% endif %}
+                <table style="margin-bottom:20px" class="table table-striped">
+                    <thead>
                     <tr>
-                        <td><a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a></td>
-                        <td>
-                            {% if song.url %}
-                                <audio controls preload="metadata" src="{{ song.signed_url }}"> Your browser does not
-                                    support
-                                    the
-                                    <code>audio</code> element.
-                                </audio>
-                            {% else %}
-                                <span class="text-muted">No audio</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not member and song in collab %}
-                                <span class="badge bg-info">Collaborator</span>
-                            {% endif %}
-                        </td>
+                        <th scope="col">Song</th>
+                        <th scope="col">Audio</th>
+                        <th scope="col">
+                        </th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                    {% if songs %}
+                        {% for song in songs %}
+                            <tr>
+                                <td><a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a></td>
+                                <td>
+                                    {% if song.url %}
+                                        <audio controls preload="metadata" src="{{ song.signed_url }}"> Your browser
+                                            does not
+                                            support
+                                            the
+                                            <code>audio</code> element.
+                                        </audio>
+                                    {% else %}
+                                        <span class="text-muted">No audio</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not member and song in collab %}
+                                        <span class="badge bg-info">Collaborator</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td><p class="text-muted">No songs here.</p></td>
+                            <td></td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
     {% else %}
         <div class="alert alert-primary"><strong>No Songs here!</strong>{% if member %} Get started and <a
                 href="{% url 'core:song-create' project.id %}">create one</a>{% endif %}</div>
