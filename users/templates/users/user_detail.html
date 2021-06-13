@@ -23,6 +23,9 @@
     <div class="btn-toolbar mb-2 mb-md-0">
         {% if user == profile_user %}
             <div class="btn-group me-2">
+                <a href="{% url 'users:user-update' %}" class="btn btn-sm btn-primary">Edit Profile</a>
+            </div>
+            <div class="btn-group me-2">
                 <a href="{% url 'sync:client-login' %}" class="btn btn-sm btn-outline-secondary">Authorize Client</a>
                 <button id="sync-disable" class="btn btn-sm btn-outline-secondary">Disable sync for browser</button>
                 {% comment %}

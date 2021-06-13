@@ -1,22 +1,13 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-
 {% block header %}
-    <h1 class="h2">Edit Project</h1>
+    <h1 class="h2">Edit user profile for {{ user }}</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
     </div>
 {% endblock %}
 
 {% block sidebar %}
-    {% if project.image %}
-        <div class="nav flex-column">
-            <img src="{{ project.image.url }}" width="75%"
-                 style="padding-left: 10px; object-fit: cover; object-position: center">
-        </div>
-    {% endif %}
-
-    {% include 'core/sidebar.html' %}
 {% endblock %}
 
 {% block content %}
@@ -26,6 +17,6 @@
         {% csrf_token %}
         <br>
         <button class="btn btn-lg btn-primary" type="submit">Save Changes</button>
-        <a href="{% url 'core:project-detail' project.id %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% url 'users:user-profile' %}" class="btn btn-secondary">Cancel</a>
     </form>
 {% endblock %}

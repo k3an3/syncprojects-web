@@ -10,7 +10,7 @@
 {% block content %}
     {% bootstrap_messages %}
     {{ form.errors }}
-    <form class="form" method="post">
+    <form enctype="multipart/form-data" method="post" action="">
         {% bootstrap_form form %}
         {% csrf_token %}
         <br>
