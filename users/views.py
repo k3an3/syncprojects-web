@@ -18,7 +18,7 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
     template_name_suffix = '_update_form'
     model = get_user_model()
     fields = ['email', 'profile_picture', 'bio',
-              'instruments', 'genres_musical_taste', 'open_to_collaboration',
+              'instruments', 'genres_musical_taste', 'links', 'open_to_collaboration',
               'private']
 
     def get_object(self, queryset=None):
@@ -28,4 +28,4 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
         return self.get_object() == self.request.user
 
     def get_success_url(self):
-        return reverse('users:user-profile', kwargs={'pk': self.get_object().id})
+        return reverse('users:user-profile')

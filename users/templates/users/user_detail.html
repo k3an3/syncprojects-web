@@ -28,12 +28,6 @@
             <div class="btn-group me-2">
                 <a href="{% url 'sync:client-login' %}" class="btn btn-sm btn-outline-secondary">Authorize Client</a>
                 <button id="sync-disable" class="btn btn-sm btn-outline-secondary">Disable sync for browser</button>
-                {% comment %}
-                <a href="{% url 'core:user-update' request.user.id %}" class="btn btn-sm btn-outline-secondary">Edit
-                    User</a>
-                <a href="{% url 'core:user-delete' request.user.id %}" class="btn btn-sm btn-outline-danger">Delete
-                    User</a>
-            {% endcomment %}
             </div>
         {% endif %}
     </div>
@@ -65,6 +59,20 @@
                 </div>
             </div>
         {% endfor %}
+        {% if profile_user.links %}
+            <div class="col-3 float-start" style="margin-right: 5px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Links</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for link in profile_user.render_links %}
+                            <p class="card-text"><a href="{{ link }}">{{ link }}</a></p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     {% else %}
         <span class="text-muted">This user prefers to keep an air of mystery about them.</span>
     {% endif %}

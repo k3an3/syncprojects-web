@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -18,6 +20,9 @@ class User(AbstractUser):
     private = models.BooleanField(default=True,
                                   help_text="Profiles of private accounts will have their details hidden.")
     latest_feature_seen = models.ForeignKey(FeatureChangelog, null=True, blank=True, on_delete=models.SET_NULL)
+    links = models.TextField(null=True, blank=True, help_text="Insert URLs (separated by space, comma, or newline) for "
+                                                              "your music, website, or social media, "
+                                                              "and we'll automatically display them.")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -62,3 +67,6 @@ class User(AbstractUser):
             ('Instruments', self.instruments),
             ('Genres/Musical Taste', self.genres_musical_taste),
         )
+
+    def render_links(self):
+        return [link for link in re.split(r'[, \n]', self.links)]
