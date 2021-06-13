@@ -198,13 +198,13 @@ class AlbumSongView:
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields['songs'].queryset = Project.objects.get(
-            id=self.kwargs.get('pk', self.kwargs['proj'])).song_set.all()
+            id=self.kwargs.get('pk', self.kwargs.get('proj'))).song_set.all()
         if form.instance:
             form.fields['songs'].initial = form.instance.song_set.all()
         return form
 
     def form_valid(self, form):
-        project = Project.objects.get(pk=self.kwargs.get('pk', self.kwargs['proj']))
+        project = Project.objects.get(pk=self.kwargs.get('pk', self.kwargs.get('proj')))
         original_songs = form.instance.song_set.all()
         form.instance.project = project
         form.instance.save()
