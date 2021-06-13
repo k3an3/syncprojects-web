@@ -69,4 +69,4 @@ class User(AbstractUser):
         )
 
     def render_links(self):
-        return [link for link in re.split(r'[, \n]', self.links)]
+        return [link for link in re.split(r'[, \n]', self.links) if re.match(r'https?:\/\/', link)]
