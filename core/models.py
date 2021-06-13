@@ -83,7 +83,7 @@ class Album(models.Model):
     released = models.BooleanField(default=False)
     release_date = models.DateField(null=True, blank=True,
                                     help_text="If the album is not released yet, this can be used to specify the "
-                                              "estimated release date.")
+                                              "estimated release date. YYYY-MM-DD")
 
     def __str__(self) -> str:
         return self.name
