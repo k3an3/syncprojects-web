@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework',
     'bootstrap5',
+    'markdownify.apps.MarkdownifyConfig',
 ]
 
 MIDDLEWARE = [
@@ -158,6 +159,28 @@ BACKEND_ACCESS_ID = ""
 BACKEND_SECRET_KEY = ""
 BACKEND_BUCKET = ""
 USERNAME_FIELD = 'username'
+
+MARKDOWNIFY = {
+    "default": {
+        "WHITELIST_TAGS": [
+            'a',
+            'abbr',
+            'acronym',
+            'b',
+            'blockquote',
+            'em',
+            'i',
+            'li',
+            'ol',
+            'p',
+            'strong',
+            'ul',
+            'h3',
+            'h4',
+            'img',
+        ]
+    }
+}
 
 try:
     from local_settings import *

@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import generic, View
 from django.views.generic.detail import SingleObjectMixin
 
-from core.models import Project, Song
+from core.forms import AlbumForm
+from core.models import Project, Song, Album, FeatureChangelog
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 from core.utils import get_syncs
 
@@ -16,6 +17,10 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['subscribed_projects_list'] = self.request.user.subscribed_projects.all()
+        if self.request.user.latest_feature_seen != FeatureChangelog.objects.last():
+            context['changes'] = FeatureChangelog.objects.all()
+            self.request.user.latest_feature_seen = FeatureChangelog.objects.last()
+            self.request.user.save()
         return context
 
 
@@ -89,12 +94,12 @@ class ProjectUnsubscribeView(LoginRequiredMixin, UserPassesTestMixin, SingleObje
 
     def post(self, *args, **kwargs):
         self.request.user.subscribed_projects.remove(self.get_object())
-        return redirect(reverse_lazy('core:index'))
+        return redirect(reverse('core:index'))
 
 
-class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
-    model = Song
-    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers']
+class ProjectCreateBaseView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
+    def get_success_url(self):
+        return reverse('core:project-detail', args=(self.kwargs['pk'],))
 
     def test_func(self, **kwargs):
         project = Project.objects.get(pk=self.kwargs['pk'])
@@ -108,6 +113,11 @@ class SongCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView
     def form_valid(self, form):
         form.instance.project = Project.objects.get(pk=self.kwargs['pk'])
         return super().form_valid(form)
+
+
+class SongCreateView(ProjectCreateBaseView):
+    model = Song
+    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order']
 
 
 class SongLookupBaseView(LoginRequiredMixin):
@@ -134,7 +144,7 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
 
 class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
     model = Song
-    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers']
+    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order']
     template_name_suffix = '_update_form'
 
 
@@ -152,7 +162,7 @@ class SongDeleteView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.De
     model = Song
 
     def get_success_url(self):
-        return reverse_lazy('core:project-detail', args=[self.object.project.pk])
+        return reverse('core:project-detail', args=[self.object.project.pk])
 
 
 class RegenSongURLView(SongLookupBaseView, UserPassesTestMixin, View):
@@ -164,3 +174,58 @@ class RegenSongURLView(SongLookupBaseView, UserPassesTestMixin, View):
         song.url_last_fetched = None
         song.signed_url
         return redirect('core:song-detail', song.project.id, song.id)
+
+
+class AlbumLookupBaseView(LoginRequiredMixin, UserIsMemberPermissionMixin):
+    model = Album
+
+    def get_object(self, queryset=None):
+        return Album.objects.get(id=self.kwargs['album'], project=self.kwargs['proj'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['project'] = self.get_object().project
+        return context
+
+
+class AlbumSongView:
+    model = Album
+    form_class = AlbumForm
+
+    def get_success_url(self):
+        return reverse('core:project-detail', args=[self.object.project.pk])
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['songs'].queryset = Project.objects.get(
+            id=self.kwargs.get('pk', self.kwargs['proj'])).song_set.all()
+        if form.instance:
+            form.fields['songs'].initial = form.instance.song_set.all()
+        return form
+
+    def form_valid(self, form):
+        project = Project.objects.get(pk=self.kwargs.get('pk', self.kwargs['proj']))
+        original_songs = form.instance.song_set.all()
+        form.instance.project = project
+        form.instance.save()
+        for song in form.cleaned_data['songs']:
+            if song.project == project:
+                song.album = form.instance
+                song.save()
+        for song in original_songs.difference(form.cleaned_data['songs']):
+            song.album = None
+            song.save()
+        return super().form_valid(form)
+
+
+class AlbumCreateView(AlbumSongView, ProjectCreateBaseView):
+    pass
+
+
+class AlbumUpdateView(AlbumLookupBaseView, AlbumSongView, generic.UpdateView):
+    template_name_suffix = '_update_form'
+
+
+class AlbumDeleteView(AlbumLookupBaseView, generic.DeleteView):
+    def get_success_url(self):
+        return reverse('core:project-detail', args=[self.object.project.pk])

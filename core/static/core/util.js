@@ -2,6 +2,12 @@
 let console_ = console;
 // noinspection JSUnusedGlobalSymbols
 const toast_container = document.querySelector('#toast-container');
+const changes_modal = document.querySelector('#changes_modal');
+
+if (changes_modal != null) {
+    let modal = new bootstrap.Modal(changes_modal, {});
+    modal.show();
+}
 
 if (!document.location.host.startsWith("localhost"))
     console = new Proxy({}, {

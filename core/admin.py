@@ -1,10 +1,11 @@
 from django.contrib import admin
 
-from core.models import Project, Song, Lock, Album
+from core.models import Project, Song, Lock, Album, FeatureChangelog
 from users.admin import UserProjectInline
 
 admin.site.register(Lock)
 admin.site.register(Album)
+admin.site.register(FeatureChangelog)
 
 
 class SongAdmin(admin.ModelAdmin):

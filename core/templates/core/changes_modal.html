@@ -1,0 +1,28 @@
+{% if changes %}
+    {% load markdownify %}
+    <div class="modal in show" tabindex="-1" id="changes_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">What's New in Syncprojects</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="changes-modal-body">
+                    {% for change in changes %}
+                        <div class="row">
+                            <div class="card" style="margin-top: 10px;">
+                                <div class="card-body">
+                                    <h2 class="card-title">{{ change.date }}</h2>
+                                    {{ change.format_changes|markdownify }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

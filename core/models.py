@@ -1,4 +1,5 @@
 import base64
+import re
 from datetime import timedelta
 
 from django.contrib.auth.models import AbstractUser
@@ -80,7 +81,9 @@ class Album(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     cover = models.ImageField(null=True, blank=True)
     released = models.BooleanField(default=False)
-    release_date = models.DateField(null=True, blank=True)
+    release_date = models.DateField(null=True, blank=True,
+                                    help_text="If the album is not released yet, this can be used to specify the "
+                                              "estimated release date.")
 
     def __str__(self) -> str:
         return self.name
@@ -142,3 +145,14 @@ class Song(models.Model, LockableModel):
                 self.url_last_error = timezone.now()
             self.save()
         return self.url
+
+
+class FeatureChangelog(models.Model):
+    date = models.DateField(default=timezone.now)
+    changes = models.TextField()
+
+    def __str__(self):
+        return str(self.date)
+
+    def format_changes(self):
+        return re.sub('^##? ', '###', self.changes)

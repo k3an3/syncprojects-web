@@ -15,6 +15,7 @@
         {% if member %}
             <div class="btn-group me-2">
                 <a href="{% url 'core:song-create' project.id %}" class="btn btn-sm btn-outline-primary">New Song</a>
+                <a href="{% url 'core:album-create' project.id %}" class="btn btn-sm btn-outline-primary">New Album</a>
                 <a href="{% url 'core:project-update' project.id %}" class="btn btn-sm btn-outline-secondary">Edit
                     Project</a>
                 <a href="{% url 'core:project-delete' project.id %}" class="btn btn-sm btn-outline-danger">Delete
@@ -77,7 +78,12 @@
                         {% if album.cover %}
                             <img src="{{ album.cover.url }}" width="60px"/>
                         {% endif %}
-                        {{ album.name }}</h3>
+                        {{ album.name }}
+                        <a style="text-decoration: none" href="{% url 'core:album-update' project.id album.id %}">
+                            <span style="font-size: 8pt; color: blue;" class="fas fa-pen"></span></a>
+                        <a style="text-decoration: none" href="{% url 'core:album-delete' project.id album.id %}">
+                            <span style="font-size: 8pt; color: red;" class="fas fa-trash"></span></a>
+                    </h3>
                     {% if album.release_date %}
                         <h6 class="text-muted">{% if album.released %}Released{% else %}Est.
                             release{% endif %} {{ album.release_date }}</h6>

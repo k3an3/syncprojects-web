@@ -1,0 +1,21 @@
+{% extends 'core/base.html' %}
+{% load bootstrap5 %}
+
+
+{% block header %}
+    <h1 class="h2">Delete album {{ album.name }} under project {{ project.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+{% block content %}
+    {% bootstrap_messages %}
+    <div class="alert alert-danger">
+        <p class="lead">Are you sure?</p>
+        <p>This is permanent and cannot be reversed. All songs in this album will be saved, but will become orphaned and
+            no longer grouped. Click the button below to proceed.</p>
+    </div>
+    <form class="form" method="post">
+        {% csrf_token %}
+        <button class="btn btn-lg btn-danger" type="submit">DELETE</button>
+    </form>
+{% endblock %}

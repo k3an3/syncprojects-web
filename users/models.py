@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from core.models import Project, Song
+from core.models import Project, Song, Album, FeatureChangelog
 from sync.models import Sync
 
 
@@ -17,6 +17,7 @@ class User(AbstractUser):
     open_to_collaboration = models.BooleanField(default=False)
     private = models.BooleanField(default=True,
                                   help_text="Profiles of private accounts will have their details hidden.")
+    latest_feature_seen = models.ForeignKey(FeatureChangelog, null=True, blank=True, on_delete=models.SET_NULL)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -33,7 +34,7 @@ class User(AbstractUser):
                 return projects.get(id=obj.id)
             except Project.DoesNotExist:
                 return False
-        elif isinstance(obj, Song):
+        elif isinstance(obj, Song) or isinstance(obj, Album):
             try:
                 return projects.get(id=obj.project.id)
             except Project.DoesNotExist:
