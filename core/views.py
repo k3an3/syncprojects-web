@@ -212,7 +212,7 @@ class AlbumSongView:
             if song.project == project:
                 song.album = form.instance
                 song.save()
-        for song in original_songs.difference(form.cleaned_data['songs']):
+        for song in original_songs.exclude(id__in=form.cleaned_data['songs']):
             song.album = None
             song.save()
         return super().form_valid(form)
