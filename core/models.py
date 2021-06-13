@@ -155,4 +155,4 @@ class FeatureChangelog(models.Model):
         return str(self.date)
 
     def format_changes(self):
-        return re.sub(r'(\n##?)', r'\1##', self.changes)
+        return re.sub(r'(\n##?) ', r'\1##', self.changes)
