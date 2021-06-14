@@ -1,3 +1,6 @@
+import io
+from zipfile import ZipFile
+
 import timeago
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -65,5 +68,20 @@ class ChangelogEntry(models.Model):
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
     sync = models.ForeignKey(Sync, null=True, on_delete=models.SET_NULL, related_name='changelog')
 
-    def __repr__(self):
+    def __str__(self):
         return f"{self.date_created.isoformat()} by {self.user} on {self.song}"
+
+
+class ClientLog(models.Model):
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    log_compressed = models.BinaryField()
+
+    def __str__(self):
+        return f"{self.user} - {self.date}"
+
+    def uncompressed(self):
+        z = io.BytesIO(self.log_compressed)
+        with ZipFile(z) as z:
+            with z.open(z.namelist()[0]) as log:
+                return log.read().decode()

@@ -30,6 +30,12 @@
                 <button id="sync-disable" class="btn btn-sm btn-outline-secondary">Disable sync for browser</button>
             </div>
         {% endif %}
+        {% if user.is_superuser %}
+            <div class="btn-group me-2">
+                <a href="{% url 'sync:log-index' profile_user.id %}" class="btn btn-sm btn-outline-warning">View
+                    Logs</a>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -48,7 +54,7 @@
 {% block content %}
     {% if not profile_user.is_private %}
         {% for title, text in profile_user.get_profile %}
-            <div class="col-3 float-start" style="margin-right: 5px;">
+            <div class="col-lg-3 col-sm-12 float-start" style="margin-right: 5px;">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">{{ title }}</h5>
@@ -60,7 +66,7 @@
             </div>
         {% endfor %}
         {% if profile_user.links %}
-            <div class="col-3 float-start" style="margin-right: 5px;">
+            <div class="col-lg-3 col-sm-12 float-start" style="margin-right: 5px;">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Links</h5>

@@ -3,7 +3,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from core.models import Project, Song, Lock
-from sync.models import Sync, ClientUpdate, ChangelogEntry
+from sync.models import Sync, ClientUpdate, ChangelogEntry, ClientLog
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -79,3 +79,14 @@ class ClientUpdateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         url = client_update.latest_updater()
         return request.build_absolute_uri(url)
+
+
+class ClientLogSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = ClientLog
+        fields = "__all__"

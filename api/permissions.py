@@ -55,3 +55,12 @@ class CreateOrReadOnly(permissions.BasePermission):
         return bool(
             request.method in ('GET', 'POST') or request.user.is_superuser
         )
+
+
+class IsAdminOrWriteOnly(permissions.BasePermission):
+    """
+    Custom permission to allow a user to add data but not view it
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_superuser or request.method == 'POST'

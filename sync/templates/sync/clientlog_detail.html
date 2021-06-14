@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block sidebar_container %}{% endblock %}
+
+{% block header %}
+    <h1 class="h2">View Client Logs for {{ log_user }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+
+{% block content %}
+    <h3>{{ clientlog }}</h3>
+    <pre>
+        {{ clientlog.uncompressed }}
+    </pre>
+{% endblock %}

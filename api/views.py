@@ -7,12 +7,13 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
-from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectAccess, CreateOrReadOnly
+from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectAccess, CreateOrReadOnly, \
+    IsAdminOrWriteOnly
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
-    ChangelogEntrySerializer, SongSerializer
+    ChangelogEntrySerializer, SongSerializer, ClientLogSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
-from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget
+from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
 from users.models import User
@@ -67,9 +68,6 @@ class SyncViewSet(viewsets.ModelViewSet):
             return Sync.objects.none()
         return Sync.objects.filter(songs=song)[revision:]
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
     def retrieve(self, request, pk=None):
         sync = super().retrieve(request, pk)
         sync.data['changelogs'] = ChangelogEntrySerializer(self.get_object().changelog, many=True, read_only=True).data
@@ -88,6 +86,9 @@ class SyncViewSet(viewsets.ModelViewSet):
                                                song=song,
                                                text=request.data['text'])
         return Response({'created': result.id})
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class SongViewSet(viewsets.ModelViewSet):
@@ -215,6 +216,15 @@ def peaks(request):
                         }[request.data['action']](request.data, song), status=status.HTTP_200_OK)
     except KeyError:
         return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClientLogViewSet(viewsets.ModelViewSet):
+    serializer_class = ClientLogSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrWriteOnly]
+    queryset = ClientLog.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, log_compressed=self.request.FILES.get('log_compressed').read())
 
 
 @api_view(['POST'])
