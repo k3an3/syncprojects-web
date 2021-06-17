@@ -84,4 +84,4 @@ class ClientLog(models.Model):
         z = io.BytesIO(self.log_compressed)
         with ZipFile(z) as z:
             with z.open(z.namelist()[0]) as log:
-                return log.read().decode()
+                return log.read().decode(errors="ignore")
