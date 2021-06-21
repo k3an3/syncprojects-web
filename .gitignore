@@ -67,4 +67,3 @@ venv/
 local_settings.py
 media/
 peaks/
-.updater-creds

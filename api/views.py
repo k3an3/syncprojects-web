@@ -7,7 +7,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
-from api.permissions import AdminOrSelfOnly, IsAdminOrReadOnly, UserHasProjectAccess, CreateOrReadOnly, \
+from api.permissions import AdminOrSelfOnly, UserHasProjectAccess, CreateOrReadOnly, \
     IsAdminOrWriteOnly
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
     ChangelogEntrySerializer, SongSerializer, ClientLogSerializer
@@ -43,7 +43,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ClientUpdateViewSet(viewsets.ModelViewSet):
     serializer_class = ClientUpdateSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         target = self.request.query_params.get('target')

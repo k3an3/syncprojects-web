@@ -64,3 +64,9 @@ class IsAdminOrWriteOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return request.user.is_superuser or request.method == 'POST'
+
+
+class ClientUploadPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_superuser or request.method in ('POST',) and request.user.has_perm(
+            'sync.add_client_update')
