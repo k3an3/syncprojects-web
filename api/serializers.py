@@ -69,7 +69,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ClientUpdateSerializer(serializers.ModelSerializer):
-    updater = serializers.SerializerMethodField()
+    updater = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = ClientUpdate

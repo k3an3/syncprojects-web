@@ -41,7 +41,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(UserSerializer(user, context={'request': request}).data)
 
 
-class ClientUpdateViewSet(viewsets.ReadOnlyModelViewSet):
+class ClientUpdateViewSet(viewsets.ModelViewSet):
     serializer_class = ClientUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
 
