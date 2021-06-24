@@ -73,7 +73,7 @@ class ClientUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClientUpdate
-        fields = ["version", "updater", "package"]
+        fields = ["version", "updater", "package", "target"]
 
     def get_updater(self, client_update):
         request = self.context.get('request')
