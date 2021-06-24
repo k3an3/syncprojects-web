@@ -10,6 +10,7 @@ const sync_modal_body = document.querySelector("#sync-modal-body");
 const progress = document.querySelector("#sync_progress");
 const alert = document.querySelector('#alert');
 let ping_failed = true;
+let auth_attempt = false;
 
 if (taskStore.getObj('changelog_todo') == null)
     taskStore.setObj('changelog_todo', []);
@@ -167,16 +168,24 @@ async function checkConnection() {
         sync_button.className = "btn btn-sm btn-success";
         sync_button.innerHTML = "Download Sync Client <span class=\"fas fa-download\"></span>";
     });
-    if (result != null && result.result == "pong") {
-        ping_failed = false;
-        console.debug("Got PONG from server: " + result.task_id);
-        if (taskStore.getObj('sync_in_progress')) {
-            sync_button.className = "btn btn-sm btn-primary";
-            sync_button.innerHTML = "Syncing... <span class=\"fas fa-hourglass-start\"></span>";
-            sync_button.disabled = true;
-            disableDawButton();
-        } else {
-            enableSyncButton();
+    if (result != null) {
+        if (result.result == "pong") {
+            ping_failed = false;
+            console.debug("Got PONG from server: " + result.task_id);
+            if (taskStore.getObj('sync_in_progress')) {
+                sync_button.className = "btn btn-sm btn-primary";
+                sync_button.innerHTML = "Syncing... <span class=\"fas fa-hourglass-start\"></span>";
+                sync_button.disabled = true;
+                disableDawButton();
+            } else {
+                enableSyncButton();
+            }
+        }
+        if (!auth_attempt && !result.auth) {
+            auth_attempt = true;
+            console.log("Open client auth window");
+            showToast("Sync Client Login", "<p>We're trying to log you in to syncprojects-client. If the popup is blocked, click <a href=\"/sync/client_login/\">here</a>.</p><p>This message will appear again after refresh.</p>", "info");
+            window.open('/sync/client_login/');
         }
     }
 }
