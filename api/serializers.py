@@ -3,7 +3,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from core.models import Project, Song, Lock
-from sync.models import Sync, ClientUpdate, ChangelogEntry, ClientLog
+from sync.models import Sync, ClientUpdate, ChangelogEntry, ClientLog, SupportedClientTarget
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -70,7 +70,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ClientUpdateSerializer(serializers.ModelSerializer):
     updater = serializers.SerializerMethodField(read_only=True)
-    target = serializers.SlugRelatedField(slug_field='target')
+    target = serializers.SlugRelatedField(slug_field='target', queryset=SupportedClientTarget.objects.all())
 
     class Meta:
         model = ClientUpdate
