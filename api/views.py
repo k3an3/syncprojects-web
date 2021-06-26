@@ -56,9 +56,6 @@ class ClientUpdateViewSet(viewsets.ModelViewSet):
         else:
             return ClientUpdate.objects.filter(target__isnull=True)
 
-    def perform_create(self, serializer):
-        serializer.save(target=SupportedClientTarget.objects.get(target=self.request.FILES.get('target')))
-
 
 class SyncViewSet(viewsets.ModelViewSet):
     serializer_class = SyncSerializer

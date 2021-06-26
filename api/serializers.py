@@ -70,6 +70,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ClientUpdateSerializer(serializers.ModelSerializer):
     updater = serializers.SerializerMethodField(read_only=True)
+    target = serializers.SlugRelatedField(slug_field='target')
 
     class Meta:
         model = ClientUpdate
