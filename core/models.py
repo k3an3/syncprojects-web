@@ -156,3 +156,16 @@ class FeatureChangelog(models.Model):
 
     def format_changes(self):
         return re.sub(r'((^|\n)##?) ', r'\1##', self.changes)
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    assignee = models.ForeignKey(AUTH_USER_MODEL, related_name='assignee', null=True, blank=True,
+                                 on_delete=models.SET_NULL)
+    requires_resolution = models.BooleanField(default=False)
+    posted_date = models.DateTimeField(default=timezone.now)
+    edited = models.BooleanField(default=False)
+    song_time = models.PositiveIntegerField(null=True, blank=True)
+    text = models.TextField()
+    song = models.ForeignKey(Song, null=True, blank=True, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)

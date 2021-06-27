@@ -11,6 +11,8 @@ const progress = document.querySelector("#sync_progress");
 const alert_div = document.querySelector('#alert');
 let ping_failed = true;
 let auth_attempt = false;
+// maybe will use to remind the user to fill out changes if they haven't done any yet
+let changelog_pending = false;
 
 if (taskStore.getObj('changelog_todo') == null)
     taskStore.setObj('changelog_todo', []);
@@ -218,6 +220,7 @@ document.addEventListener('click', e => {
     console.log(e);
     if (e.target && e.target.classList.contains("view-changes")) {
     } else if (e.target && e.target.classList.contains("changelog-submit")) {
+        changelog_pending = false;
         let id = e.target.id.split('-')[2]
         submitChangelog(parseInt(id), document.querySelector(`#changelog-${id}`).value);
         showToast("Success", "Submitted your changes.", "success");
@@ -258,6 +261,7 @@ function syncResultHandler(data) {
                 } else if (song_result.action == "local") {
                     // TODO
                     // appendChangelogTodo(song_result.song);
+                    changelog_pending = true;
                     after_action = `<textarea class="form-control" id="changelog-${song_result.id}" placeholder="What did you change..."></textarea>
    <button class="btn btn-primary btn-sm changelog-submit" id="changelog-btn-${song_result.id}">Submit</button>
 </div>`;
