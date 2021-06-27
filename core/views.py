@@ -119,6 +119,12 @@ class SongCreateView(ProjectCreateBaseView):
     model = Song
     fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order']
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['album'].queryset = Project.objects.get(
+            id=self.kwargs.get('pk', self.kwargs.get('proj'))).album_set.all()
+        return form
+
 
 class SongLookupBaseView(LoginRequiredMixin):
     model = Song
@@ -147,6 +153,12 @@ class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.Up
     fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order']
     template_name_suffix = '_update_form'
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['album'].queryset = Project.objects.get(
+            id=self.kwargs.get('pk', self.kwargs.get('proj'))).album_set.all()
+        return form
+
 
 class ClearSongPeaksView(SongLookupBaseView, UserPassesTestMixin, View):
     def test_func(self):
@@ -172,7 +184,7 @@ class RegenSongURLView(SongLookupBaseView, UserPassesTestMixin, View):
     def get(self, *args, **kwargs):
         song = self.get_object()
         song.url_last_fetched = None
-        song.signed_url
+        song.signed_url  # causes resolution of URL on access
         return redirect('core:song-detail', song.project.id, song.id)
 
 

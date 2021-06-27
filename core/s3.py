@@ -28,11 +28,13 @@ def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION) 
 
 
 def get_remote_files(client, prefix: str):
-    results = client.list_objects_v2(Bucket=BACKEND_BUCKET, Prefix=prefix)
-    try:
-        return results['Contents']
-    except KeyError:
-        return []
+    if BACKEND_BUCKET:
+        results = client.list_objects_v2(Bucket=BACKEND_BUCKET, Prefix=prefix)
+        try:
+            return results['Contents']
+        except KeyError:
+            pass
+    return []
 
 
 def get_song_names(client, project: str) -> Set:
