@@ -35,7 +35,7 @@ function isMobile() {
 
 // noinspection JSUnusedGlobalSymbols
 function showAlert(msg, klass = "info") {
-    new bootstrap.Alert(alert);
+    new bootstrap.Alert(alert_div);
     alert.innerHTML = msg;
     alert.classList = "alert alert-fixed fade in alert-" + klass;
     setTimeout(function () {

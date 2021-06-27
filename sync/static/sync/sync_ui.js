@@ -8,7 +8,7 @@ const sync_modal = new bootstrap.Modal(document.querySelector("#sync_modal"), {}
 const undo_modal = new bootstrap.Modal(document.querySelector("#undo_modal"), {});
 const sync_modal_body = document.querySelector("#sync-modal-body");
 const progress = document.querySelector("#sync_progress");
-const alert = document.querySelector('#alert');
+const alert_div = document.querySelector('#alert');
 let ping_failed = true;
 let auth_attempt = false;
 
@@ -502,15 +502,24 @@ if (taskStore.getObj('sync-disabled')) {
 
 } else {
     if (!isMobile()) {
-        if (daw_button != null)
-            daw_button.removeAttribute('hidden');
-        sync_button.removeAttribute('hidden');
-        if (!taskStore.getObj('sync_in_progress')) {
-            sync_button.removeAttribute('disabled');
-            disableDawButton(false);
+        if (navigator.userAgent.indexOf('Safari') != -1) {
+            // We don't support Safari
+            document.querySelector('#safari').removeAttribute('hidden');
+            if (taskStore.getItem('safari_warn') != '1') {
+                alert("Safari does not properly follow web browser standards set by the World Wide Web Consortium (W3C) and therefore does not work with the syncprojects client. Please use another browser that properly follows the standards, such as Google Chrome or Mozilla Firefox.");
+                taskStore.setItem('safari_warn', '1');
+            }
+        } else {
+            if (daw_button != null)
+                daw_button.removeAttribute('hidden');
+            sync_button.removeAttribute('hidden');
+            if (!taskStore.getObj('sync_in_progress')) {
+                sync_button.removeAttribute('disabled');
+                disableDawButton(false);
+            }
+            checkConnection();
+            setInterval(checkConnection, 15000);
         }
-        checkConnection();
-        setInterval(checkConnection, 15000);
     }
 
     handleSyncInProgress();

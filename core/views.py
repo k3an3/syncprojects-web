@@ -18,7 +18,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context['subscribed_projects_list'] = self.request.user.subscribed_projects.all()
         if self.request.user.latest_feature_seen != FeatureChangelog.objects.last():
-            context['changes'] = FeatureChangelog.objects.all()
+            context['changes'] = FeatureChangelog.objects.all().order_by('-id')
             self.request.user.latest_feature_seen = FeatureChangelog.objects.last()
             self.request.user.save()
         return context
