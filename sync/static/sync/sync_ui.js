@@ -506,7 +506,8 @@ if (taskStore.getObj('sync-disabled')) {
 
 } else {
     if (!isMobile()) {
-        if (navigator.userAgent.indexOf('Safari') != -1) {
+        let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        if (isSafari) {
             // We don't support Safari
             document.querySelector('#safari').removeAttribute('hidden');
             if (taskStore.getItem('safari_warn') != '1') {

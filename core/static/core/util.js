@@ -33,6 +33,7 @@ function isMobile() {
     });
 }
 
+
 // noinspection JSUnusedGlobalSymbols
 function showAlert(msg, klass = "info") {
     new bootstrap.Alert(alert_div);
