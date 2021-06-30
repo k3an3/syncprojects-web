@@ -26,7 +26,7 @@ class DownloadIndexView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'supported_targets'
 
 
-class UserLogIndexView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
+class UserLogBaseView(LoginRequiredMixin, UserPassesTestMixin):
     model = ClientLog
 
     def test_func(self):
@@ -41,16 +41,9 @@ class UserLogIndexView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView
         return context
 
 
-class UserLogDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
-    model = ClientLog
+class UserLogIndexView(UserLogBaseView, generic.ListView):
+    pass
 
-    def test_func(self):
-        return self.request.user.is_superuser
 
-    def get_queryset(self):
-        return ClientLog.objects.filter(user_id=self.kwargs['user'])
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['log_user'] = get_user_model().objects.get(id=self.kwargs['user'])
-        return context
+class UserLogDetailView(UserLogBaseView, generic.DetailView):
+    pass

@@ -108,8 +108,8 @@
                             <tr>
                                 <td><a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a></td>
                                 <td>
-                                    {% if song.url %}
-                                        <audio controls preload="metadata" src="{{ song.signed_url }}"> Your browser
+                                    {% if song.signed_url %}
+                                        <audio controls preload="metadata" src="{{ song.url }}"> Your browser
                                             does not
                                             support
                                             the
