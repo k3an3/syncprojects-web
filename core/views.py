@@ -50,7 +50,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
             album_set = project.album_set.all()
         for album in album_set:
             songs = []
-            for song in album.song_set.order_by('-album_order'):
+            for song in album.song_set.order_by('album_order'):
                 if self._song_is_visible(song):
                     songs.append(song)
             # Don't show albums that a subscriber has no song access to
