@@ -32,6 +32,9 @@ class User(AbstractUser):
 
     # TODO: social_links
 
+    def display_name(self):
+        return self.first_name or self.email
+
     @staticmethod
     def check_object_access(obj, projects):
         if isinstance(obj, Project):
@@ -59,7 +62,7 @@ class User(AbstractUser):
         return self.has_member_access(obj) or obj in self.collab_songs.all()
 
     def __str__(self):
-        return self.first_name or self.email
+        return self.display_name()
 
     def get_profile(self):
         return (

@@ -2,6 +2,7 @@ import base64
 import re
 from datetime import timedelta
 
+import timeago
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -165,7 +166,21 @@ class Comment(models.Model):
     requires_resolution = models.BooleanField(default=False)
     posted_date = models.DateTimeField(default=timezone.now)
     edited = models.BooleanField(default=False)
-    song_time = models.PositiveIntegerField(null=True, blank=True)
+    song_time = models.DurationField(null=True, blank=True)
     text = models.TextField()
     song = models.ForeignKey(Song, null=True, blank=True, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
+    likes = models.PositiveIntegerField(default=0)
+
+    def when_str(self):
+        return timeago.format(self.posted_date, timezone.now())
+
+    def timecode(self):
+        seconds = int(self.song_time.total_seconds())
+        minutes = seconds // 60
+        hours = minutes // 60
+        seconds = seconds % 60
+        result = ""
+        if hours:
+            result += f"{hours}:"
+        return result + f"{minutes}:{seconds:02}"

@@ -67,3 +67,6 @@ venv/
 local_settings.py
 media/
 peaks/
+static/audio/_documentation/
+static/audio/includes/
+*.bak

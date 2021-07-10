@@ -5,7 +5,7 @@ from django.views import generic, View
 from django.views.generic.detail import SingleObjectMixin
 
 from core.forms import AlbumForm
-from core.models import Project, Song, Album, FeatureChangelog
+from core.models import Project, Song, Album, FeatureChangelog, Comment
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 from core.utils import get_syncs
 
@@ -60,6 +60,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
         context['member'] = member
         context['subscriber'] = self.request.user.has_subscriber_access(project)
         context['collab'] = self.request.user.collab_songs.filter(project=project)
+        context['comments'] = project.comment_set.all().order_by('-id')
         if context['member']:
             context['syncs'] = project.sync_set.all().order_by('-id')[:10]
         return context
@@ -141,8 +142,10 @@ class SongLookupBaseView(LoginRequiredMixin):
 class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['member'] = self.request.user.has_member_access(self.get_object())
-        context['can_sync'] = self.request.user.can_sync(self.get_object())
+        song = self.get_object()
+        context['member'] = self.request.user.has_member_access(song)
+        context['can_sync'] = self.request.user.can_sync(song)
+        context['comments'] = song.comment_set.all().order_by('-id')
         if context['can_sync']:
             context['syncs'] = get_syncs(self.get_object())
         return context
@@ -240,4 +243,24 @@ class AlbumUpdateView(AlbumLookupBaseView, AlbumSongView, generic.UpdateView):
 
 class AlbumDeleteView(AlbumLookupBaseView, generic.DeleteView):
     def get_success_url(self):
+        return reverse('core:project-detail', args=[self.object.project.pk])
+
+
+class CommentCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Comment
+    fields = ['text', 'assignee', 'song_time']
+
+    def form_valid(self, form):
+        project = Project.objects.get(pk=self.kwargs.get('proj'))
+        if 'song' in self.kwargs:
+            song = Song.objects.get(pk=self.kwargs.get('song'))
+            form.instance.song = song
+        form.instance.project = project
+        form.instance.user = self.request.user
+        form.instance.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        if self.object.song:
+            return reverse('core:song-detail', args=[self.object.project.pk, self.object.song.pk])
         return reverse('core:project-detail', args=[self.object.project.pk])

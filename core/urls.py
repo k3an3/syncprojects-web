@@ -21,4 +21,6 @@ urlpatterns = [
     path('projects/<int:proj>/albums/<int:album>/delete/', views.AlbumDeleteView.as_view(), name='album-delete'),
     path('projects/<int:proj>/songs/<int:song>/regen_url/', views.RegenSongURLView.as_view(),
          name='song-regen-url'),
+    path('projects/<int:proj>/comment/', views.CommentCreateView.as_view(), name='comment-create'),
+    path('projects/<int:proj>/songs/<int:song>/comment/', views.CommentCreateView.as_view(), name='comment-create'),
 ]

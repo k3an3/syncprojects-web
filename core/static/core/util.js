@@ -3,6 +3,7 @@ let console_ = console;
 // noinspection JSUnusedGlobalSymbols
 const toast_container = document.querySelector('#toast-container');
 const changes_modal = document.querySelector('#changes_modal');
+const comment_div = document.querySelector('#comment-div');
 
 if (changes_modal != null) {
     let modal = new bootstrap.Modal(changes_modal, {});
@@ -86,7 +87,42 @@ if (sync_disable != null) {
     });
 }
 
-/*
-if (awp_player != null) {
+function pad(n, width = 2, z = "0") {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
- */
+
+let clicked = false;
+
+function handleCommentTimeClick() {
+    clicked = !clicked;
+    if (clicked) {
+        document.querySelector('#time-button').setAttribute('class', 'btn btn-secondary');
+        document.querySelector('#song_time').value = awp_player.getCurrentTime();
+    } else {
+        document.querySelector('#time-button').setAttribute('class', 'btn btn-primary');
+        document.querySelector('#song_time').value = 0;
+    }
+}
+
+function updateCommentButton() {
+    if (!clicked) {
+        let time = awp_player.getCurrentTime();
+        const time_btn = document.querySelector('#time-button');
+        time_btn.innerHTML = `Comment at ${pad(Math.round(time / 60))}:${pad(Math.round(time % 60))}`;
+    }
+}
+
+function setUpPlayer() {
+    document.querySelector('#time-button').addEventListener('click', handleCommentTimeClick);
+    if (awp_player != null) {
+        if (comment_div != null) {
+            setInterval(updateCommentButton, 1000);
+        }
+    } else {
+        console.log("No player loaded.");
+    }
+}
+
+window.onload = setUpPlayer;
