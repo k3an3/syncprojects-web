@@ -60,7 +60,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
         context['member'] = member
         context['subscriber'] = self.request.user.has_subscriber_access(project)
         context['collab'] = self.request.user.collab_songs.filter(project=project)
-        context['comments'] = project.comment_set.all().order_by('-id')
+        context['comments'] = project.comment_set.filter(song__isnull=True).order_by('-id')
         if context['member']:
             context['syncs'] = project.sync_set.all().order_by('-id')[:10]
         return context
@@ -259,6 +259,18 @@ class CommentCreateView(LoginRequiredMixin, generic.CreateView):
         form.instance.user = self.request.user
         form.instance.save()
         return super().form_valid(form)
+
+    def get_success_url(self):
+        if self.object.song:
+            return reverse('core:song-detail', args=[self.object.project.pk, self.object.song.pk])
+        return reverse('core:project-detail', args=[self.object.project.pk])
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    model = Comment
+
+    def test_func(self):
+        return self.get_object().user == self.request.user
 
     def get_success_url(self):
         if self.object.song:
