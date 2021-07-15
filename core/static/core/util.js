@@ -110,7 +110,7 @@ function updateCommentButton() {
     if (!clicked) {
         let time = awp_player.getCurrentTime();
         const time_btn = document.querySelector('#time-button');
-        time_btn.innerHTML = `Comment at ${pad(Math.round(time / 60))}:${pad(Math.round(time % 60))}`;
+        time_btn.innerHTML = `Comment at ${pad(Math.floor(time / 60))}:${pad(Math.round(time % 60))}`;
     }
 }
 
@@ -118,7 +118,7 @@ function setUpPlayer() {
     document.querySelector('#time-button').addEventListener('click', handleCommentTimeClick);
     if (awp_player != null) {
         if (comment_div != null) {
-            setInterval(updateCommentButton, 1000);
+            setInterval(updateCommentButton, 500);
         }
     } else {
         console.log("No player loaded.");

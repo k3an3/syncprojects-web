@@ -21,7 +21,9 @@
                 </div>
                 <div class="card-body">
                     {% if comment.song_time %}
-                        <h5 class="card-title">{{ comment.timecode }}</h5>
+                        <a role="button" class="timecode-link" id="time-{{ comment.song_time.total_seconds }}"
+                           onclick="awp_player.seek({{ comment.song_time.total_seconds }});"><h5
+                                class="card-title">{{ comment.timecode }}</h5></a>
                     {% endif %}
                     <p class="card-text">{{ comment.text }}</p>
                     {# <a href="#" class="btn btn-sm btn-primary">Reply</a>#}
@@ -30,10 +32,12 @@
                     {% if comment.user == user %}
                         <button class="btn btn-link btn-sm text-muted">Edit</button>
                         <a href="
+
                                 {% if song %}{% url 'core:comment-delete' project.id song.id comment.id %}{% else %}{% url 'core:comment-delete' project.id comment.id %}{% endif %}"
                            class="btn btn-link btn-sm text-muted">Delete</a>
                     {% else %}
                         <button class="btn btn-link btn-sm text-muted">Like</button>
+                        <button class="btn btn-link btn-sm text-muted">Reply</button>
                     {% endif %}
                     {{ comment.likes }}
                     <button class="btn btn-link btn-sm text-muted">Assign</button>
