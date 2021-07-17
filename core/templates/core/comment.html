@@ -4,7 +4,8 @@
         {% if song and song.url %}
             <button class="btn btn-primary" id="time-button">Comment at...</button>
         {% endif %}
-        <form method="post" action="
+        <form id="comment-form" method="post" action="
+
                 {% if song %}{% url 'core:comment-create' project.id song.id %}{% else %}{% url 'core:comment-create' project.id %}{% endif %}">
             {% csrf_token %}
             <textarea name="text" id="comment-field" class="form-control"
@@ -14,36 +15,40 @@
             {% endif %}
             <input type="submit" class="btn btn-primary" value="Post Comment">
         </form>
-        {% for comment in comments %}
-            <div class="card col-md-8">
-                <div class="card-header">
-                    {{ comment.user.display_name }} &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
-                </div>
-                <div class="card-body">
-                    {% if comment.song_time %}
-                        <a role="button" class="timecode-link" id="time-{{ comment.song_time.total_seconds }}"
-                           onclick="awp_player.seek({{ comment.song_time.total_seconds }});"><h5
-                                class="card-title">{{ comment.timecode }}</h5></a>
-                    {% endif %}
-                    <p class="card-text">{{ comment.text }}</p>
-                    {# <a href="#" class="btn btn-sm btn-primary">Reply</a>#}
-                </div>
-                <div class="card-footer text-muted">
-                    {% if comment.user == user %}
-                        <button class="btn btn-link btn-sm text-muted">Edit</button>
-                        <a href="
+        <div id="comment-div-inner">
+            {% for comment in comments %}
+                <div class="card col-md-8">
+                    <div class="card-header">
+                        {{ comment.user.display_name }} &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
+                        {% if comment.edited %} (edited){% endif %}
+                    </div>
+                    <div class="card-body">
+                        {% if comment.song_time %}
+                            <a role="button" class="timecode-link" id="time-{{ comment.song_time.total_seconds }}"
+                               onclick="awp_player.seek({{ comment.song_time.total_seconds }});"><h5
+                                    class="card-title">{{ comment.timecode }}</h5></a>
+                        {% endif %}
+                        <p class="card-text">{{ comment.text }}</p>
+                        {# <a href="#" class="btn btn-sm btn-primary">Reply</a>#}
+                    </div>
+                    <div class="card-footer text-muted">
+                        {% if comment.user == user %}
+                            <button class="btn btn-link btn-sm text-muted">Edit</button>
+                            <a href="
 
-                                {% if song %}{% url 'core:comment-delete' project.id song.id comment.id %}{% else %}{% url 'core:comment-delete' project.id comment.id %}{% endif %}"
-                           class="btn btn-link btn-sm text-muted">Delete</a>
-                    {% else %}
-                        <button class="btn btn-link btn-sm text-muted">Like</button>
-                        <button class="btn btn-link btn-sm text-muted">Reply</button>
-                    {% endif %}
-                    {{ comment.likes }}
-                    <button class="btn btn-link btn-sm text-muted">Assign</button>
-                    <button class="btn btn-link btn-sm text-muted">Mark as needing resolution</button>
+
+                                    {% if song %}{% url 'core:comment-delete' project.id song.id comment.id %}{% else %}{% url 'core:comment-delete' project.id comment.id %}{% endif %}"
+                               class="btn btn-link btn-sm text-muted">Delete</a>
+                        {% else %}
+                            <button class="btn btn-link btn-sm text-muted">Like</button>
+                            <button class="btn btn-link btn-sm text-muted">Reply</button>
+                        {% endif %}
+                        {{ comment.likes }}
+                        <button class="btn btn-link btn-sm text-muted">Assign</button>
+                        <button class="btn btn-link btn-sm text-muted">Mark as needing resolution</button>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 </div>

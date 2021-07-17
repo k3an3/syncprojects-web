@@ -1,4 +1,3 @@
-const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const sync_button = document.querySelector('#sync_button');
 const daw_button = document.querySelector('#daw_button');
 const undo_button = document.querySelector('#undo_button');
@@ -17,12 +16,6 @@ let changelog_pending = false;
 if (taskStore.getObj('changelog_todo') == null)
     taskStore.setObj('changelog_todo', []);
 
-function getContext() {
-    let matches = window.location.pathname.match(proj_re);
-    if (matches == null)
-        return {'project': null, 'song': null};
-    return {'project': parseInt(matches.groups.project), 'song': parseInt(matches.groups.song) || null};
-}
 
 function pushTask(task_id, data) {
     let tasks = taskStore.getObj('tasks');

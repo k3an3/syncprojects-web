@@ -106,6 +106,9 @@
     {% include 'sync/sync.html' %}
     {% if song.signed_url %}
         <span id="song_url_present" hidden></span>
+        <div class="col-sm-1">
+            <div id="MyClockDisplay" class="timecode"></div>
+        </div>
         <div class="col-lg-6 col-sm-12">
             <div id="awp-wrapper">
                 <div class="awp-player-thumb-wrapper">
@@ -132,9 +135,6 @@
                         {% if song.project.image %}data-thumb="{{ song.project.image.url }}"{% endif %}></li>
                 </ul>
             </div>
-        </div>
-        <div class="col-lg-1">
-            <div id="MyClockDisplay" class="timecode"></div>
         </div>
     {% else %}
         <div class="alert alert-dismissable alert-secondary"><strong>No audio!</strong> There is currently not an audio

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from api.permissions import AdminOrSelfOnly, UserHasProjectAccess, CreateOrReadOnly, \
     IsAdminOrWriteOnly
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
-    ChangelogEntrySerializer, SongSerializer, ClientLogSerializer
+    ChangelogEntrySerializer, SongSerializer, ClientLogSerializer, CommentSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock
 from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog
@@ -105,6 +105,17 @@ class SongViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def url(self, request, pk=None):
         return JsonResponse({'url': self.get_object().get_signed_url()})
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.comment_set.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
-from core.models import Project, Song, Lock
+from core.models import Project, Song, Lock, Comment
 from sync.models import Sync, ClientUpdate, ChangelogEntry, ClientLog, SupportedClientTarget
 
 
@@ -91,3 +91,12 @@ class ClientLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientLog
         fields = "__all__"
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    edited = serializers.ReadOnlyField()
+    posted_date = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ["text", "song_time", "assignee", "edited", "project", "song", "posted_date"]
