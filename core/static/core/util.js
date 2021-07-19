@@ -73,7 +73,7 @@ function showToast(title, content, type = "primary", icon = "") {
 
 function showTime() {
     let cur_time = awp_player.getCurrentTime();
-    let time = String(Math.round(cur_time / 60)).padStart(2, '0') + ":" + String(Math.round(cur_time) % 60).padStart(2, '0');
+    let time = String(Math.floor(cur_time / 60)).padStart(2, '0') + ":" + String(Math.round(cur_time) % 60).padStart(2, '0');
     document.getElementById("MyClockDisplay").innerText = time;
     document.getElementById("MyClockDisplay").textContent = time;
 }
@@ -125,9 +125,11 @@ function updateClocks() {
 }
 
 function setUpPlayer() {
-    showTime();
-    document.querySelector('#time-button').addEventListener('click', handleCommentTimeClick);
+    let time_btn = document.querySelector('#time-button');
+    if (time_btn != null)
+        time_btn.addEventListener('click', handleCommentTimeClick);
     if (awp_player != null) {
+        showTime();
         if (comment_div != null) {
             setInterval(updateClocks, 500);
         }
