@@ -19,7 +19,8 @@
             {% for comment in comments %}
                 <div class="card col-md-8">
                     <div class="card-header">
-                        {{ comment.user.display_name }} &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
+                        <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
+                        &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
                         {% if comment.edited %} (edited){% endif %}
                     </div>
                     <div class="card-body">

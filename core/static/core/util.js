@@ -3,12 +3,9 @@ let console_ = console;
 // noinspection JSUnusedGlobalSymbols
 const toast_container = document.querySelector('#toast-container');
 const changes_modal = document.querySelector('#changes_modal');
-const comment_div = document.querySelector('#comment-div');
-const comment_div_inner = document.querySelector('#comment-div-inner');
-const comment_field = document.querySelector('#comment-field');
-const comment_form = document.querySelector('#comment-form');
 const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const username = document.querySelector('#username').textContent;
+const userid = document.querySelector('#userid').textContent;
 
 function getContext() {
     let matches = window.location.pathname.match(proj_re);
@@ -138,41 +135,4 @@ function setUpPlayer() {
     }
 }
 
-async function addComment(comment) {
-    let content = '<div class="card col-md-8"><div class="card-header">';
-    content += username + " — Just now";
-    let time = '';
-    if (comment.song_time) {
-        time = `<a role="button" class="timecode-link" onclick="awp_player.seek(${comment.song_time});"><h5>${comment.song_time}</h5></a>`;
-    }
-    content += `</div><div class="card-body">${time}<p class="card-text">${comment.text}</p></div>`;
-    content += '<div class="card-footer text-muted"><button class="btn btn-link btn-sm text-muted">Edit</button><button class="btn btn-link btn-sm text-muted">Delete</button></div></div>'
-    comment_div_inner.innerHTML = content + comment_div_inner.innerHTML;
-}
-
-
-async function commentFormSubmit(event) {
-    event.preventDefault();
-    let context = getContext();
-    let elements = comment_form.elements;
-    let data = {
-        text: elements.text.value,
-        song_time: parseInt(elements.song_time.value),
-        project: context.project,
-        song: context.song
-    };
-    await comment(data);
-    addComment(data);
-}
-
-if (comment_form) {
-    comment_form.addEventListener('submit', commentFormSubmit);
-}
-
-if (comment_field != null) {
-    comment_field.addEventListener('keyup', k => {
-
-    });
-}
-
-window.onload = setUpPlayer;
+setTimeout(setUpPlayer, 1000);
