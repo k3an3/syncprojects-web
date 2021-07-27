@@ -59,6 +59,9 @@
 
 {% block header %}
     <h1 class="h2">{{ song.name }}</h1>
+    {% if song.bpm %}
+        <h5 class="text-muted">{{ song.bpm }} BPM</h5>
+    {% endif %}
     {% if member %}
         <span class="badge bg-primary">Member</span>
     {% elif can_sync %}

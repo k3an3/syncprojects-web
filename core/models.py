@@ -109,6 +109,7 @@ class Song(models.Model, LockableModel):
     shared_with_followers = models.BooleanField(default=False)
     album = models.ForeignKey(Album, null=True, blank=True, on_delete=models.SET_NULL)
     album_order = models.PositiveIntegerField(null=True, blank=True)
+    bpm = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
