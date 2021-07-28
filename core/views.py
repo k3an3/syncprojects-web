@@ -115,10 +115,11 @@ class ProjectCreateBaseView(LoginRequiredMixin, UserPassesTestMixin, generic.Cre
         form.instance.project = Project.objects.get(pk=self.kwargs['pk'])
         return super().form_valid(form)
 
+song_fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order', 'bpm']
 
 class SongCreateView(ProjectCreateBaseView):
     model = Song
-    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order']
+    fields = song_fields
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -153,7 +154,7 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
 
 class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
     model = Song
-    fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order']
+    fields = song_fields
     template_name_suffix = '_update_form'
 
     def get_form(self, form_class=None):
@@ -187,7 +188,7 @@ class RegenSongURLView(SongLookupBaseView, UserPassesTestMixin, View):
     def get(self, *args, **kwargs):
         song = self.get_object()
         song.url_last_fetched = None
-        song.signed_url  # causes resolution of URL on access
+        song.signed_url(force=True)  # causes resolution of URL on access
         return redirect('core:song-detail', song.project.id, song.id)
 
 
