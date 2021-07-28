@@ -1,5 +1,4 @@
 import base64
-import datetime
 import re
 from datetime import timedelta
 
@@ -130,7 +129,7 @@ class Song(models.Model, LockableModel):
         return len(self.sync_set.all())
 
     def should_fetch_url(self) -> bool:
-        now = datetime.datetime.utcnow()
+        now = timezone.now()
         if not self.url_last_fetched:
             if not self.url_last_error or now >= self.url_last_error + timedelta(seconds=FAILURE_RETRY_INTERVAL):
                 return True
@@ -143,9 +142,9 @@ class Song(models.Model, LockableModel):
         if self.should_fetch_url():
             if self.name.lower() in (names := get_song_names(get_client(), self.project)):
                 self.url = get_presigned_url(get_client(), names[self.name.lower()])
-                self.url_last_fetched = datetime.datetime.utcnow()
+                self.url_last_fetched = timezone.now()
             else:
-                self.url_last_error = datetime.datetime.utcnow()
+                self.url_last_error = timezone.now()
             self.save()
         return self.url
 
