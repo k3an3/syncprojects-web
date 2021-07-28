@@ -130,7 +130,7 @@ class Song(models.Model, LockableModel):
         return len(self.sync_set.all())
 
     def should_fetch_url(self) -> bool:
-        now = timezone.now()
+        now = datetime.datetime.utcnow()
         if not self.url_last_fetched:
             if not self.url_last_error or now >= self.url_last_error + timedelta(seconds=FAILURE_RETRY_INTERVAL):
                 return True

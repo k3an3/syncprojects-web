@@ -189,6 +189,7 @@ class RegenSongURLView(SongLookupBaseView, UserPassesTestMixin, View):
         song = self.get_object()
         song.url_last_fetched = None
         song.url_last_error = None
+        song.save()
         song.signed_url  # causes resolution of URL on access
         return redirect('core:song-detail', song.project.id, song.id)
 
