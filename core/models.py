@@ -139,8 +139,8 @@ class Song(models.Model, LockableModel):
         return False
 
     @property
-    def signed_url(self, force: bool = False):
-        if force or self.should_fetch_url():
+    def signed_url(self):
+        if self.should_fetch_url():
             if self.name.lower() in (names := get_song_names(get_client(), self.project)):
                 self.url = get_presigned_url(get_client(), names[self.name.lower()])
                 self.url_last_fetched = datetime.datetime.utcnow()
