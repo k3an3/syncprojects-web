@@ -69,6 +69,9 @@
     {% else %}
         <span class="badge bg-success">Follower</span>
     {% endif %}
+    {% for lock in song.locks.all %}
+        <span class="badge bg-danger">Checked Out by {{ lock.user }} since {{ lock.start_time }}</span>
+    {% endfor %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
             {% include 'sync/buttons.html' %}
