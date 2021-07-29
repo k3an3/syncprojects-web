@@ -87,6 +87,22 @@ class SyncViewSet(viewsets.ModelViewSet):
                                                text=request.data['text'])
         return Response({'created': result.id})
 
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['get'])
+    def get_changelogs(self, request, pk=None):
+        song = Song.objects.get(id=pk)
+        if not self.request.user.can_sync(song):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            revision = int(request.query_params.get('since'))
+        except (TypeError, ValueError):
+            revision = None
+        if revision is None:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+        lookback = song.revision - revision
+        result = ChangelogEntry.objects.filter(song=song).order_by('-id')[:lookback]
+        return Response(ChangelogEntrySerializer(result, many=True).data)
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 

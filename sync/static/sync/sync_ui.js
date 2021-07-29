@@ -222,7 +222,17 @@ document.addEventListener('click', e => {
     }
 });
 
-function syncResultHandler(data) {
+async function processChangelogs(id, revision) {
+    let changelogs = await getChangelogs(id, revision)
+    console.log(changelogs);
+    let result = '';
+    changelogs.forEach(c => {
+        result += `<h5>${c.date_created} &mdash; ${c.user}</h5><p>${c.text}</p>`
+    });
+    return result;
+}
+
+async function syncResultHandler(data) {
     console.log("displaying sync results, fetched from storage");
     let html = `<p class="text-muted"><small>(${data.task_id})</small></p>`;
     let results = taskStore.getObj('sync-' + data.task_id);
@@ -230,20 +240,21 @@ function syncResultHandler(data) {
         console.warn("Results were null. Skipping...");
         return;
     }
-    results.forEach(project_result => {
+    for (const project_result of results) {
         console.log(project_result);
         html += `<h3>${project_result.project}</h3>`;
         if (project_result.songs != null && project_result.songs.length) {
             html += '<span class="badge bg-success">Success</span>';
             html += '<ul class="list-group">'
-            project_result.songs.forEach(song_result => {
+            for (const song_result of project_result.songs) {
                 let after_action = "";
                 if (song_result.action == "remote") {
                     let revision = song_result.revision || 0;
-                    after_action = ` <a class="view-changes" data-bs-toggle="collapse" id="#collapse-${song_result.id}-rev-${revision}-btn" href="#collapse-${song_result.id}" role="button" aria-expanded="false" aria-controls="collapse-${song_result.id}">View Changes</a>`;
+                    let changelogs = await processChangelogs(song_result.id, revision - 1);
+                    after_action = ` <a class="view-changes" data-bs-toggle="collapse" id="#collapse-${song_result.id}-rev-${revision}-btn" href="#collapse-${song_result.id}" role="button" aria-expanded="false" aria-controls="collapse-${song_result.id}">Show/Hide Changes</a>`;
                     after_action += `<div class="collapse" id="collapse-${song_result.id}">
   <div class="card card-body">
-    ${song_result.changes || 'No changes found.'} 
+    ${changelogs || 'No changes found.'} 
   </div>
 </div>`;
                     /*
@@ -269,7 +280,7 @@ function syncResultHandler(data) {
                     console.log(song_result)
                     html += `<span class="badge bg-${bg} rounded-pill">${song_result.result}</span>`;
                 }
-            });
+            }
             html += '</ul>';
         } else if (project_result.lock) {
             html += '<span class="badge bg-danger">Failed</span>';
@@ -287,7 +298,7 @@ function syncResultHandler(data) {
             html += '<span class="badge bg-warning">None</span>';
             html += '<p class="text-muted">No results.</p>';
         }
-    });
+    }
     taskStore.removeItem('sync-' + data.task_id);
     console.log(results);
     sync_modal_body.innerHTML = html;
@@ -347,13 +358,13 @@ const task_name_map = {
     'workdone': "Check in"
 }
 
-function handleResults(data) {
+async function handleResults(data) {
     if (!data.results.length) {
         return;
     }
     console.log("Got results");
     console.log(data.results);
-    data.results.forEach(result => {
+    for (const result of data.results) {
         console.log("processing");
         console.log(result);
         let task = getTask(result.task_id);
@@ -387,7 +398,7 @@ function handleResults(data) {
                         break;
                     case 'workdone':
                         taskStore.setObj('sync_in_progress', false);
-                        syncResultHandler(result);
+                        await syncResultHandler(result);
                         setSongCheckedIn();
                         break;
                     default:
@@ -426,7 +437,7 @@ function handleResults(data) {
                 console.warn("Unhandled task status " + result.status);
                 break;
         }
-    });
+    }
 }
 
 let FINAL_UNDO_TIME = 3;
@@ -481,7 +492,7 @@ async function checkTasks(force_check = false) {
         let results = await getResults().catch(_ => {
         });
         if (results != null)
-            handleResults(results);
+            await handleResults(results);
     }
 }
 

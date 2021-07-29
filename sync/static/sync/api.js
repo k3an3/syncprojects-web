@@ -59,6 +59,10 @@ async function getTasks() {
     return await localRequest('tasks', 'POST', {});
 }
 
+async function getChangelogs(song, revision) {
+    return await APIRequest('syncs/' + song + '/get_changelogs/?since=' + revision);
+}
+
 async function submitChangelog(song, text) {
     if (text === "") {
         showToast("Error", "Changelog must not be blank.", "danger");

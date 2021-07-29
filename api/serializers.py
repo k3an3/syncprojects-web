@@ -19,9 +19,14 @@ class LockSerializer(serializers.ModelSerializer):
 
 
 class ChangelogEntrySerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = ChangelogEntry
-        fields = ["id", "text", "song"]
+        fields = ["id", "text", "song", "date_created", "user"]
+
+    def get_user(self, changelog):
+        return changelog.user.display_name()
 
 
 class SyncSerializer(serializers.ModelSerializer):
