@@ -209,6 +209,18 @@ function appendChangelogTodo(name) {
     taskStore.setObj(td);
 }
 
+function closeSyncModal() {
+    if (changelog_pending) {
+        if (!confirm("You haven't entered any changes. Are you sure you want to close?")) {
+            return;
+        }
+    }
+    sync_modal.hide();
+}
+
+const close_buttons = document.querySelectorAll('.close-sync-modal');
+close_buttons.forEach(el => el.addEventListener('click', closeSyncModal));
+
 document.addEventListener('click', e => {
     console.log(e);
     if (e.target && e.target.classList.contains("view-changes")) {
