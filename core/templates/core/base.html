@@ -84,32 +84,30 @@
 </header>
 
 <div class="container-fluid">
-    <div class="row">
-        {% block sidebar_container %}
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3">
-                    {% block sidebar %}
-                    {% endblock %}
-                </div>
-            </nav>
-        {% endblock %}
+    {% block sidebar_container %}
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                {% block sidebar %}
+                {% endblock %}
+            </div>
+        </nav>
+    {% endblock %}
 
-        <div class="toast-container"></div>
-        {% include 'core/changes_modal.html' %}
+    <div class="toast-container"></div>
+    {% include 'core/changes_modal.html' %}
 
-        {% block main %}
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    {% block main %}
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    {% endblock %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        {% block header %}
         {% endblock %}
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            {% block header %}
-            {% endblock %}
-        </div>
-        {% block content %}
-        {% endblock %}
-        </main>
-
-        <div class="alert fade alert-fixed" role="alert" id="alert"></div>
     </div>
+    {% block content %}
+    {% endblock %}
+    </main>
+
+    <div class="alert fade alert-fixed" role="alert" id="alert"></div>
 </div>
 
 <hr>
