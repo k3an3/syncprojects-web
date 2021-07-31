@@ -69,6 +69,10 @@
             &nbsp;
         {% endif %}
         <li class="nav-item text-nowrap">
+            <a class="nav-link"><span class="fas fa-bell"></span></a>
+        </li>
+        &nbsp;
+        <li class="nav-item text-nowrap">
             <a class="nav-link"
                href="{% url 'users:user-profile' %}">{% firstof user.get_short_name user.get_username %}</a>
         </li>
