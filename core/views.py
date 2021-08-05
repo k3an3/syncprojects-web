@@ -115,7 +115,10 @@ class ProjectCreateBaseView(LoginRequiredMixin, UserPassesTestMixin, generic.Cre
         form.instance.project = Project.objects.get(pk=self.kwargs['pk'])
         return super().form_valid(form)
 
-song_fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order', 'bpm']
+
+song_fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order', 'bpm',
+               'archived']
+
 
 class SongCreateView(ProjectCreateBaseView):
     model = Song
