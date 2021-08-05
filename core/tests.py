@@ -158,12 +158,13 @@ class ProjectDetailViewTests(TestCase):
         self.user = User.objects.create(username="tester")
 
     def test_no_access(self):
-        self.assertFalse(self.view(self.project, self.user).get_context_data()['songs'])
+        self.assertFalse(self.view(self.project, self.user).get_context_data()['albums'][0][1])
         self.assertFalse(self.view(self.project, self.user).get_context_data()['member'])
 
     def test_song_list_member(self):
         self.user.projects.add(self.project)
-        self.assertEqual(self.view(self.project, self.user).get_context_data()['songs'], [self.song_1, self.song_2])
+        self.assertEqual(self.view(self.project, self.user).get_context_data()['albums'][0][1],
+                         [self.song_1, self.song_2])
         self.assertTrue(self.view(self.project, self.user).get_context_data()['member'])
 
     def test_partial_song_list_follower(self):
@@ -171,7 +172,7 @@ class ProjectDetailViewTests(TestCase):
         self.song_2.shared_with_followers = True
         self.song_2.save()
         self.assertFalse(self.view(self.project, self.user).get_context_data()['member'])
-        self.assertEqual(self.view(self.project, self.user).get_context_data()['songs'], [self.song_2])
+        self.assertEqual(self.view(self.project, self.user).get_context_data()['albums'][0][1], [self.song_2])
 
 
 class UserIsMemberTests(TestCase):

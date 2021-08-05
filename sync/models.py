@@ -22,7 +22,7 @@ class Sync(models.Model):
         return timeago.format(self.sync_time, timezone.now())
 
     def __str__(self):
-        return f"{self.user} sync at {self.sync_time}"
+        return f"{self.user} sync at {self.sync_time} on {self.project}"
 
 
 class SupportedClientTarget(models.Model):
