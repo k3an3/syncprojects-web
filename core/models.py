@@ -110,6 +110,8 @@ class Song(models.Model, LockableModel):
     album = models.ForeignKey(Album, null=True, blank=True, on_delete=models.SET_NULL)
     album_order = models.PositiveIntegerField(null=True, blank=True)
     bpm = models.PositiveIntegerField(null=True, blank=True)
+    archived = models.BooleanField(default=False, help_text="Prevent further syncs to this song. It can be "
+                                                            "downloaded, but no new changes made.")
 
     def __str__(self):
         return self.name
