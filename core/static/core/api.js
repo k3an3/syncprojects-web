@@ -1,4 +1,4 @@
-async function APIRequest(path, method = 'GET', data) {
+async function APIRequest(path, method = 'GET', data, jsonResponse = true) {
     const response = await fetch("/api/v1/" + path, {
         method: method,
         mode: 'same-origin',
@@ -10,10 +10,19 @@ async function APIRequest(path, method = 'GET', data) {
         redirect: 'error',
         body: JSON.stringify(data)
     });
-    return response.json();
+    if (jsonResponse) {
+        return response.json();
+    } else {
+        return response;
+    }
 }
 
 async function comment(comment) {
     const response = await APIRequest('comments/', 'POST', comment);
-    return response.results;
+    return response;
+}
+
+async function commentDelete(comment) {
+    const response = await APIRequest('comments/' + comment + '/', 'DELETE', {}, false)
+    return response;
 }

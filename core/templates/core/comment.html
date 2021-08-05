@@ -1,3 +1,21 @@
+<div class="modal" tabindex="-1" id="comment-delete-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Comment</h5>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="comment-delete-modal-body">
+                <p class="lead">Are you sure?</p>
+                <p>This comment will be deleted permanently. If you are sure, click the button below.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary">Close</button>
+                <button class="btn btn-lg btn-danger" id="confirm-comment-delete" type="submit">DELETE</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="col-12 col-lg-9 float-lg-start order-lg-3 order-2">
     <h2>Comments</h2>
     {% if song and song.url %}
@@ -16,7 +34,7 @@
     </form>
     <div id="comment-div-inner">
         {% for comment in comments %}
-            <div class="card col-md-9">
+            <div class="card col-md-9" id="comment-{{ comment.id }}">
                 <div class="card-header">
                     <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
                     &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
@@ -34,7 +52,9 @@
                 <div class="card-footer text-muted">
                     {% if comment.user == user %}
                         <button class="btn btn-link btn-sm text-muted">Edit</button>
-                        <a role="button" class="btn btn-link btn-sm text-muted">Delete</a>
+                        <button id="comment-delete-btn-{{ comment.id }}"
+                                class="btn btn-link btn-sm text-muted comment-delete">Delete
+                        </button>
                     {% else %}
                         <button class="btn btn-link btn-sm text-muted">Like</button>
                         <button class="btn btn-link btn-sm text-muted">Reply</button>

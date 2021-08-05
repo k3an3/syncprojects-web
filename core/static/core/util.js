@@ -135,4 +135,61 @@ function setUpPlayer() {
     }
 }
 
+function bindToClass(querySelector, func, event = 'click') {
+    console.debug("Binding elements with selector " + querySelector);
+    let items = document.querySelectorAll(querySelector);
+    items.forEach(el => el.addEventListener(event, func));
+}
+
 setTimeout(setUpPlayer, 1000);
+
+function fadeIn(elem, ms = 500) {
+    if (!elem)
+        return;
+
+    elem.style.opacity = 0;
+    elem.style.filter = "alpha(opacity=0)";
+    elem.style.display = "inline-block";
+    elem.style.visibility = "visible";
+
+    if (ms) {
+        let opacity = 0;
+        let timer = setInterval(function () {
+            opacity += 50 / ms;
+            if (opacity >= 1) {
+                clearInterval(timer);
+                opacity = 1;
+            }
+            elem.style.opacity = opacity;
+            elem.style.filter = "alpha(opacity=" + opacity * 100 + ")";
+        }, 50);
+    } else {
+        elem.style.opacity = 1;
+        elem.style.filter = "alpha(opacity=1)";
+    }
+}
+
+function fadeOut(elem, ms = 500) {
+    if (!elem)
+        return;
+
+    if (ms) {
+        let opacity = 1;
+        let timer = setInterval(function () {
+            opacity -= 50 / ms;
+            if (opacity <= 0) {
+                clearInterval(timer);
+                opacity = 0;
+                elem.style.display = "none";
+                elem.style.visibility = "hidden";
+            }
+            elem.style.opacity = opacity;
+            elem.style.filter = "alpha(opacity=" + opacity * 100 + ")";
+        }, 50);
+    } else {
+        elem.style.opacity = 0;
+        elem.style.filter = "alpha(opacity=0)";
+        elem.style.display = "none";
+        elem.style.visibility = "hidden";
+    }
+}

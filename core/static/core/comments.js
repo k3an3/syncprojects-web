@@ -2,9 +2,10 @@ const comment_div = document.querySelector('#comment-div');
 const comment_div_inner = document.querySelector('#comment-div-inner');
 const comment_field = document.querySelector('#comment-field');
 const comment_form = document.querySelector('#comment-form');
+const comment_delete_modal = new bootstrap.Modal(document.querySelector('#comment-delete-modal'));
 
 async function addComment(comment) {
-    let content = '<div class="card col-md-8"><div class="card-header">';
+    let content = `<div class="card col-md-8" id="comment-${comment.id}"><div class="card-header">`;
     content += `<a href="/users/${userid}/">${username}</a> &mdash; Just now`;
     let time = '';
     if (comment.song_time) {
@@ -14,9 +15,32 @@ async function addComment(comment) {
         time = `<a role="button" class="timecode-link" onclick="awp_player.seek(${comment.song_time});"><h5>${minutes}:${pad(seconds)}</h5></a>`;
     }
     content += `</div><div class="card-body">${time}<p class="card-text">${comment.text}</p></div>`;
-    content += '<div class="card-footer text-muted"><button class="btn btn-link btn-sm text-muted">Edit</button><button class="btn btn-link btn-sm text-muted">Delete</button>0<button class="btn btn-link btn-sm text-muted">Assign</button><button class="btn btn-link btn-sm text-muted">Mark as needing resolution</button></div></div>'
+    content += `<div class="card-footer text-muted"><button class="btn btn-link btn-sm text-muted">Edit</button><button id="comment-delete-btn-${comment.id}" class="btn btn-link btn-sm text-muted">Delete</button>0<button class="btn btn-link btn-sm text-muted">Assign</button><button class="btn btn-link btn-sm text-muted">Mark as needing resolution</button></div></div>`;
     comment_div_inner.innerHTML = content + comment_div_inner.innerHTML;
+    document.querySelector('#comment-delete-btn-' + comment.id).addEventListener('click', deleteComment);
+    fadeIn(document.querySelector('#comment-' + comment.id));
 }
+
+function getCommentId(id) {
+    return id.split('-')[3];
+}
+
+let comment_to_delete = '';
+
+async function deleteComment(event) {
+    comment_to_delete = getCommentId(event.target.id);
+    comment_delete_modal.show();
+}
+
+async function doDeleteComment() {
+    await commentDelete(comment_to_delete);
+    showToast("Comments", "Comment deleted successfully.", "success");
+    fadeOut(document.querySelector("#comment-" + comment_to_delete));
+    comment_to_delete = '';
+    comment_delete_modal.hide()
+}
+
+document.querySelector('#confirm-comment-delete').addEventListener('click', doDeleteComment);
 
 async function clearComment() {
     comment_field.value = "";
@@ -37,11 +61,14 @@ async function commentFormSubmit(event) {
     if (elements.song_time) {
         data.song_time = parseInt(elements.song_time.value);
     }
-    await comment(data);
+    let resp = await comment(data);
+    data.id = resp.id;
     await addComment(data);
     await clearComment();
     showToast("Comments", "Comment posted successfully!", "success");
 }
+
+bindToClass('.comment-delete', deleteComment);
 
 if (comment_form) {
     comment_form.addEventListener('submit', commentFormSubmit);
