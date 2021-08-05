@@ -62,6 +62,9 @@
     {% if song.bpm %}
         <h5 class="text-muted">{{ song.bpm }} BPM</h5>
     {% endif %}
+    {% if song.key_tuning %}
+        <h5 class="text-muted">{{ song.key_tuning }}</h5>
+    {% endif %}
     {% if member %}
         <span class="badge bg-primary">Member</span>
     {% elif can_sync %}

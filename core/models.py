@@ -112,6 +112,8 @@ class Song(models.Model, LockableModel):
     bpm = models.PositiveIntegerField(null=True, blank=True)
     archived = models.BooleanField(default=False, help_text="Prevent further syncs to this song. It can be "
                                                             "downloaded, but no new changes made.")
+    key_tuning = models.CharField(max_length=40, verbose_name="Key/tuning", null=True, blank=True,
+                                  help_text="E.g. G# Minor, Half-step down tuning")
 
     def __str__(self):
         return self.name

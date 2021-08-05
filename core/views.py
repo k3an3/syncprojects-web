@@ -117,6 +117,7 @@ class ProjectCreateBaseView(LoginRequiredMixin, UserPassesTestMixin, generic.Cre
 
 
 song_fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order', 'bpm',
+               'key_tuning',
                'archived']
 
 
