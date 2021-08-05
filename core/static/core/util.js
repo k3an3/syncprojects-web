@@ -135,7 +135,7 @@ function setUpPlayer() {
     }
 }
 
-function bindToClass(querySelector, func, event = 'click') {
+function bindEventToClass(querySelector, func, event = 'click') {
     console.debug("Binding elements with selector " + querySelector);
     let items = document.querySelectorAll(querySelector);
     items.forEach(el => el.addEventListener(event, func));

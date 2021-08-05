@@ -26,3 +26,13 @@ async function commentDelete(comment) {
     const response = await APIRequest('comments/' + comment + '/', 'DELETE', {}, false)
     return response;
 }
+
+async function commentResolve(comment) {
+    const response = await APIRequest('comments/' + comment + '/resolve/', 'POST', {}, false)
+    return response;
+}
+
+async function commentUnresolve(comment) {
+    const response = await APIRequest('comments/' + comment + '/unresolve/', 'POST', {}, false)
+    return response;
+}

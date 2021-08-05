@@ -6,7 +6,7 @@ const comment_delete_modal = new bootstrap.Modal(document.querySelector('#commen
 
 async function addComment(comment) {
     let content = `<div class="card col-md-8" id="comment-${comment.id}"><div class="card-header">`;
-    content += `<a href="/users/${userid}/">${username}</a> &mdash; Just now`;
+    content += `<a href="/users/${userid}/">${username}</a> &mdash; Just now `;
     let time = '';
     if (comment.song_time) {
         let song_time = parseInt(comment.song_time);
@@ -15,9 +15,15 @@ async function addComment(comment) {
         time = `<a role="button" class="timecode-link" onclick="awp_player.seek(${comment.song_time});"><h5>${minutes}:${pad(seconds)}</h5></a>`;
     }
     content += `</div><div class="card-body">${time}<p class="card-text">${comment.text}</p></div>`;
-    content += `<div class="card-footer text-muted"><button class="btn btn-link btn-sm text-muted">Edit</button><button id="comment-delete-btn-${comment.id}" class="btn btn-link btn-sm text-muted">Delete</button>0<button class="btn btn-link btn-sm text-muted">Assign</button><button class="btn btn-link btn-sm text-muted">Mark as needing resolution</button></div></div>`;
+    content += `<div class="card-footer text-muted">
+<button class="btn btn-link btn-sm text-muted">Edit</button>
+<button id="comment-delete-btn-${comment.id}" class="btn btn-link btn-sm text-muted">Delete</button>
+0<button class="btn btn-link btn-sm text-muted">Assign</button>
+<button id="comment-unresolve-btn-${comment.id}" class="btn btn-link btn-sm text-muted">Mark as needing resolution</button>
+</div></div>`;
     comment_div_inner.innerHTML = content + comment_div_inner.innerHTML;
     document.querySelector('#comment-delete-btn-' + comment.id).addEventListener('click', deleteComment);
+    document.querySelector('#comment-unresolve-btn-' + comment.id).addEventListener('click', resolveComment);
     fadeIn(document.querySelector('#comment-' + comment.id));
 }
 
@@ -68,7 +74,23 @@ async function commentFormSubmit(event) {
     showToast("Comments", "Comment posted successfully!", "success");
 }
 
-bindToClass('.comment-delete', deleteComment);
+async function resolveComment(event) {
+    let comment = getCommentId(event.target.id);
+    if (event.target.id.split('-')[1] === "unresolve") {
+        await commentUnresolve(comment);
+        showToast("Comments", "Comment marked as needing resolution", "success");
+        event.target.innerHTML = "Mark as resolved";
+        event.target.id = event.target.id.replace('unresolve', 'resolve');
+        event.target.parentElement.parentElement.firstElementChild.innerHTML += '<span class="badge bg-warning">Unresolved</span>';
+    } else {
+        await commentResolve(comment);
+        showToast("Comments", "Comment resolved successfully!", "success");
+        fadeOut(document.querySelector("#comment-" + comment));
+    }
+}
+
+bindEventToClass('.comment-delete', deleteComment);
+bindEventToClass('.comment-resolve', resolveComment);
 
 if (comment_form) {
     comment_form.addEventListener('submit', commentFormSubmit);

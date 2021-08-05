@@ -167,6 +167,7 @@ class Comment(models.Model):
     assignee = models.ForeignKey(AUTH_USER_MODEL, related_name='assignee', null=True, blank=True,
                                  on_delete=models.SET_NULL)
     requires_resolution = models.BooleanField(default=False)
+    resolved = models.BooleanField(default=False)
     posted_date = models.DateTimeField(default=timezone.now)
     edited = models.BooleanField(default=False)
     song_time = models.DurationField(null=True, blank=True)
@@ -187,3 +188,7 @@ class Comment(models.Model):
         if hours:
             result += f"{hours}:"
         return result + f"{minutes}:{seconds:02}"
+
+    def __str__(self):
+        return self.user.username + " at " + self.posted_date.isoformat() + " says \"" + self.text[:50] + (
+            "..." if len(self.text) > 50 else "") + "\""

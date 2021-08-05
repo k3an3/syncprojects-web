@@ -22,7 +22,6 @@
         <button class="btn btn-primary" id="time-button">Comment at...</button>
     {% endif %}
     <form id="comment-form" method="post" action="
-
             {% if song %}{% url 'core:comment-create' project.id song.id %}{% else %}{% url 'core:comment-create' project.id %}{% endif %}">
         {% csrf_token %}
         <textarea name="text" id="comment-field" class="form-control"
@@ -39,6 +38,9 @@
                     <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
                     &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
                     {% if comment.edited %} (edited){% endif %}
+                    {% if comment.requires_resolution and not comment.resolved %}
+                        <span id="comment-unresolved-{{ comment.id }}" class="badge bg-warning">Unresolved</span>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if comment.song_time %}
@@ -61,7 +63,15 @@
                     {% endif %}
                     {{ comment.likes }}
                     <button class="btn btn-link btn-sm text-muted">Assign</button>
-                    <button class="btn btn-link btn-sm text-muted">Mark as needing resolution</button>
+                    {% if comment.requires_resolution and not comment.resolved %}
+                        <button id="comment-resolve-btn-{{ comment.id }}"
+                                class="btn btn-link btn-sm text-muted comment-resolve">Mark as resolved
+                        </button>
+                    {% else %}
+                        <button id="comment-unresolve-btn-{{ comment.id }}"
+                                class="btn btn-link btn-sm text-muted comment-resolve">Mark as needing resolution
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}

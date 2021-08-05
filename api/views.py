@@ -12,7 +12,7 @@ from api.permissions import AdminOrSelfOnly, UserHasProjectAccess, CreateOrReadO
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
     ChangelogEntrySerializer, SongSerializer, ClientLogSerializer, CommentSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song, Lock
+from core.models import Song, Lock, Comment
 from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
@@ -132,6 +132,28 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['post'])
+    def unresolve(self, request, pk=None):
+        comment = Comment.objects.get(id=pk)
+        if not self.request.user.has_member_access(comment.song):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        comment.requires_resolution = True
+        comment.resolved = False
+        comment.save()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['post'])
+    def resolve(self, request, pk=None):
+        comment = Comment.objects.get(id=pk)
+        if not self.request.user.has_member_access(comment.song):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        comment.requires_resolution = True
+        comment.resolved = True
+        comment.save()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
