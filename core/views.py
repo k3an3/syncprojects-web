@@ -116,9 +116,9 @@ class ProjectCreateBaseView(LoginRequiredMixin, UserPassesTestMixin, generic.Cre
         return super().form_valid(form)
 
 
-song_fields = ['name', 'sync_enabled', 'directory_name', 'shared_with_followers', 'album', 'album_order', 'bpm',
-               'key_tuning',
-               'archived']
+song_fields = ['name', 'sync_enabled', 'directory_name', 'project_file', 'shared_with_followers', 'album',
+               'album_order', 'bpm',
+               'key_tuning', 'archived']
 
 
 class SongCreateView(ProjectCreateBaseView):
