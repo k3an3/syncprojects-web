@@ -105,7 +105,8 @@ class Song(models.Model, LockableModel):
                                                 "optional)")
     project_file = models.CharField(max_length=200, null=True, blank=True, help_text="By default, the most recently "
                                                                                      "edited .cpr file is opened. Use"
-                                                                                     " this to supply a custom filename.")
+                                                                                     "this to supply a custom "
+                                                                                     "filename.")
     last_mtime = models.DateTimeField(null=True, blank=True)
     peaks = models.TextField(null=True, blank=True)
     locks = GenericRelation(Lock)

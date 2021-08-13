@@ -61,7 +61,7 @@
                         <button class="btn btn-link btn-sm text-muted">Like</button>
                         <button class="btn btn-link btn-sm text-muted">Reply</button>
                     {% endif %}
-                    {{ comment.likes }}
+                    <span class="fas fa-thumbs-up"></span>{{ comment.likes }}
                     <button class="btn btn-link btn-sm text-muted">Assign</button>
                     {% if comment.requires_resolution and not comment.resolved %}
                         <button id="comment-resolve-btn-{{ comment.id }}"
