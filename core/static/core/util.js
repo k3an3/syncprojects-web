@@ -125,6 +125,7 @@ function setUpPlayer() {
     let time_btn = document.querySelector('#time-button');
     if (time_btn != null)
         time_btn.addEventListener('click', handleCommentTimeClick);
+    /*
     if (awp_player != null) {
         showTime();
         if (comment_div != null) {
@@ -133,6 +134,7 @@ function setUpPlayer() {
     } else {
         console.log("No player loaded.");
     }
+     */
 }
 
 function bindEventToClass(querySelector, func, event = 'click') {
