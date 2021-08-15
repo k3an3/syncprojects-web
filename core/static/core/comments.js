@@ -72,6 +72,7 @@ async function commentFormSubmit(event) {
     await addComment(data);
     await clearComment();
     showToast("Comments", "Comment posted successfully!", "success");
+    await setUpMarkers();
 }
 
 async function resolveComment(event) {
@@ -87,6 +88,7 @@ async function resolveComment(event) {
         showToast("Comments", "Comment resolved successfully!", "success");
         fadeOut(document.querySelector("#comment-" + comment));
     }
+    await setUpMarkers();
 }
 
 bindEventToSelector('.comment-delete', deleteComment);

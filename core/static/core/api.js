@@ -36,3 +36,14 @@ async function commentUnresolve(comment) {
     const response = await APIRequest('comments/' + comment + '/unresolve/', 'POST', {}, false)
     return response;
 }
+
+async function getComments(project = null, song = null) {
+    let query = '';
+    if (project) {
+        query = 'project=' + project;
+    } else {
+        query = 'song=' + song;
+    }
+    const response = await APIRequest('comments/?' + query);
+    return response;
+}

@@ -2,6 +2,7 @@ const songUrl = document.getElementById('song_url').innerText;
 const waveformDiv = document.getElementById('waveform');
 const playerControls = document.getElementById('player-controls');
 const playerVolume = document.getElementById('player-volume');
+const playButton = document.getElementById('player-play');
 const volInc = 0.1;
 const seekInc = 1;
 const volMax = 1;
@@ -18,18 +19,37 @@ let wavesurfer = WaveSurfer.create({
     ]
 });
 
-wavesurfer.on('ready', function () {
+wavesurfer.on('ready', async function () {
 // code that runs after wavesurfer is ready
     console.log('Wavesurfer loaded.');
     fadeOut(document.getElementById('audio-spinner'));
     fadeIn(playerControls);
+    await setUpMarkers();
 });
+
+async function setUpMarkers() {
+    wavesurfer.clearMarkers();
+    let context = getContext();
+    if (context.song) {
+        let comments = await getComments(context.project, context.song);
+        console.log(comments);
+        for (const comment of comments.results) {
+            if (comment.song_time_seconds && !comment.resolved) {
+                addMarker(comment.song_time_seconds, comment.requires_resolution ? "yellow" : "white");
+            }
+        }
+    }
+}
 
 // noinspection JSUnresolvedVariable
 wavesurfer.load(songUrl);
 
 function updateVolume(vol) {
     playerVolume.innerText = Math.round(vol * 100).toString() + "%";
+}
+
+function addMarker(time, color = "gray", text = "", position = "top") {
+    return wavesurfer.addMarker({time: time, label: text, color: color, position: position});
 }
 
 async function playerControl(e) {
@@ -83,8 +103,9 @@ async function playerControl(e) {
             }
             break;
         case "mute":
-            wavesurfer.setMute(!wavesurfer.getMute());
-            if (wavesurfer.getMute()) {
+            let mute = !wavesurfer.getMute();
+            wavesurfer.setMute(mute);
+            if (mute) {
                 e.target.className = "btn btn-danger";
             } else {
                 e.target.className = "btn btn-outline-danger";
@@ -94,9 +115,17 @@ async function playerControl(e) {
 }
 
 wavesurfer.on('pause', () => {
+    playButton.innerHTML = '<span class="fas fa-play"></span>';
+    playButton.className = "btn btn-success";
 });
 
 wavesurfer.on('play', () => {
+    playButton.innerHTML = '<span class="fas fa-pause"></span>';
+    playButton.className = "btn btn-warning";
+});
+
+wavesurfer.on('marker-click', (e) => {
+    console.log(e);
 });
 
 wavesurfer.on('error', (e) => {

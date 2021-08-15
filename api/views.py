@@ -123,12 +123,24 @@ class SongViewSet(viewsets.ModelViewSet):
         return JsonResponse({'url': self.get_object().get_signed_url()})
 
 
-
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        project = self.request.query_params.get('project')
+        song = self.request.query_params.get('song')
+        for name, param in (('song', song), ('project', project)):
+            if not param:
+                continue
+            _class = {'song': Song, 'project': Project}[name]
+            try:
+                obj = _class.objects.get(id=param)
+            except _class.DoesNotExist:
+                return Comment.objects.none()
+            if not self.request.user.can_sync(obj):
+                return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return Comment.objects.filter(**{name: obj})
         return self.request.user.comment_set.all()
 
     def perform_create(self, serializer):
