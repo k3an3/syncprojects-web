@@ -89,8 +89,8 @@ async function resolveComment(event) {
     }
 }
 
-bindEventToClass('.comment-delete', deleteComment);
-bindEventToClass('.comment-resolve', resolveComment);
+bindEventToSelector('.comment-delete', deleteComment);
+bindEventToSelector('.comment-resolve', resolveComment);
 
 if (comment_form) {
     comment_form.addEventListener('submit', commentFormSubmit);

@@ -1,4 +1,18 @@
+<div id="audio-spinner" class="text-center">
+    <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+    <strong>Loading audio...</strong>
+</div>
 <div id="waveform"></div>
+
+<div id="player-controls" class="btn-group" role="group" aria-label="Player Controls" hidden>
+    <button type="button" id="player-backward" class="btn btn-primary player-control"><span
+            class="fas fa-fast-backward"></span></button>
+    <button type="button" id="player-play" class="btn btn-success player-control"><span class="fas fa-play"></span>
+    </button>
+    <button type="button" id="player-forward" class="btn btn-primary player-control"><span
+            class="fas fa-fast-forward"></span></button>
+</div>
+
 <span id="song_url" hidden>{{ song.signed_url }}</span>
 
 
