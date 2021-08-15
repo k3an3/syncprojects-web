@@ -1,6 +1,10 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
+{% block head %}
+    {% include 'player/awp_player_res.html' %}
+{% endblock %}
+
 {% block header %}
     <h1 class="h2">{{ project.name }} Dashboard
         {% if project.website %}
@@ -77,7 +81,7 @@
     <div class="row">
         {% if albums %}
             {% for album, songs in albums %}
-                <div class="col-12 col-lg-9">
+                <div class="col-12 col-lg-7">
                     {% if album %}
                         <h3 class="h3">
                             {% if album.cover %}
@@ -105,7 +109,6 @@
                                 <th scope="col">#</th>
                             {% endif %}
                             <th scope="col">Song</th>
-                            <th scope="col">Audio</th>
                             <th scope="col"></th>
                         </tr>
                         </thead>
@@ -117,18 +120,6 @@
                                         <td>{% if song.album_order %}{{ song.album_order }}{% else %}{% endif %}</td>
                                     {% endif %}
                                     <td><a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a>
-                                    </td>
-                                    <td>
-                                        {% if song.signed_url %}
-                                            <audio controls preload="metadata" src="{{ song.url }}"> Your browser
-                                                does not
-                                                support
-                                                the
-                                                <code>audio</code> element.
-                                            </audio>
-                                        {% else %}
-                                            <span class="text-muted">No audio</span>
-                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if not member and song in collab %}
@@ -151,6 +142,9 @@
                     </table>
                 </div>
             {% endfor %}
+            <div class="col-lg-5">
+                {% include 'player/awp_player.html' %}
+            </div>
         {% else %}
             <div class="alert alert-primary"><strong>No Songs here!</strong>{% if member %} Get started and <a
                     href="{% url 'core:song-create' project.id %}">create one</a>{% endif %}</div>

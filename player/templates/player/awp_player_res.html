@@ -1,0 +1,51 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'audio/css/awp_default.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'audio/css/jquery.mCustomScrollbar.css' %}" media="all">
+<script type="text/javascript" src="{% static 'audio/js/jquery-3.1.0.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'audio/js/wavesurfer.js' %}"></script>
+<script type="text/javascript" src="{% static 'audio/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+<!-- playlist scroll -->
+<script type="text/javascript" src="{% static 'audio/js/new_cb.js' %}"></script>
+<script type="text/javascript" src="{% static 'audio/js/new.js' %}"></script>
+
+<script type="text/javascript">
+    let awp_player;
+    jQuery(document).ready(function ($) {
+        let settings = {
+            instanceName: "default2",
+            sourcePath: "",
+            playlistList: "#awp-playlist-list",
+            activePlaylist: "playlist-audio1",
+            activeItem: 0,
+            volume: 1.0,
+            autoPlay: false,
+            drawWaveWithoutLoad: false,
+            randomPlay: false,
+            loopingOn: false,
+            autoAdvanceToNextMedia: true,
+            mediaEndAction: "stop",
+            createDownloadIconsInPlaylist: true,
+            soundCloudAppId: "",
+            gDriveAppId: "",
+            useKeyboardNavigationForPlayback: false,
+            usePlaylistScroll: true,
+            playlistScrollOrientation: "vertical",
+            playlistScrollTheme: "light",
+            useDownload: true,
+            facebookAppId: "",
+            useNumbersInPlaylist: true,
+            numberTitleSeparator: ".  ",
+            artistTitleSeparator: " - ",
+            playlistItemContent: "title",
+            wavesurfer: {
+                waveColor: '#33FDFF',
+                progressColor: '#0066cc',
+                barWidth: 3,
+                cursorColor: '#ffffff',
+                cursorWidth: 1,
+                height: 100,
+            }
+        };
+        awp_player = $("#awp-wrapper").awp(settings);
+    });
+</script>
