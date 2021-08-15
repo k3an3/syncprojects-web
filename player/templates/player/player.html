@@ -4,13 +4,30 @@
 </div>
 <div id="waveform"></div>
 
-<div id="player-controls" class="btn-group" role="group" aria-label="Player Controls" hidden>
-    <button type="button" id="player-backward" class="btn btn-primary player-control"><span
-            class="fas fa-fast-backward"></span></button>
-    <button type="button" id="player-play" class="btn btn-success player-control"><span class="fas fa-play"></span>
-    </button>
-    <button type="button" id="player-forward" class="btn btn-primary player-control"><span
-            class="fas fa-fast-forward"></span></button>
+<div id="player-controls" aria-label="Player Controls" hidden>
+    <div class="btn-group" role="group">
+        <button type="button" id="player-begin" class="btn btn-default player-control"><span
+                class="fas fa-step-backward"></span></button>
+        <button type="button" id="player-backward" class="btn btn-primary player-control"><span
+                class="fas fa-fast-backward"></span></button>
+        <button type="button" id="player-play" class="btn btn-success player-control"><span class="fas fa-play"></span>
+        </button>
+        <button type="button" id="player-forward" class="btn btn-primary player-control"><span
+                class="fas fa-fast-forward"></span></button>
+        <button type="button" id="player-loop" class="btn btn-primary player-control"><span
+                class="fas fa-recycle"></span></button>
+    </div>
+
+    <div class="btn-group" role="group">
+        <button type="button" id="player-mute" class="btn btn-outline-danger player-control"><span
+                class="fas fa-volume-off"></span></button>
+        <button type="button" id="player-voldown" class="btn btn-secondary player-control"><span
+                class="fas fa-volume-down"></span>
+        </button>
+        <button type="button" id="player-volup" class="btn btn-secondary player-control"><span
+                class="fas fa-volume-up"></span></button>
+        <span class="text-muted" id="player-volume">100%</span>
+    </div>
 </div>
 
 <span id="song_url" hidden>{{ song.signed_url }}</span>
