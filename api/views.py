@@ -294,8 +294,11 @@ def get_backend_creds(request):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def audio_sync(self, request):
-    project = Project.objects.get(name=request.data['project'])
-    song = Song.objects.get(name__iexact=request.data['song'], project=project)
+    try:
+        project = Project.objects.get(name=request.data['project'])
+        song = Song.objects.get(name__iexact=request.data['song'], project=project)
+    except (Song.DoesNotExist, Project.DoesNotExist):
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
     if not self.request.user.can_sync(song):
         return Response({}, status=status.HTTP_403_FORBIDDEN)
     AudioSync.objects.create(user=request.user, song=song)
