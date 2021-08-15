@@ -13,7 +13,7 @@ from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, C
     ChangelogEntrySerializer, SongSerializer, ClientLogSerializer, CommentSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
 from core.models import Song, Lock, Comment
-from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog
+from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog, AudioSync
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
 from users.models import User
@@ -121,6 +121,15 @@ class SongViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def url(self, request, pk=None):
         return JsonResponse({'url': self.get_object().get_signed_url()})
+
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['post'])
+    def audio_sync(self, request, pk=None):
+        song = self.get_object()
+        if not self.request.user.can_sync(song):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        AudioSync.objects.create(user=request.user, song=song)
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

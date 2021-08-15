@@ -85,3 +85,12 @@ class ClientLog(models.Model):
         with ZipFile(z) as z:
             with z.open(z.namelist()[0]) as log:
                 return log.read().decode(errors="ignore")
+
+
+class AudioSync(models.Model):
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    song = models.ForeignKey(Song, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.song} audio synced at {self.date} by {self.user}"

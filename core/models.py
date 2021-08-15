@@ -156,6 +156,10 @@ class Song(models.Model, LockableModel):
             self.save()
         return self.url
 
+    def last_audio_sync(self):
+        from sync.models import AudioSync
+        return AudioSync.objects.filter(song=self).last()
+
 
 class FeatureChangelog(models.Model):
     date = models.DateField(default=timezone.now)
