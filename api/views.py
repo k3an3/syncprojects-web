@@ -12,7 +12,7 @@ from api.permissions import AdminOrSelfOnly, UserHasProjectAccess, CreateOrReadO
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
     ChangelogEntrySerializer, SongSerializer, ClientLogSerializer, CommentSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song, Lock, Comment
+from core.models import Song, Lock, Comment, Project
 from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog, AudioSync
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
@@ -122,14 +122,6 @@ class SongViewSet(viewsets.ModelViewSet):
     def url(self, request, pk=None):
         return JsonResponse({'url': self.get_object().get_signed_url()})
 
-    # noinspection PyUnusedLocal
-    @action(detail=True, methods=['post'])
-    def audio_sync(self, request, pk=None):
-        song = self.get_object()
-        if not self.request.user.can_sync(song):
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
-        AudioSync.objects.create(user=request.user, song=song)
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -297,3 +289,14 @@ def sign_data(request):
 @permission_classes([permissions.IsAuthenticated])
 def get_backend_creds(request):
     return Response({'access_id': BACKEND_ACCESS_ID, 'secret_key': BACKEND_SECRET_KEY})
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def audio_sync(self, request):
+    project = Project.objects.get(name=request.data['project'])
+    song = Song.objects.get(name__iexact=request.data['song'], project=project)
+    if not self.request.user.can_sync(song):
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
+    AudioSync.objects.create(user=request.user, song=song)
+    return Response({}, status=status.HTTP_204_NO_CONTENT)
