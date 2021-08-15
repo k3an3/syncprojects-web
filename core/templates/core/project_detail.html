@@ -2,7 +2,11 @@
 {% load static %}
 
 {% block header %}
-    <h1 class="h2">{{ project.name }} Dashboard</h1>
+    <h1 class="h2">{{ project.name }} Dashboard
+        {% if project.website %}
+            <a href="{{ project.website }}"><span class="fas fa-external-link-alt"></span></a>
+        {% endif %}
+    </h1>
     {% if member %}
         <span class="badge bg-primary">Member</span>
     {% else %}

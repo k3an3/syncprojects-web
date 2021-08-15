@@ -14,6 +14,14 @@ from core.s3 import get_client, get_presigned_url, PRESIGNED_URL_DURATION, get_s
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
+class Link(models.Model):
+    url = models.URLField()
+    name = models.CharField(max_length=100)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    object = GenericForeignKey('content_type', 'object_id')
+
+
 class Lock(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     start_time = models.DateTimeField(default=timezone.now)
@@ -63,6 +71,8 @@ class Project(models.Model, LockableModel):
     sync_enabled = models.BooleanField(default=True)
     sharing = models.CharField(max_length=10, default=INVITE, choices=SHARING_CHOICES)
     locks = GenericRelation(Lock)
+    website = models.URLField(null=True, blank=True)
+    links = GenericRelation(Link)
 
     def __str__(self):
         return self.name
@@ -85,6 +95,7 @@ class Album(models.Model):
     release_date = models.DateField(null=True, blank=True,
                                     help_text="If the album is not released yet, this can be used to specify the "
                                               "estimated release date. YYYY-MM-DD")
+    links = GenericRelation(Link)
 
     def __str__(self) -> str:
         return self.name
@@ -118,6 +129,7 @@ class Song(models.Model, LockableModel):
                                                             "downloaded, but no new changes made.")
     key_tuning = models.CharField(max_length=40, verbose_name="Key/tuning", null=True, blank=True,
                                   help_text="E.g. G# Minor, Half-step down tuning")
+    links = GenericRelation(Link)
 
     def __str__(self):
         return self.name

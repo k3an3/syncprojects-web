@@ -9,6 +9,11 @@ from core.models import Project, Song, Album, FeatureChangelog, Comment
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 from core.utils import get_syncs
 
+project_fields = ['name', 'image', 'website', 'sync_enabled']
+song_fields = ['name', 'sync_enabled', 'directory_name', 'project_file', 'shared_with_followers', 'album',
+               'album_order', 'bpm',
+               'key_tuning', 'archived']
+
 
 class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
@@ -68,7 +73,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
 
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     model = Project
-    fields = ['name', 'image', 'sync_enabled']
+    fields = project_fields
 
     def form_valid(self, form):
         obj = form.save()
@@ -78,7 +83,7 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
 
 class ProjectUpdateView(UserIsMemberPermissionMixin, generic.UpdateView):
     model = Project
-    fields = ['name', 'image', 'sync_enabled']
+    fields = project_fields
     template_name_suffix = '_update_form'
 
 
@@ -114,11 +119,6 @@ class ProjectCreateBaseView(LoginRequiredMixin, UserPassesTestMixin, generic.Cre
     def form_valid(self, form):
         form.instance.project = Project.objects.get(pk=self.kwargs['pk'])
         return super().form_valid(form)
-
-
-song_fields = ['name', 'sync_enabled', 'directory_name', 'project_file', 'shared_with_followers', 'album',
-               'album_order', 'bpm',
-               'key_tuning', 'archived']
 
 
 class SongCreateView(ProjectCreateBaseView):
