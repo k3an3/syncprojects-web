@@ -146,7 +146,7 @@ class Song(models.Model, LockableModel):
 
     @property
     def revision(self) -> int:
-        return len(self.sync_set.all())
+        return self.sync_set.all().count()
 
     def should_fetch_url(self) -> bool:
         now = timezone.now()
@@ -196,7 +196,6 @@ class Comment(models.Model):
     text = models.TextField()
     song = models.ForeignKey(Song, null=True, blank=True, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
-    likes = models.PositiveIntegerField(default=0)
 
     def when_str(self):
         return timeago.format(self.posted_date, timezone.now())
@@ -214,3 +213,18 @@ class Comment(models.Model):
     def __str__(self):
         return self.user.username + " at " + self.posted_date.isoformat() + " says \"" + self.text[:50] + (
             "..." if len(self.text) > 50 else "") + "\""
+
+    @property
+    def likes(self):
+        return self.commentlike_set.all().count()
+
+    def liked_by(self, user):
+        try:
+            return self.commentlike_set.get(user=user)
+        except CommentLike.DoesNotExist:
+            return None
+
+
+class CommentLike(models.Model):
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)

@@ -27,14 +27,16 @@ wavesurfer.on('ready', async function () {
     await setUpMarkers();
 });
 
+let allComments = {};
 async function setUpMarkers() {
     wavesurfer.clearMarkers();
     let context = getContext();
     if (context.song) {
         let comments = await getComments(context.project, context.song);
-        console.log(comments);
+        allComments = {};
         for (const comment of comments.results) {
             if (comment.song_time_seconds && !comment.resolved) {
+                allComments[comment.song_time_seconds] = comment;
                 addMarker(comment.song_time_seconds, comment.requires_resolution ? "yellow" : "white");
             }
         }
@@ -125,7 +127,7 @@ wavesurfer.on('play', () => {
 });
 
 wavesurfer.on('marker-click', (e) => {
-    console.log(e);
+    window.location = '#comment-' + allComments[e.time].id;
 });
 
 wavesurfer.on('error', (e) => {

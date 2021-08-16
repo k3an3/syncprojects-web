@@ -128,7 +128,7 @@ function setUpPlayer() {
         time_btn.addEventListener('click', handleCommentTimeClick);
     if (isDefined(wavesurfer) && wavesurfer != null) {
         showTime();
-        if (comment_div != null) {
+        if (isDefined(comment_div) && comment_div != null) {
             setInterval(updateClocks, 500);
         }
     } else {

@@ -78,6 +78,9 @@
         <div class="col-lg-9 col-sm-12">
             {% include 'player/player.html' %}
         </div>
+        <span class="text-muted">Audio last updated: {% if song.last_audio_sync %}{{ song.last_audio_sync.date }} by
+            {{ song.last_audio_sync.user }}{% else %}unknown{% endif %}</span>
+        <span class="text-muted"><a href="{{ song.signed_url }}"><span class="fas fa-download"></span></a></span>
     {% else %}
         <div class="alert alert-dismissable alert-secondary"><strong>No audio!</strong> There is currently not an audio
             URL defined for this song. Add one to enable the player and other features.
