@@ -38,7 +38,7 @@ async function setUpMarkers() {
         for (const comment of comments.results) {
             if (comment.song_time_seconds && !comment.resolved) {
                 allComments[comment.song_time_seconds] = comment;
-                addMarker(comment.song_time_seconds, comment.requires_resolution ? "yellow" : "white");
+                addMarker(comment.song_time_seconds, comment.requires_resolution ? "yellow" : "blue");
             }
         }
     }
