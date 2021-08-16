@@ -69,7 +69,7 @@ function showToast(title, content, type = "primary", icon = "") {
 }
 
 function showTime() {
-    let cur_time = awp_player.getCurrentTime();
+    let cur_time = wavesurfer.getCurrentTime();
     let time = String(Math.floor(cur_time / 60)).padStart(2, '0') + ":" + String(Math.round(cur_time) % 60).padStart(2, '0');
     document.getElementById("MyClockDisplay").innerText = time;
     document.getElementById("MyClockDisplay").textContent = time;
@@ -105,7 +105,7 @@ function handleCommentTimeClick() {
     clicked = !clicked;
     if (clicked) {
         document.querySelector('#time-button').setAttribute('class', 'btn btn-secondary');
-        document.querySelector('#song_time').value = awp_player.getCurrentTime();
+        document.querySelector('#song_time').value = wavesurfer.getCurrentTime();
     } else {
         document.querySelector('#time-button').setAttribute('class', 'btn btn-primary');
         document.querySelector('#song_time').value = 0;
@@ -115,27 +115,31 @@ function handleCommentTimeClick() {
 function updateClocks() {
     showTime();
     if (!clicked) {
-        let time = awp_player.getCurrentTime();
+        let time = wavesurfer.getCurrentTime();
         const time_btn = document.querySelector('#time-button');
         time_btn.innerHTML = `Comment at ${pad(Math.floor(time / 60))}:${pad(Math.round(time % 60))}`;
     }
 }
 
+let retries = 3;
 function setUpPlayer() {
     let time_btn = document.querySelector('#time-button');
     if (time_btn != null)
         time_btn.addEventListener('click', handleCommentTimeClick);
-    if (awp_player != null) {
+    if (isDefined(wavesurfer) && wavesurfer != null) {
         showTime();
-        if (comment_div != null) {
+        if (isDefined(comment_div) && comment_div != null) {
             setInterval(updateClocks, 500);
         }
     } else {
+        if (retries-- > 0) {
+            setTimeout(setUpPlayer, 1000);
+        }
         console.log("No player loaded.");
     }
 }
 
-function bindEventToClass(querySelector, func, event = 'click') {
+function bindEventToSelector(querySelector, func, event = 'click') {
     console.debug("Binding elements with selector " + querySelector);
     let items = document.querySelectorAll(querySelector);
     items.forEach(el => el.addEventListener(event, func));
@@ -151,6 +155,7 @@ function fadeIn(elem, ms = 500) {
     elem.style.filter = "alpha(opacity=0)";
     elem.style.display = "inline-block";
     elem.style.visibility = "visible";
+    elem.removeAttribute('hidden');
 
     if (ms) {
         let opacity = 0;
@@ -192,4 +197,16 @@ function fadeOut(elem, ms = 500) {
         elem.style.display = "none";
         elem.style.visibility = "hidden";
     }
+}
+
+function show(elem) {
+    elem.removeAttribute('hidden');
+}
+
+function hide(elem) {
+    elem.setAttribute('hidden', 'hidden');
+}
+
+function isDefined(e) {
+    return typeof e !== 'undefined';
 }

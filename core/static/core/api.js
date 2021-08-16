@@ -23,16 +23,32 @@ async function comment(comment) {
 }
 
 async function commentDelete(comment) {
-    const response = await APIRequest('comments/' + comment + '/', 'DELETE', {}, false)
+    const response = await APIRequest('comments/' + comment + '/', 'DELETE', {}, false);
     return response;
 }
 
 async function commentResolve(comment) {
-    const response = await APIRequest('comments/' + comment + '/resolve/', 'POST', {}, false)
+    const response = await APIRequest('comments/' + comment + '/resolve/', 'POST', {}, false);
     return response;
 }
 
 async function commentUnresolve(comment) {
-    const response = await APIRequest('comments/' + comment + '/unresolve/', 'POST', {}, false)
+    const response = await APIRequest('comments/' + comment + '/unresolve/', 'POST', {}, false);
+    return response;
+}
+
+async function commentLike(comment) {
+    const response = await APIRequest('comments/' + comment + '/like/', 'POST', {});
+    return response;
+}
+
+async function getComments(project = null, song = null) {
+    let query = '';
+    if (project) {
+        query = 'project=' + project;
+    } else {
+        query = 'song=' + song;
+    }
+    const response = await APIRequest('comments/?' + query);
     return response;
 }

@@ -31,6 +31,20 @@ function getCommentId(id) {
     return id.split('-')[3];
 }
 
+async function likeComment(event) {
+    let comment = getCommentId(event.currentTarget.id);
+    let result = await commentLike(comment);
+    let likeBtn = document.getElementById("comment-like-btn-" + comment);
+    document.getElementById("comment-likes-" + comment).innerText = result.likes;
+    if (result.liked) {
+        likeBtn.className = "btn btn-link btn-sm btn-primary text-muted comment-like";
+        showToast("Comments", "Comment liked");
+    } else {
+        likeBtn.className = "btn btn-link btn-sm text-muted comment-like";
+        showToast("Comments", "Comment unliked");
+    }
+}
+
 let comment_to_delete = '';
 
 async function deleteComment(event) {
@@ -72,6 +86,7 @@ async function commentFormSubmit(event) {
     await addComment(data);
     await clearComment();
     showToast("Comments", "Comment posted successfully!", "success");
+    await setUpMarkers();
 }
 
 async function resolveComment(event) {
@@ -87,10 +102,12 @@ async function resolveComment(event) {
         showToast("Comments", "Comment resolved successfully!", "success");
         fadeOut(document.querySelector("#comment-" + comment));
     }
+    await setUpMarkers();
 }
 
-bindEventToClass('.comment-delete', deleteComment);
-bindEventToClass('.comment-resolve', resolveComment);
+bindEventToSelector('.comment-delete', deleteComment);
+bindEventToSelector('.comment-resolve', resolveComment);
+bindEventToSelector('.comment-like', likeComment);
 
 if (comment_form) {
     comment_form.addEventListener('submit', commentFormSubmit);

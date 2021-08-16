@@ -1,3 +1,4 @@
+{% load core_extras %}
 <div class="modal" tabindex="-1" id="comment-delete-modal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -45,7 +46,7 @@
                 <div class="card-body">
                     {% if comment.song_time %}
                         <a role="button" class="timecode-link" id="time-{{ comment.song_time.total_seconds }}"
-                           onclick="awp_player.seek({{ comment.song_time.total_seconds }});"><h5
+                           onclick="wavesurfer.play({{ comment.song_time.total_seconds }});"><h5
                                 class="card-title">{{ comment.timecode }}</h5></a>
                     {% endif %}
                     <p class="card-text">{{ comment.text }}</p>
@@ -57,11 +58,13 @@
                         <button id="comment-delete-btn-{{ comment.id }}"
                                 class="btn btn-link btn-sm text-muted comment-delete">Delete
                         </button>
-                    {% else %}
-                        <button class="btn btn-link btn-sm text-muted">Like</button>
-                        <button class="btn btn-link btn-sm text-muted">Reply</button>
                     {% endif %}
-                    <span class="fas fa-thumbs-up"></span>{{ comment.likes }}
+                    <button class="btn btn-link btn-sm text-muted">Reply</button>
+                    <button id="comment-like-btn-{{ comment.id }}"
+                            class="btn btn-link btn-sm {% liked_by_user comment user %}text-muted comment-like"
+                            {% if user == comment.user %} disabled{% endif %}><span class="fas fa-thumbs-up"></span>
+                    </button>
+                    <span id="comment-likes-{{ comment.id }}">{{ comment.likes }}</span>
                     <button class="btn btn-link btn-sm text-muted">Assign</button>
                     {% if comment.requires_resolution and not comment.resolved %}
                         <button id="comment-resolve-btn-{{ comment.id }}"

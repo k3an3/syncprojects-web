@@ -4,56 +4,6 @@
 {% block head %}
     {% if song.url %}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-        <link rel="stylesheet" type="text/css" href="{% static 'audio/css/awp_default.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'audio/css/jquery.mCustomScrollbar.css' %}" media="all">
-        <script type="text/javascript" src="{% static 'audio/js/jquery-3.1.0.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'audio/js/wavesurfer.js' %}"></script>
-        <script type="text/javascript" src="{% static 'audio/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
-        <!-- playlist scroll -->
-        <script type="text/javascript" src="{% static 'audio/js/new_cb.js' %}"></script>
-        <script type="text/javascript" src="{% static 'audio/js/new.js' %}"></script>
-        {# maybe upgrade to https://wavesurfer-js.org/ at some point #}
-        <script type="text/javascript">
-            let awp_player;
-            jQuery(document).ready(function ($) {
-                let settings = {
-                    instanceName: "default2",
-                    sourcePath: "",
-                    playlistList: "#awp-playlist-list",
-                    activePlaylist: "playlist-audio1",
-                    activeItem: 0,
-                    volume: 1.0,
-                    autoPlay: false,
-                    drawWaveWithoutLoad: false,
-                    randomPlay: false,
-                    loopingOn: false,
-                    autoAdvanceToNextMedia: false,
-                    mediaEndAction: "stop",
-                    createDownloadIconsInPlaylist: false,
-                    soundCloudAppId: "",
-                    gDriveAppId: "",
-                    useKeyboardNavigationForPlayback: false,
-                    usePlaylistScroll: false,
-                    playlistScrollOrientation: "vertical",
-                    playlistScrollTheme: "light",
-                    useDownload: true,
-                    facebookAppId: "",
-                    useNumbersInPlaylist: false,
-                    numberTitleSeparator: ".  ",
-                    artistTitleSeparator: " - ",
-                    playlistItemContent: "title",
-                    wavesurfer: {
-                        waveColor: '#33FDFF',
-                        progressColor: '#0066cc',
-                        barWidth: 3,
-                        cursorColor: '#ffffff',
-                        cursorWidth: 1,
-                        height: 100,
-                    }
-                };
-                awp_player = $("#awp-wrapper").awp(settings);
-            });
-        </script>
     {% endif %}
 {% endblock %}
 
@@ -125,36 +75,12 @@
         <div class="col-sm-1">
             <div id="MyClockDisplay" class="timecode"></div>
         </div>
-        <div class="col-lg-8 col-sm-12">
-            <div id="awp-wrapper">
-                <div class="awp-player-thumb-wrapper">
-                    <div class="awp-player-thumb"></div>
-                    <div class="awp-playback-toggle"><i class="fa fa-play"></i></div>
-                </div>
-                <div class="awp-player-holder">
-                    <div class="awp-waveform-wrap">
-                        <div class="awp-waveform awp-hidden"></div>
-                        <div class="awp-waveform-img awp-hidden"><!-- image waveform backup -->
-                            <div class="awp-waveform-img-load"></div>
-                            <div class="awp-waveform-img-progress-wrap">
-                                <div class="awp-waveform-img-progress"></div>
-                            </div>
-                        </div>
-                        <span class="awp-waveform-preloader"></span>
-                    </div>
-                </div>
-            </div>
-            <div id="awp-playlist-list">
-                <ul id="playlist-audio1">
-                    <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.signed_url }}"
-                        data-artist="{{ song.project.name }}" data-title="{{ song.name }}"
-                        {% if song.project.image %}data-thumb="{{ song.project.image.url }}"{% endif %}></li>
-                </ul>
-            </div>
-            <span class="text-muted">Audio last updated: {% if song.last_audio_sync %}{{ song.last_audio_sync.date }} by
-                {{ song.last_audio_sync.user }}{% else %}unknown{% endif %}</span>
-            <span class="text-muted"><a href="{{ song.signed_url }}"><span class="fas fa-download"></span></a></span>
+        <div class="col-lg-9 col-sm-12">
+            {% include 'player/player.html' %}
         </div>
+        <span class="text-muted">Audio last updated: {% if song.last_audio_sync %}{{ song.last_audio_sync.date }} by
+            {{ song.last_audio_sync.user }}{% else %}unknown{% endif %}</span>
+        <span class="text-muted"><a href="{{ song.signed_url }}"><span class="fas fa-download"></span></a></span>
     {% else %}
         <div class="alert alert-dismissable alert-secondary"><strong>No audio!</strong> There is currently not an audio
             URL defined for this song. Add one to enable the player and other features.
@@ -166,4 +92,5 @@
 
 {% block script %}
     {% include 'sync/script.html' %}
+    {% include 'player/script.html' %}
 {% endblock %}

@@ -12,7 +12,7 @@ from api.permissions import AdminOrSelfOnly, UserHasProjectAccess, CreateOrReadO
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
     ChangelogEntrySerializer, SongSerializer, ClientLogSerializer, CommentSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song, Lock, Comment, Project
+from core.models import Song, Lock, Comment, Project, CommentLike
 from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog, AudioSync
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
@@ -123,12 +123,24 @@ class SongViewSet(viewsets.ModelViewSet):
         return JsonResponse({'url': self.get_object().get_signed_url()})
 
 
-
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        project = self.request.query_params.get('project')
+        song = self.request.query_params.get('song')
+        for name, param in (('song', song), ('project', project)):
+            if not param:
+                continue
+            _class = {'song': Song, 'project': Project}[name]
+            try:
+                obj = _class.objects.get(id=param)
+            except _class.DoesNotExist:
+                return Comment.objects.none()
+            if not self.request.user.can_sync(obj):
+                return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return Comment.objects.filter(**{name: obj})
         return self.request.user.comment_set.all()
 
     def perform_create(self, serializer):
@@ -138,7 +150,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def unresolve(self, request, pk=None):
         comment = Comment.objects.get(id=pk)
-        if not self.request.user.has_member_access(comment.song):
+        if not request.user.has_member_access(comment.song):
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         comment.requires_resolution = True
         comment.resolved = False
@@ -149,12 +161,25 @@ class CommentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def resolve(self, request, pk=None):
         comment = Comment.objects.get(id=pk)
-        if not self.request.user.has_member_access(comment.song):
+        if not request.user.has_member_access(comment.song):
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         comment.requires_resolution = True
         comment.resolved = True
         comment.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        comment = Comment.objects.get(id=pk)
+        if not request.user.has_subscriber_access(comment.song) and not request.user.has_member_access(comment.song):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        elif request.user == comment.user:
+            return Response({}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+        like, created = CommentLike.objects.get_or_create(user=request.user, comment=comment)
+        if not created:
+            like.delete()
+        return JsonResponse({'likes': comment.likes, 'liked': created})
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
