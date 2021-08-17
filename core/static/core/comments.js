@@ -12,7 +12,7 @@ async function addComment(comment) {
         let song_time = parseInt(comment.song_time);
         let minutes = Math.floor(song_time / 60);
         let seconds = song_time % 60;
-        time = `<a role="button" class="timecode-link" onclick="awp_player.seek(${comment.song_time});"><h5>${minutes}:${pad(seconds)}</h5></a>`;
+        time = `<a role="button" class="timecode-link" onclick="wavesurfer.play(${comment.song_time});"><h5>${minutes}:${pad(seconds)}</h5></a>`;
     }
     content += `</div><div class="card-body">${time}<p class="card-text">${comment.text}</p></div>`;
     content += `<div class="card-footer text-muted">
