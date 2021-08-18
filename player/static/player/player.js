@@ -33,7 +33,7 @@ async function setUpMarkers() {
     wavesurfer.clearMarkers();
     let context = getContext();
     if (context.song) {
-        let comments = await getComments(context.project, context.song);
+        let comments = await getComments(null, context.song);
         allComments = {};
         for (const comment of comments.results) {
             if (comment.song_time_seconds && !comment.resolved) {
