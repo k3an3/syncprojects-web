@@ -34,6 +34,10 @@
     </form>
     <div id="comment-div-inner">
         {% for comment in comments %}
+            {% if comment.is_root %}
+                {% for subcomment in comment.tree %}
+                    {{ subcomment }}
+                {% endfor %}
             <div class="card col-md-9" id="comment-{{ comment.id }}">
                 <div class="card-header">
                     <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
@@ -77,6 +81,7 @@
                     {% endif %}
                 </div>
             </div>
+            {% endif %}
         {% endfor %}
     </div>
 </div>

@@ -196,6 +196,13 @@ class Comment(models.Model):
     text = models.TextField()
     song = models.ForeignKey(Song, null=True, blank=True, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.SET_NULL)
+
+    def tree(self):
+        return self + self.children.all()
+
+    def is_root(self):
+        return self.parent is None
 
     def when_str(self):
         return timeago.format(self.posted_date, timezone.now())
