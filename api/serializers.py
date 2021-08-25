@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
-from core.models import Project, Song, Lock, Comment
+from core.models import Project, Song, Lock
+from comments.models import Comment
 from sync.models import Sync, ClientUpdate, ChangelogEntry, ClientLog, SupportedClientTarget
 
 

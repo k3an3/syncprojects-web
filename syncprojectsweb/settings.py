@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'sync.apps.SyncConfig',
     'users.apps.UsersConfig',
     'player.apps.PlayerConfig',
+    'comments.apps.CommentsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

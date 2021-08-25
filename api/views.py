@@ -12,7 +12,8 @@ from api.permissions import AdminOrSelfOnly, UserHasProjectAccess, CreateOrReadO
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
     ChangelogEntrySerializer, SongSerializer, ClientLogSerializer, CommentSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song, Lock, Comment, Project, CommentLike
+from core.models import Song, Lock, Project
+from comments.models import Comment, CommentLike
 from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog, AudioSync
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY

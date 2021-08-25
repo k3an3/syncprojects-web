@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from core.models import Project, Song, Lock, Album, FeatureChangelog, Comment, Link
+from core.models import Project, Song, Lock, Album, FeatureChangelog, Link
+from comments.models import Comment
 from users.admin import UserProjectInline
 
 admin.site.register(Lock)
