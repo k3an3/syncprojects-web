@@ -78,6 +78,10 @@ async function commentFormSubmit(event) {
         project: context.project,
         song: context.song
     };
+    if (!data.text.length) {
+        showToast("Comments", "Can't add comment. You must enter text.")
+        return;
+    }
     if (elements.song_time) {
         data.song_time = parseInt(elements.song_time.value);
     }
