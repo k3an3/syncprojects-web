@@ -22,8 +22,7 @@
     {% if song and song.url %}
         <button class="btn btn-primary" id="time-button">Comment at...</button>
     {% endif %}
-    <form id="comment-form" method="post" action="
-            {% if song %}{% url 'core:comment-create' project.id song.id %}{% else %}{% url 'core:comment-create' project.id %}{% endif %}">
+    <form id="comment-form" method="post" action="">
         {% csrf_token %}
         <textarea name="text" id="comment-field" class="form-control"
                   placeholder="Write your comment here..."></textarea>
