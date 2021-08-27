@@ -12,8 +12,8 @@ from api.permissions import AdminOrSelfOnly, UserHasProjectAccess, CreateOrReadO
 from api.serializers import UserSerializer, ProjectSerializer, LockSerializer, ClientUpdateSerializer, SyncSerializer, \
     ChangelogEntrySerializer, SongSerializer, ClientLogSerializer, CommentSerializer
 from api.utils import get_tokens_for_user, update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication
-from core.models import Song, Lock, Project
 from comments.models import Comment, CommentLike
+from core.models import Song, Lock, Project
 from sync.models import ClientUpdate, ChangelogEntry, Sync, SupportedClientTarget, ClientLog, AudioSync
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
@@ -173,7 +173,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         comment = Comment.objects.get(id=pk)
-        if not request.user.has_subscriber_access(comment.song) and not request.user.has_member_access(comment.song):
+        if comment.song:
+            obj = comment.song
+        else:
+            obj = comment.project
+        if not request.user.has_subscriber_access(obj) and not request.user.has_member_access(obj):
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         elif request.user == comment.user:
             return Response({}, status=status.HTTP_429_TOO_MANY_REQUESTS)

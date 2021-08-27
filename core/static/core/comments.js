@@ -116,8 +116,14 @@ async function resolveComment(event) {
     await setUpMarkers();
 }
 
+let lastReply;
 async function replyComment(event) {
     let comment = getCommentId(event.target.id);
+    if (lastReply) {
+        lastReply.className = "btn btn-link btn-sm text-muted comment-reply";
+    }
+    lastReply = event.target;
+    lastReply.className = "btn btn-link btn-sm btn-primary comment-reply"
     console.log(comment);
     document.getElementById("comment-parent").value = comment;
     document.getElementById("comment-field").setAttribute("placeholder", "Reply to comment...");
