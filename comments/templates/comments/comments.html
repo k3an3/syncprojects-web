@@ -1,0 +1,37 @@
+<div class="modal" tabindex="-1" id="comment-delete-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Comment</h5>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="comment-delete-modal-body">
+                <p class="lead">Are you sure?</p>
+                <p>This comment will be deleted permanently. If you are sure, click the button below.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary">Close</button>
+                <button class="btn btn-lg btn-danger" id="confirm-comment-delete" type="submit">DELETE</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="comment-div" class="col-12 col-lg-9 float-lg-start order-lg-3 order-2">
+    <h2>Comments</h2>
+    {% if song and song.url %}
+        <button class="btn btn-primary" id="time-button">Comment at...</button>
+    {% endif %}
+    <form id="comment-form" method="post" action="">
+        {% csrf_token %}
+        <textarea name="text" id="comment-field" class="form-control"
+                  placeholder="Write your comment here..."></textarea>
+        {% if song %}
+            <input type="hidden" name="song_time" id="song_time" value="0"/>
+        {% endif %}
+        <input type="hidden" name="parent" value="" id="comment-parent"/>
+        <input type="submit" class="btn btn-primary" value="Post Comment">
+    </form>
+    <div id="comment-div-inner">
+        {% include 'comments/comment_cards.html' %}
+    </div>
+</div>

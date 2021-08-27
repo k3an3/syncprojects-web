@@ -21,10 +21,16 @@ async function addComment(comment) {
 0<button class="btn btn-link btn-sm text-muted">Assign</button>
 <button id="comment-unresolve-btn-${comment.id}" class="btn btn-link btn-sm text-muted">Mark as needing resolution</button>
 </div></div>`;
-    comment_div_inner.innerHTML = content + comment_div_inner.innerHTML;
+    if (comment.parent) {
+        let parent = document.getElementById("comment-" + comment.parent);
+        parent.parentElement.innerHTML += '<div style="padding-left:10px;">' + content + '</div>';
+    } else {
+        comment_div_inner.innerHTML = content + comment_div_inner.innerHTML;
+    }
     document.querySelector('#comment-delete-btn-' + comment.id).addEventListener('click', deleteComment);
     document.querySelector('#comment-unresolve-btn-' + comment.id).addEventListener('click', resolveComment);
     fadeIn(document.querySelector('#comment-' + comment.id));
+    window.location = "#comment-" + comment.id;
 }
 
 function getCommentId(id) {
@@ -76,7 +82,8 @@ async function commentFormSubmit(event) {
     let data = {
         text: elements.text.value,
         project: context.project,
-        song: context.song
+        song: context.song,
+        parent: elements.parent.value ? parseInt(elements.parent.value) : "",
     };
     if (!data.text.length) {
         showToast("Comments", "Can't add comment. You must enter text.", "danger");
@@ -109,9 +116,18 @@ async function resolveComment(event) {
     await setUpMarkers();
 }
 
+async function replyComment(event) {
+    let comment = getCommentId(event.target.id);
+    console.log(comment);
+    document.getElementById("comment-parent").value = comment;
+    document.getElementById("comment-field").setAttribute("placeholder", "Reply to comment...");
+    window.location = "#comment-div";
+}
+
 bindEventToSelector('.comment-delete', deleteComment);
 bindEventToSelector('.comment-resolve', resolveComment);
 bindEventToSelector('.comment-like', likeComment);
+bindEventToSelector('.comment-reply', replyComment);
 
 if (comment_form) {
     comment_form.addEventListener('submit', commentFormSubmit);

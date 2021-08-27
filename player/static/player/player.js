@@ -1,4 +1,8 @@
-const songUrl = document.getElementById('song_url').innerText;
+const songUrlE = document.getElementById('song_url');
+let songUrl = "";
+if (songUrlE) {
+    songUrl = songUrlE.innerText;
+}
 const waveformDiv = document.getElementById('waveform');
 const playerControls = document.getElementById('player-controls');
 const playerVolume = document.getElementById('player-volume');

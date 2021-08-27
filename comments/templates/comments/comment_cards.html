@@ -1,0 +1,55 @@
+{% load core_extras %}
+<div>
+    {% for comment in comments %}
+        <div class="card col-md-9" id="comment-{{ comment.id }}">
+            <div class="card-header">
+                <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
+                &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
+                {% if comment.edited %} (edited){% endif %}
+                {% if comment.requires_resolution and not comment.resolved %}
+                    <span id="comment-unresolved-{{ comment.id }}" class="badge bg-warning">Unresolved</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if comment.song_time %}
+                    <a role="button" class="timecode-link" id="time-{{ comment.song_time.total_seconds }}"
+                       onclick="wavesurfer.play({{ comment.song_time.total_seconds }});"><h5
+                            class="card-title">{{ comment.timecode }}</h5></a>
+                {% endif %}
+                <p class="card-text">{{ comment.text }}</p>
+                {# <a href="#" class="btn btn-sm btn-primary">Reply</a>#}
+            </div>
+            <div class="card-footer text-muted">
+                {% if comment.user == user %}
+                    <button class="btn btn-link btn-sm text-muted">Edit</button>
+                    <button id="comment-delete-btn-{{ comment.id }}"
+                            class="btn btn-link btn-sm text-muted comment-delete">Delete
+                    </button>
+                {% endif %}
+                <button class="btn btn-link btn-sm text-muted comment-reply" id="comment-reply-btn-{{ comment.id }}">
+                    Reply
+                </button>
+                <button id="comment-like-btn-{{ comment.id }}"
+                        class="btn btn-link btn-sm {% liked_by_user comment user %}text-muted comment-like"
+                        {% if user == comment.user %} disabled{% endif %}><span class="fas fa-thumbs-up"></span>
+                </button>
+                <span id="comment-likes-{{ comment.id }}">{{ comment.likes }}</span>
+                <button class="btn btn-link btn-sm text-muted">Assign</button>
+                {% if comment.requires_resolution and not comment.resolved %}
+                    <button id="comment-resolve-btn-{{ comment.id }}"
+                            class="btn btn-link btn-sm text-muted comment-resolve">Mark as resolved
+                    </button>
+                {% else %}
+                    <button id="comment-unresolve-btn-{{ comment.id }}"
+                            class="btn btn-link btn-sm text-muted comment-resolve">Mark as needing resolution
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        {% if comment.children.count %}
+            <div style="padding-left:10px;">
+                {% include 'comments/comment_cards.html' with comments=comment.children.all %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

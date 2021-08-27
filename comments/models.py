@@ -1,6 +1,5 @@
 import timeago
 from django.db import models
-
 from django.utils import timezone
 
 from core.models import Song, Project
@@ -22,7 +21,8 @@ class Comment(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.SET_NULL)
 
     def tree(self):
-        return self + self.children.all()
+        # todo: separate comment_list and comment_card html so it's easier to loop over parent and child
+        return self.children.all()
 
     def is_root(self):
         return self.parent is None

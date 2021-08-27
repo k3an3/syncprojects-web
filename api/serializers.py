@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
-from core.models import Project, Song, Lock
 from comments.models import Comment
+from core.models import Project, Song, Lock
 from sync.models import Sync, ClientUpdate, ChangelogEntry, ClientLog, SupportedClientTarget
 
 
@@ -108,7 +108,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ["id", "text", "song_time", "song_time_seconds", "assignee",
                   "edited", "project", "song", "posted_date",
-                  "requires_resolution", "resolved"]
+                  "requires_resolution", "resolved", "parent"]
 
     @staticmethod
     def get_song_time_seconds(comment):
