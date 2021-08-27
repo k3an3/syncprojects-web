@@ -103,21 +103,25 @@ let clicked = false;
 
 function handleCommentTimeClick() {
     clicked = !clicked;
+    const time_btn = document.querySelector('#time-button');
     if (clicked) {
         document.querySelector('#time-button').setAttribute('class', 'btn btn-secondary');
         document.querySelector('#song_time').value = wavesurfer.getCurrentTime();
+        time_btn.innerHTML += " <span class=\"fas fa-lock\"></span>";
     } else {
         document.querySelector('#time-button').setAttribute('class', 'btn btn-primary');
         document.querySelector('#song_time').value = 0;
+        let time = wavesurfer.getCurrentTime();
+        time_btn.innerHTML = `Comment at ${pad(Math.floor(time / 60))}:${pad(Math.round(time % 60))} `;
     }
 }
 
 function updateClocks() {
     showTime();
+    const time_btn = document.querySelector('#time-button');
     if (!clicked) {
         let time = wavesurfer.getCurrentTime();
-        const time_btn = document.querySelector('#time-button');
-        time_btn.innerHTML = `Comment at ${pad(Math.floor(time / 60))}:${pad(Math.round(time % 60))}`;
+        time_btn.innerHTML = `Comment at ${pad(Math.floor(time / 60))}:${pad(Math.round(time % 60))} `;
     }
 }
 

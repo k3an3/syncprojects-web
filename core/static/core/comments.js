@@ -79,7 +79,7 @@ async function commentFormSubmit(event) {
         song: context.song
     };
     if (!data.text.length) {
-        showToast("Comments", "Can't add comment. You must enter text.", "danger")
+        showToast("Comments", "Can't add comment. You must enter text.", "danger");
         return;
     }
     if (elements.song_time) {

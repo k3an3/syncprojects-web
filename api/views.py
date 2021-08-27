@@ -277,12 +277,11 @@ def update_webhook(request):
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([CsrfExemptSessionAuthentication])
 def peaks(request):
-    # TODO: authz, CSRF
     try:
         song = Song.objects.get(name=request.data['id'])
     except Song.DoesNotExist:
         return Response({}, status=status.HTTP_404_NOT_FOUND)
-    if not request.user.has_member_access(song) and not request.user.is_superuser:
+    if not request.user.can_sync(song) and not request.user.is_superuser:
         return Response({}, status=status.HTTP_403_FORBIDDEN)
     try:
         return Response({
@@ -327,4 +326,6 @@ def audio_sync(request):
     if not request.user.can_sync(song):
         return Response({}, status=status.HTTP_403_FORBIDDEN)
     AudioSync.objects.create(user=request.user, song=song)
+    song.peaks = ""
+    song.save()
     return Response({}, status=status.HTTP_204_NO_CONTENT)
