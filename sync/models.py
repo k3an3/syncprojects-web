@@ -103,7 +103,7 @@ class ClientFeatureChangelog(models.Model):
     changes = models.TextField()
 
     def __str__(self):
-        return str(self.date)
+        return str(self.version)
 
     def format_changes(self):
         return re.sub(r'((^|\n)##?) ', r'\1###', self.changes)
