@@ -99,7 +99,7 @@ class AudioSync(models.Model):
 
 class ClientFeatureChangelog(models.Model):
     version = models.CharField(max_length=20, unique=True)
-    date = models.DateField(default=timezone.now)
+    date = models.DateField(default=timezone.now, null=True, blank=True)
     changes = models.TextField()
 
     def __str__(self):
