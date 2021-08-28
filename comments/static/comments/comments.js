@@ -113,7 +113,9 @@ async function resolveComment(event) {
         showToast("Comments", "Comment resolved successfully!", "success");
         fadeOut(document.querySelector("#comment-" + comment));
     }
-    await setUpMarkers();
+    if (playerActive) {
+        await setUpMarkers();
+    }
 }
 
 let lastReply;

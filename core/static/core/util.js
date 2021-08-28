@@ -6,6 +6,7 @@ const changes_modal = document.querySelector('#changes_modal');
 const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const username = document.querySelector('#username').textContent;
 const userid = document.querySelector('#userid').textContent;
+let playerActive = false;
 
 function getContext() {
     let matches = window.location.pathname.match(proj_re);
@@ -130,11 +131,12 @@ function setUpPlayer() {
     let time_btn = document.querySelector('#time-button');
     if (time_btn != null)
         time_btn.addEventListener('click', handleCommentTimeClick);
-    if (isDefined(wavesurfer) && wavesurfer != null) {
+    if (typeof wavesurfer !== 'undefined') {
         showTime();
-        if (isDefined(comment_div) && comment_div != null) {
+        if (typeof comment_div !== 'undefined' && comment_div != null) {
             setInterval(updateClocks, 500);
         }
+        playerActive = true;
     } else {
         if (retries-- > 0) {
             setTimeout(setUpPlayer, 1000);
@@ -209,8 +211,4 @@ function show(elem) {
 
 function hide(elem) {
     elem.setAttribute('hidden', 'hidden');
-}
-
-function isDefined(e) {
-    return typeof e !== 'undefined';
 }

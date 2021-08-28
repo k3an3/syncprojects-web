@@ -92,5 +92,7 @@
 
 {% block script %}
     {% include 'sync/script.html' %}
-    {% include 'player/script.html' %}
+    {% if song.signed_url %}
+        {% include 'player/script.html' %}
+    {% endif %}
 {% endblock %}
