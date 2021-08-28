@@ -7,8 +7,8 @@
             <div class="row">
                 <div class="card" style="margin-top: 10px;">
                     <div class="card-body">
-                        <h3 class="card-title">
-                            {{ change.version }}{% if change.date %} - {{ change.date }}{% endif %}</h3>
+                        <h4 class="card-title">
+                            {{ change.version }}{% if change.date %} - {{ change.date }}{% endif %}</h4>
                         {{ change.format_changes|markdownify }}
                     </div>
                 </div>
