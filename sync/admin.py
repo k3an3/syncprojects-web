@@ -1,10 +1,11 @@
 from django.contrib import admin
 
-from sync.models import Sync, ClientUpdate, ChangelogEntry, SupportedClientTarget, ClientLog, AudioSync
+import sync.models as models
 
-admin.site.register(Sync)
-admin.site.register(ClientUpdate)
-admin.site.register(ChangelogEntry)
-admin.site.register(SupportedClientTarget)
-admin.site.register(ClientLog)
-admin.site.register(AudioSync)
+admin.site.register(models.Sync)
+admin.site.register(models.ClientUpdate)
+admin.site.register(models.ChangelogEntry)
+admin.site.register(models.SupportedClientTarget)
+admin.site.register(models.ClientLog)
+admin.site.register(models.AudioSync)
+admin.site.register(models.ClientFeatureChangelog)

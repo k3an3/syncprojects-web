@@ -1,4 +1,5 @@
 import io
+import re
 from zipfile import ZipFile
 
 import timeago
@@ -94,3 +95,15 @@ class AudioSync(models.Model):
 
     def __str__(self):
         return f"{self.song} audio synced at {self.date} by {self.user}"
+
+
+class ClientFeatureChangelog(models.Model):
+    version = models.CharField(max_length=20, unique=True)
+    date = models.DateField(default=timezone.now)
+    changes = models.TextField()
+
+    def __str__(self):
+        return str(self.date)
+
+    def format_changes(self):
+        return re.sub(r'((^|\n)##?) ', r'\1###', self.changes)

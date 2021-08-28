@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views import generic
 
 from api.utils import get_tokens_for_user
-from sync.models import SupportedClientTarget, ClientLog
+from sync.models import SupportedClientTarget, ClientLog, ClientFeatureChangelog
 from sync.utils import get_signed_data
 
 
@@ -24,6 +24,11 @@ class DownloadIndexView(LoginRequiredMixin, generic.ListView):
     model = SupportedClientTarget
     template_name = 'sync/download.html'
     context_object_name = 'supported_targets'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['client_changes'] = ClientFeatureChangelog.objects.all().order_by('-id')
+        return context
 
 
 class UserLogBaseView(LoginRequiredMixin, UserPassesTestMixin):
