@@ -185,6 +185,10 @@ MARKDOWNIFY = {
     }
 }
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# 90 days; 60s * 60m * 24h * 90d
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 90
+
 try:
     from local_settings import *
 except ImportError:
