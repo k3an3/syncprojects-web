@@ -41,7 +41,7 @@ class SupportedClientTarget(models.Model):
         return f'<span class="fab fa-{self.icon}"></span>' if self.icon else ''
 
     def latest_release(self):
-        return self.clientupdate_set.last()
+        return self.clientupdate_set.filter(visible=True).last()
 
 
 class ClientUpdate(models.Model):
@@ -49,6 +49,7 @@ class ClientUpdate(models.Model):
     updater = models.FileField(upload_to='updates/updater/', null=True, blank=True)
     package = models.FileField(upload_to='updates/')
     target = models.ForeignKey(SupportedClientTarget, null=True, blank=True, on_delete=models.PROTECT)
+    visible = models.BooleanField(default=True)
 
     def __str__(self):
         return f"v{self.version}-{self.target}"

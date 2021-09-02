@@ -50,12 +50,12 @@ class ClientUpdateViewSet(viewsets.ModelViewSet):
         target = self.request.query_params.get('target')
         if target:
             try:
-                target = SupportedClientTarget.objects.get(target=target)
+                target = SupportedClientTarget.objects.get(target=target, visible=True)
             except SupportedClientTarget.DoesNotExist:
                 return ClientUpdate.objects.none()
-            return ClientUpdate.objects.filter(target=target)
+            return ClientUpdate.objects.filter(target=target, visible=True)
         else:
-            return ClientUpdate.objects.filter(target__isnull=True)
+            return ClientUpdate.objects.filter(target__isnull=True, visible=True)
 
 
 class SyncViewSet(viewsets.ModelViewSet):
