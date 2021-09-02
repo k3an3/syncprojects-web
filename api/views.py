@@ -50,7 +50,7 @@ class ClientUpdateViewSet(viewsets.ModelViewSet):
         target = self.request.query_params.get('target')
         if target:
             try:
-                target = SupportedClientTarget.objects.get(target=target, visible=True)
+                target = SupportedClientTarget.objects.get(target=target)
             except SupportedClientTarget.DoesNotExist:
                 return ClientUpdate.objects.none()
             return ClientUpdate.objects.filter(target=target, visible=True)
