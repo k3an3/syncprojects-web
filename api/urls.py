@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views import UserViewSet, ProjectViewSet, fetch_user_tokens, update_webhook, peaks, \
     ClientUpdateViewSet, sign_data, SyncViewSet, get_backend_creds, SongViewSet, ClientLogViewSet, CommentViewSet, \
     audio_sync
+from player.api.urls import router as player_router
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, 'user')
@@ -15,8 +16,12 @@ router.register(r'songs', SongViewSet, 'song')
 router.register(r'logs', ClientLogViewSet, 'log')
 router.register(r'comments', CommentViewSet, 'comment')
 
+# Submodule APIs
+router.registry.extend(player_router.registry)
+
 urlpatterns = [
     path('', include(router.urls)),
+    path('player/', include(player_router.urls)),
     path('sign/', sign_data, name='sign_data'),
     path('peaks/', peaks, name='peaks'),
     path('token/fetch/', fetch_user_tokens),

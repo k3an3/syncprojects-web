@@ -51,14 +51,15 @@ const regionDefaults = {
 }
 
 async function setUpRegions() {
-    let regions = getRegions(context.song);
-    if (regions.results) {
+    let regions = await getRegions(context.song);
+    if (regions.results != null) {
         for (let region of regions.results) {
-            region.color = parseRGBA(region.color);
+            region.color = hex2RGBA(region.color, 0.33);
             region = {
                 ...region,
                 ...regionDefaults
             }
+            console.log(region);
             wavesurfer.addRegion(region);
         }
     } else {
@@ -71,7 +72,7 @@ async function setUpMarkers() {
     if (context.song) {
         let comments = await getComments(null, context.song);
         allComments = {};
-        if (comments.results.length) {
+        if (comments.results != null) {
             for (const comment of comments.results) {
                 if (comment.song_time_seconds && !comment.resolved) {
                     allComments[comment.song_time_seconds] = comment;
@@ -175,3 +176,8 @@ wavesurfer.on('error', (e) => {
 });
 
 bindEventToSelector('.player-control', playerControl);
+
+const hex2RGBA = (hex, alpha = 1) => {
+    const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
+    return `rgba(${r},${g},${b},${alpha})`;
+};

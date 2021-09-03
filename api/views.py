@@ -19,6 +19,9 @@ from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET, BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
 from users.models import User
 
+HTTP_404_RESPONSE = Response({}, status=status.HTTP_404_NOT_FOUND)
+HTTP_403_RESPONSE = Response({}, status=status.HTTP_403_FORBIDDEN)
+
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -75,17 +78,31 @@ class SyncViewSet(viewsets.ModelViewSet):
         return Response(sync.data)
 
     # noinspection PyUnusedLocal
+    @action(detail=True, methods=['put'])
+    def changelog(self, request, pk=None):
+        # TODO: validate
+        song = Song.objects.get(id=pk)
+        if not self.request.user.can_sync(song):
+            return HTTP_403_RESPONSE
+        sync = song.sync_set.all().last()
+        result = ChangelogEntry.objects.create(user=self.request.user,
+                                               sync=sync,
+                                               song=song,
+                                               text=request.data['text'])
+        return Response({'created': result.id})
+
+    # noinspection PyUnusedLocal
     @action(detail=True, methods=['get'])
     def get_changelogs(self, request, pk=None):
         song = Song.objects.get(id=pk)
         if not self.request.user.can_sync(song):
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return HTTP_403_RESPONSE
         try:
             revision = int(request.query_params.get('since'))
         except (TypeError, ValueError):
             revision = None
         if revision is None:
-            return Response({}, status=status.HTTP_404_NOT_FOUND)
+            return HTTP_404_RESPONSE
         lookback = song.revision - revision
         result = ChangelogEntry.objects.filter(song=song).order_by('-id')[:lookback]
         return Response(ChangelogEntrySerializer(result, many=True).data)
@@ -139,7 +156,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             except _class.DoesNotExist:
                 return Comment.objects.none()
             if not self.request.user.can_sync(obj):
-                return Response({}, status=status.HTTP_403_FORBIDDEN)
+                return HTTP_403_RESPONSE
             return Comment.objects.filter(**{name: obj})
         return self.request.user.comment_set.all()
 
@@ -151,7 +168,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def unresolve(self, request, pk=None):
         comment = Comment.objects.get(id=pk)
         if not request.user.has_member_access(comment.song):
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return HTTP_403_RESPONSE
         comment.requires_resolution = True
         comment.resolved = False
         comment.save()
@@ -162,7 +179,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def resolve(self, request, pk=None):
         comment = Comment.objects.get(id=pk)
         if not request.user.has_member_access(comment.song):
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return HTTP_403_RESPONSE
         comment.requires_resolution = True
         comment.resolved = True
         comment.save()
@@ -178,7 +195,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         else:
             obj = comment.project
         if not request.user.has_subscriber_access(obj) and not request.user.has_member_access(obj):
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return HTTP_403_RESPONSE
         elif request.user == comment.user:
             return Response({}, status=status.HTTP_429_TOO_MANY_REQUESTS)
         like, created = CommentLike.objects.get_or_create(user=request.user, comment=comment)
@@ -202,7 +219,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if 'song' in request.data:
             song = Song.objects.get(id=request.data['song'], project=project)
             if not self.request.user.can_sync(song):
-                return Response({}, status=status.HTTP_403_FORBIDDEN)
+                return HTTP_403_RESPONSE
             if not song.project.is_locked_by_user(request.user) and (lock := song.project.is_locked()):
                 return Response({'status': 'locked',
                                  'locked_by': lock.user.username,
@@ -225,7 +242,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                                          })
                     return Response({'id': 1})
                 else:
-                    return Response({}, status=status.HTTP_403_FORBIDDEN)
+                    return HTTP_403_RESPONSE
             obj = project
 
         if request.method == 'PUT':
@@ -286,7 +303,7 @@ def update_webhook(request):
             if request.data.get("ref") == "refs/heads/master":
                 update()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
-    return Response({}, status=status.HTTP_403_FORBIDDEN)
+    return HTTP_403_RESPONSE
 
 
 @api_view(['POST'])
@@ -296,9 +313,9 @@ def peaks(request):
     try:
         song = Song.objects.get(name=request.data['id'])
     except Song.DoesNotExist:
-        return Response({}, status=status.HTTP_404_NOT_FOUND)
+        return HTTP_404_RESPONSE
     if not request.user.can_sync(song) and not request.user.is_superuser:
-        return Response({}, status=status.HTTP_403_FORBIDDEN)
+        return HTTP_403_RESPONSE
     try:
         return Response({
                             'awp_write_peaks': awp_write_peaks,
@@ -338,9 +355,9 @@ def audio_sync(request):
         project = Project.objects.get(name=request.data['project'])
         song = Song.objects.get(name__iexact=request.data['song'], project=project)
     except (Song.DoesNotExist, Project.DoesNotExist):
-        return Response({}, status=status.HTTP_404_NOT_FOUND)
+        return HTTP_404_RESPONSE
     if not request.user.can_sync(song):
-        return Response({}, status=status.HTTP_403_FORBIDDEN)
+        return HTTP_403_RESPONSE
     AudioSync.objects.create(user=request.user, song=song)
     song.peaks = ""
     song.save()

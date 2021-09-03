@@ -54,6 +54,6 @@ async function getComments(project = null, song = null) {
 }
 
 async function getRegions(song) {
-    const response = await APIRequest('player/regions/' + song + "/");
+    const response = await APIRequest('player/regions/?song=' + song);
     return response
 }

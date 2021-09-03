@@ -49,6 +49,10 @@ class User(AbstractUser):
                 return False
         elif isinstance(obj, Sync):
             return obj.project in projects.all()
+        elif hasattr(obj, 'song'):
+            return User.check_object_access(obj.song, projects)
+        elif hasattr(obj, 'project'):
+            return User.check_object_access(obj.project, projects)
         else:
             raise NotImplementedError()
 
