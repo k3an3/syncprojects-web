@@ -52,3 +52,8 @@ async function getComments(project = null, song = null) {
     const response = await APIRequest('comments/?' + query);
     return response;
 }
+
+async function getRegions(song) {
+    const response = await APIRequest('player/regions/' + song + "/");
+    return response
+}

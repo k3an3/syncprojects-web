@@ -7,6 +7,7 @@ const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const username = document.querySelector('#username').textContent;
 const userid = document.querySelector('#userid').textContent;
 let playerActive = false;
+const context = getContext();
 
 function getContext() {
     let matches = window.location.pathname.match(proj_re);

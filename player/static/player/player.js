@@ -28,21 +28,55 @@ wavesurfer.on('ready', async function () {
     console.log('Wavesurfer loaded.');
     fadeOut(document.getElementById('audio-spinner'));
     fadeIn(playerControls);
-    await setUpMarkers();
+    await Promise.all([setUpMarkers(), setUpRegions()]);
 });
 
 let allComments = {};
+let allRegions = {};
+
+function parseRGBA(int) {
+    // convert int r.g.b.(a*100) to rgba(r, g, b, a)
+    let result = "rgba(";
+    result += int >> 24 + ", ";
+    result += (int >> 16) & 0xff + ", ";
+    result += (int >> 8) & 0xff + ", ";
+    result += (int & 0xff) / 255 + ")";
+    return result;
+}
+
+const regionDefaults = {
+    loop: false,
+    drag: false,
+    resize: false,
+}
+
+async function setUpRegions() {
+    let regions = getRegions(context.song);
+    if (regions.results) {
+        for (let region of regions.results) {
+            region.color = parseRGBA(region.color);
+            region = {
+                ...region,
+                ...regionDefaults
+            }
+            wavesurfer.addRegion(region);
+        }
+    } else {
+        console.log("No regions found for song.");
+    }
+}
 
 async function setUpMarkers() {
     wavesurfer.clearMarkers();
-    let context = getContext();
     if (context.song) {
         let comments = await getComments(null, context.song);
         allComments = {};
-        for (const comment of comments.results) {
-            if (comment.song_time_seconds && !comment.resolved) {
-                allComments[comment.song_time_seconds] = comment;
-                addMarker(comment.song_time_seconds, comment.requires_resolution ? "yellow" : "blue");
+        if (comments.results.length) {
+            for (const comment of comments.results) {
+                if (comment.song_time_seconds && !comment.resolved) {
+                    allComments[comment.song_time_seconds] = comment;
+                    addMarker(comment.song_time_seconds, comment.requires_resolution ? "yellow" : "blue");
+                }
             }
         }
     }
