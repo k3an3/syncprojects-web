@@ -11,6 +11,7 @@ const volInc = 0.1;
 const seekInc = 1;
 const volMax = 1;
 const volMin = 0;
+let loopAll = false;
 
 let wavesurfer = WaveSurfer.create({
     container: '#waveform',
@@ -33,39 +34,6 @@ wavesurfer.on('ready', async function () {
 
 let allComments = {};
 let allRegions = {};
-
-function parseRGBA(int) {
-    // convert int r.g.b.(a*100) to rgba(r, g, b, a)
-    let result = "rgba(";
-    result += int >> 24 + ", ";
-    result += (int >> 16) & 0xff + ", ";
-    result += (int >> 8) & 0xff + ", ";
-    result += (int & 0xff) / 255 + ")";
-    return result;
-}
-
-const regionDefaults = {
-    loop: false,
-    drag: false,
-    resize: false,
-}
-
-async function setUpRegions() {
-    let regions = await getRegions(context.song);
-    if (regions.results != null) {
-        for (let region of regions.results) {
-            region.color = hex2RGBA(region.color, 0.33);
-            region = {
-                ...region,
-                ...regionDefaults
-            }
-            console.log(region);
-            wavesurfer.addRegion(region);
-        }
-    } else {
-        console.log("No regions found for song.");
-    }
-}
 
 async function setUpMarkers() {
     wavesurfer.clearMarkers();
@@ -103,11 +71,11 @@ async function playerControl(e) {
         case "play":
             wavesurfer.playPause();
             if (wavesurfer.isPlaying()) {
-                e.target.innerHTML = '<span class="fas fa-pause"></span>';
-                e.target.className = "btn btn-warning";
+                e.currentTarget.innerHTML = '<span class="fas fa-pause"></span>';
+                e.currentTarget.className = "btn btn-warning player-control";
             } else {
-                e.target.innerHTML = '<span class="fas fa-play"></span>';
-                e.target.className = "btn btn-success";
+                e.currentTarget.innerHTML = '<span class="fas fa-play"></span>';
+                e.currentTarget.className = "btn btn-success player-control";
             }
             break;
         case "forward":
@@ -123,7 +91,12 @@ async function playerControl(e) {
             wavesurfer.seekTo(1);
             break;
         case "loop":
-
+            loopAll = !loopAll;
+            if (loopAll) {
+                e.currentTarget.className = "btn btn-warning player-control";
+            } else {
+                e.currentTarget.className = "btn btn-default player-control";
+            }
         case "volup":
             vol = wavesurfer.getVolume();
             if (vol + volInc <= volMax) {
@@ -148,9 +121,9 @@ async function playerControl(e) {
             let mute = !wavesurfer.getMute();
             wavesurfer.setMute(mute);
             if (mute) {
-                e.target.className = "btn btn-danger";
+                e.currentTarget.className = "btn btn-danger player-control";
             } else {
-                e.target.className = "btn btn-outline-danger";
+                e.currentTarget.className = "btn btn-outline-danger player-control";
             }
             break;
     }
@@ -175,9 +148,14 @@ wavesurfer.on('error', (e) => {
     document.getElementById("audio-spinner").innerHTML = "<strong>Error loading audio</strong>";
 });
 
-bindEventToSelector('.player-control', playerControl);
+wavesurfer.on('finish', (e) => {
+    if (loopAll) {
+        wavesurfer.playPause();
+        setTimeout(_ => {
+            playButton.innerHTML = '<span class="fas fa-pause"></span>';
+            playButton.className = "btn btn-warning";
+        }, 300);
+    }
+});
 
-const hex2RGBA = (hex, alpha = 1) => {
-    const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
-    return `rgba(${r},${g},${b},${alpha})`;
-};
+bindEventToSelector('.player-control', playerControl);
