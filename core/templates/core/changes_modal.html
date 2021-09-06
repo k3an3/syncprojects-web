@@ -5,6 +5,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">What's New in Syncprojects</h5>
+                    {% if version and revision %}
+                        &nbsp;
+                        <span class="text-muted">revision {{ revision }} ({{ version }})</span>
+                    {% endif %}
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="changes-modal-body">

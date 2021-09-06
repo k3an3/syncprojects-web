@@ -214,7 +214,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
             obj = song
         else:
             if not self.request.user.has_member_access(project):
-                return Response({}, status=status.HTTP_403_FORBIDDEN)
+                # Check if the user has any songs from this project. If so, just pretend they got the lock and let
+                # them continue
+                if self.request.user.collab_songs.filter(project=project).count():
+                    if lock := project.is_locked():
+                        return Response({'status': 'locked',
+                                         'locked_by': lock.user.username,
+                                         'until': lock.end_time,
+                                         'since': lock.start_time
+                                         })
+                    return Response({'id': 1})
+                else:
+                    return Response({}, status=status.HTTP_403_FORBIDDEN)
             obj = project
 
         if request.method == 'PUT':

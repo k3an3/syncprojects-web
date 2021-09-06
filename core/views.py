@@ -1,3 +1,5 @@
+import subprocess
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
@@ -14,6 +16,13 @@ song_fields = ['name', 'sync_enabled', 'directory_name', 'project_file', 'shared
                'album_order', 'bpm',
                'key_tuning', 'archived']
 
+try:
+    version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
+    revision = subprocess.check_output(["git", "rev-list", "--count", "HEAD"]).strip().decode()
+except subprocess.CalledProcessError:
+    version = None
+    revision = None
+
 
 class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
@@ -24,6 +33,8 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         context['subscribed_projects_list'] = self.request.user.subscribed_projects.all()
         if self.request.user.latest_feature_seen != FeatureChangelog.objects.last():
             context['changes'] = FeatureChangelog.objects.all().order_by('-id')
+            context['version'] = version
+            context['revision'] = revision
             self.request.user.latest_feature_seen = FeatureChangelog.objects.last()
             self.request.user.save()
         return context
