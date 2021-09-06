@@ -26,3 +26,21 @@ const hex2RGBA = (hex, alpha = 1) => {
     const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
     return `rgba(${r},${g},${b},${alpha})`;
 };
+
+wavesurfer.on('region-in', (e) => {
+});
+
+wavesurfer.on('region-out', (e) => {
+});
+
+wavesurfer.on('region-click', (e) => {
+});
+
+wavesurfer.on('region-dblclick', (e) => {
+});
+
+wavesurfer.on('region-mouseenter', (e) => {
+});
+
+wavesurfer.on('region-mouseleave', (e) => {
+});
