@@ -137,6 +137,7 @@ wavesurfer.on('marker-click', (e) => {
 
 wavesurfer.on('error', (e) => {
     showToast("Audio Player", "Error: " + e, "danger");
+    document.getElementById("audio-spinner").innerHTML = "<strong>Error loading audio</strong>";
 });
 
 bindEventToSelector('.player-control', playerControl);
