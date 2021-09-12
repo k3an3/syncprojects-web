@@ -68,7 +68,7 @@ async function submitChangelog(song, text) {
         showToast("Error", "Changelog must not be blank.", "danger");
         return;
     }
-    return await APIRequest('syncs/' + song + '/changelog/', 'PUT', {
+    return await APIRequest('songs/' + song + '/changelog/', 'PUT', {
         text: text
     });
 }

@@ -74,19 +74,6 @@ class SyncViewSet(viewsets.ModelViewSet):
         sync.data['changelogs'] = ChangelogEntrySerializer(self.get_object().changelog, many=True, read_only=True).data
         return Response(sync.data)
 
-    # noinspection PyUnusedLocal
-    @action(detail=True, methods=['put'])
-    def changelog(self, request, pk=None):
-        # TODO: validate
-        song = Song.objects.get(id=pk)
-        if not self.request.user.can_sync(song):
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
-        sync = song.sync_set.all().last()
-        result = ChangelogEntry.objects.create(user=self.request.user,
-                                               sync=sync,
-                                               song=song,
-                                               text=request.data['text'])
-        return Response({'created': result.id})
 
     # noinspection PyUnusedLocal
     @action(detail=True, methods=['get'])
@@ -122,6 +109,19 @@ class SongViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def url(self, request, pk=None):
         return JsonResponse({'url': self.get_object().get_signed_url()})
+
+    # noinspection PyUnusedLocal
+    @action(detail=True, methods=['put'])
+    def changelog(self, request, pk=None):
+        song = Song.objects.get(id=pk)
+        if not self.request.user.can_sync(song):
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        sync = song.sync_set.all().last()
+        result = ChangelogEntry.objects.create(user=self.request.user,
+                                               sync=sync,
+                                               song=song,
+                                               text=request.data['text'])
+        return Response({'created': result.id})
 
 
 class CommentViewSet(viewsets.ModelViewSet):
