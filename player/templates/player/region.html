@@ -1,0 +1,38 @@
+<div class="card" id="region-controls" hidden>
+    <div class="card-header">
+        <h5 class="card-title">Region Editor</h5>
+        <h6 class="card-subtitle mb-2 text-muted" id="region-title">Region Name</h6>
+    </div>
+    <div class="card-body">
+        <button class="btn btn-success btn-sm region-control" id="region-play">Play <span class="fas fa-play"></span>
+        </button>
+        <button class="btn btn-default btn-sm region-control" id="region-loop">Loop <span class="fas fa-undo"></span>
+        </button>
+        <button class="btn btn-warning btn-sm region-control" id="region-edit">Enable Editing <span
+                class="fas fa-edit"></span></button>
+        <input type="text" class="text-muted" id="region-start" style="width: 60px;" placeholder="start" disabled/>
+        <input type="text" class="text-muted" id="region-end" style="width: 60px;" placeholder="end" disabled/>
+        <button type="button" id="region-close" class="btn-close btn-sm region-control" data-bs-dismiss="card"
+                aria-label="Close"></button>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="region-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add new region</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Name your new region and pick a color:</p>
+                <input type="text" class="form-control" id="region-name" placeholder="Region name"/>
+                <input type="color" class="form-control" id="region-color"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary region-control" id="region-commit">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

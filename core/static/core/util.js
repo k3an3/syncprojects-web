@@ -70,9 +70,14 @@ function showToast(title, content, type = "primary", icon = "") {
     });
 }
 
+function secondsToMMSS(seconds) {
+    return String(Math.floor(seconds / 60)).padStart(2, '0') + ":" + String(Math.round(seconds) % 60).padStart(2, '0');
+
+}
+
 function showTime() {
     let cur_time = wavesurfer.getCurrentTime();
-    let time = String(Math.floor(cur_time / 60)).padStart(2, '0') + ":" + String(Math.round(cur_time) % 60).padStart(2, '0');
+    let time = secondsToMMSS(cur_time);
     document.getElementById("MyClockDisplay").innerText = time;
     document.getElementById("MyClockDisplay").textContent = time;
 }

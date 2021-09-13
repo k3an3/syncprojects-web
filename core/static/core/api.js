@@ -57,3 +57,11 @@ async function getRegions(song) {
     const response = await APIRequest('player/regions/?song=' + song);
     return response
 }
+
+async function addRegion(data, id = null) {
+    if (id) {
+        return await APIRequest('player/regions/' + id + "/", 'PUT', data);
+    } else {
+        return await APIRequest('player/regions/', 'POST', data);
+    }
+}

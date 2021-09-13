@@ -2,6 +2,7 @@
     <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
     <strong>Loading audio...</strong>
 </div>
+<span class="text-muted" id="region-display"></span>
 <div id="waveform"></div>
 
 <div id="player-controls" aria-label="Player Controls" hidden>
@@ -26,9 +27,11 @@
         </button>
         <button type="button" id="player-volup" class="btn btn-secondary player-control"><span
                 class="fas fa-volume-up"></span></button>
-        <span class="text-muted" id="player-volume">100%</span>
+        <span class="text-muted">Volume: </span><span class="text-muted" id="player-volume">100%</span>
     </div>
+    <button class="btn btn-warning region-control" id="region-add">Add Region<span class="fas fa-plus"></span></button>
 </div>
+{% include 'player/region.html' %}
 
 <span id="song_url" hidden>{{ song.signed_url }}</span>
 
