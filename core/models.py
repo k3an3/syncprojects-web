@@ -171,6 +171,10 @@ class Song(models.Model, LockableModel):
         from sync.models import AudioSync
         return AudioSync.objects.filter(song=self).last()
 
+    def unresolved_comments_count(self):
+        return self.comment_set.filter(requires_resolution=True, resolved=False).count() + self.comment_set.filter(
+            requires_resolution=False).count()
+
 
 class FeatureChangelog(models.Model):
     date = models.DateField(default=timezone.now)
