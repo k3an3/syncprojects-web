@@ -125,9 +125,9 @@
                                         {% if not member and song in collab %}
                                             <span class="badge bg-info">Collaborator</span>
                                         {% endif %}
-                                        {% if song.unresolved_comments_count %}
+                                        {% if song.unresolved_comments.count %}
                                             <span class="fas fa-comment"></span>
-                                            <span class="text-muted">{{ song.unresolved_comments_count }}</span>
+                                            <span class="text-muted">{{ song.unresolved_comments.count }}</span>
                                         {% endif %}
                                     </td>
                                 </tr>

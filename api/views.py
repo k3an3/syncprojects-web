@@ -74,7 +74,6 @@ class SyncViewSet(viewsets.ModelViewSet):
         sync.data['changelogs'] = ChangelogEntrySerializer(self.get_object().changelog, many=True, read_only=True).data
         return Response(sync.data)
 
-
     # noinspection PyUnusedLocal
     @action(detail=True, methods=['get'])
     def get_changelogs(self, request, pk=None):
@@ -167,6 +166,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment.requires_resolution = True
         comment.resolved = True
         comment.save()
+        comment.hide_tree()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
     # noinspection PyUnusedLocal

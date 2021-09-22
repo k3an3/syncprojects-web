@@ -19,9 +19,15 @@ class Comment(models.Model):
     song = models.ForeignKey(Song, null=True, blank=True, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.SET_NULL)
+    hidden = models.BooleanField(default=False)
+
+    def hide_tree(self):
+        for comment in self.tree():
+            comment.hidden = True
+            comment.save()
+            comment.hide_tree()
 
     def tree(self):
-        # todo: separate comment_list and comment_card html so it's easier to loop over parent and child
         return self.children.all()
 
     def is_root(self):

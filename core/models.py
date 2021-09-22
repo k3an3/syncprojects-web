@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 
@@ -171,9 +172,9 @@ class Song(models.Model, LockableModel):
         from sync.models import AudioSync
         return AudioSync.objects.filter(song=self).last()
 
-    def unresolved_comments_count(self):
-        return self.comment_set.filter(requires_resolution=True, resolved=False).count() + self.comment_set.filter(
-            requires_resolution=False).count()
+    def unresolved_comments(self):
+        return self.comment_set.filter(
+            Q(requires_resolution=True, resolved=False, hidden=False) | Q(requires_resolution=False, hidden=False))
 
 
 class FeatureChangelog(models.Model):
