@@ -28,7 +28,6 @@ class Comment(models.Model):
             comment.hide_tree()
 
     def tree(self):
-        # todo: separate comment_list and comment_card html so it's easier to loop over parent and child
         return self.children.all()
 
     def is_root(self):
