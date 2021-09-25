@@ -2,22 +2,22 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-from api.views import UserViewSet, ProjectViewSet, fetch_user_tokens, update_webhook, peaks, \
-    ClientUpdateViewSet, sign_data, SyncViewSet, get_backend_creds, SongViewSet, ClientLogViewSet, CommentViewSet, \
-    audio_sync
+from api.views import ProjectViewSet, update_webhook, peaks, \
+    sign_data, SongViewSet, fetch_user_tokens
+from comments.api.urls import router as comments_router
 from player.api.urls import router as player_router
+from sync.api.urls import router as sync_router
+from users.api.urls import router as users_router
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet, 'user')
-router.register(r'updates', ClientUpdateViewSet, 'update')
 router.register(r'projects', ProjectViewSet, 'project')
-router.register(r'syncs', SyncViewSet, 'sync')
 router.register(r'songs', SongViewSet, 'song')
-router.register(r'logs', ClientLogViewSet, 'log')
-router.register(r'comments', CommentViewSet, 'comment')
 
 # Submodule APIs
 router.registry.extend(player_router.registry)
+router.registry.extend(users_router.registry)
+router.registry.extend(comments_router.registry)
+router.registry.extend(sync_router.registry)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -30,6 +30,4 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('webauth/', include('rest_framework.urls', namespace='rest_framework')),
     path('webhook/update/', update_webhook, name='update_webhook'),
-    path('backend_creds/', get_backend_creds, name='backend_creds'),
-    path('sync/audio_sync/', audio_sync, name='audio_sync'),
 ]
