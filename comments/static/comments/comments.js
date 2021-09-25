@@ -16,10 +16,10 @@ async function addComment(comment) {
     }
     content += `</div><div class="card-body">${time}<p class="card-text">${comment.text}</p></div>`;
     content += `<div class="card-footer text-muted">
-<button class="btn btn-link btn-sm text-muted">Edit</button>
-<button id="comment-delete-btn-${comment.id}" class="btn btn-link btn-sm text-muted">Delete</button>
-0<button class="btn btn-link btn-sm text-muted">Assign</button>
-<button id="comment-unresolve-btn-${comment.id}" class="btn btn-link btn-sm text-muted">Mark as needing resolution</button>
+<button class="btn btn-link btn-sm text-muted comment-edit">Edit</button>
+<button id="comment-delete-btn-${comment.id}" class="btn btn-link btn-sm text-muted comment-delete">Delete</button>
+0<button class="btn btn-link btn-sm text-muted comment-assign">Assign</button>
+<button id="comment-unresolve-btn-${comment.id}" class="btn btn-link btn-sm text-muted comment-resolve">Mark as needing resolution</button>
 </div></div>`;
     if (comment.parent) {
         let parent = document.getElementById("comment-" + comment.parent);
@@ -27,8 +27,8 @@ async function addComment(comment) {
     } else {
         comment_div_inner.innerHTML = content + comment_div_inner.innerHTML;
     }
-    document.querySelector('#comment-delete-btn-' + comment.id).addEventListener('click', deleteComment);
-    document.querySelector('#comment-unresolve-btn-' + comment.id).addEventListener('click', resolveComment);
+    bindEventToSelector('.comment-delete', deleteComment);
+    bindEventToSelector('.comment-resolve', resolveComment);
     fadeIn(document.querySelector('#comment-' + comment.id));
     window.location = "#comment-" + comment.id;
 }
@@ -102,6 +102,7 @@ async function commentFormSubmit(event) {
 
 async function resolveComment(event) {
     let comment = getCommentId(event.target.id);
+    console.log(comment);
     if (event.target.id.split('-')[1] === "unresolve") {
         await commentUnresolve(comment);
         showToast("Comments", "Comment marked as needing resolution", "success");

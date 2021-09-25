@@ -3,14 +3,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Delete Comment</h5>
-                <button type="button" class="btn-close" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="comment-delete-modal-body">
                 <p class="lead">Are you sure?</p>
                 <p>This comment will be deleted permanently. If you are sure, click the button below.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close
+                </button>
                 <button class="btn btn-lg btn-danger" id="confirm-comment-delete" type="submit">DELETE</button>
             </div>
         </div>
