@@ -8,24 +8,19 @@ const loopBtn = document.getElementById('region-loop');
 const editBtn = document.getElementById('region-edit');
 const regionModal = new bootstrap.Modal(document.getElementById('region-modal'));
 
-const regionDefaults = {
-    loop: false,
-    drag: false,
-    resize: false,
-}
 
 async function setUpRegions() {
     let regions = await getRegions(context.song);
     if (regions.results != null) {
         for (let region of regions.results) {
             region.color = hex2RGBA(region.color, 0.33);
-            region = {
-                ...region,
-                ...regionDefaults
-            }
-            wavesurfer.addRegion(region);
+            let r = wavesurfer.addRegion(region);
+            r.loop = false;
+            r.drag = false;
+            r.resize = false;
             // by default, the name is the range
-            wavesurfer.regions.list[region.id].element.title = region.name;
+            //wavesurfer.regions.list[region.id].element.title = region.name;
+            r.element.title = region.name;
             allRegions[region.id] = region;
         }
     } else {
@@ -37,6 +32,11 @@ const hex2RGBA = (hex, alpha = 1) => {
     const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
     return `rgba(${r},${g},${b},${alpha})`;
 };
+
+const RGBA2Hex = (rgbaString) => {
+    const rgba = rgbaString.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+    return `${((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1)}`;
+}
 
 function showRegionMenu(region) {
     if (region == currentRegion) {
@@ -100,10 +100,17 @@ async function regionControl(e) {
                 currentRegion.resize = false;
                 editBtn.className = "btn btn-warning btn-sm region-control";
                 editBtn.innerHTML = "Enable Editing <span class=\"fas fa-plus\"></span";
-                await addRegion(currentRegion, allRegions[currentRegion.id]);
+                let r = {
+                    ...allRegions[currentRegion.id],
+                    color: RGBA2Hex(currentRegion.color),
+                    start: currentRegion.start,
+                    end: currentRegion.end,
+                }
+                await addRegion(r, currentRegion.id);
             } else {
                 currentRegion.drag = true;
                 currentRegion.resize = true;
+                showToast("Regions", "The region can now be resized by clicking the edges and dragging, or moved by clicking anywhere in the region and dragging it to a new location.");
                 editBtn.className = "btn btn-success btn-sm region-control";
                 editBtn.innerHTML = "Save Edits <span class=\"fas fa-save\"></span>";
             }

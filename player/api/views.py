@@ -20,4 +20,4 @@ class SongRegionViewSet(viewsets.ModelViewSet):
             if not self.request.user.can_sync(song):
                 return HTTP_403_RESPONSE
             return SongRegion.objects.filter(song=song)
-        return SongRegion.objects.none()
+        return SongRegion.objects.all()
