@@ -137,6 +137,7 @@ async function regionControl(e) {
             break;
         case 'close':
             fadeOut(regionMenu);
+            currentRegion = null;
             break;
         case 'delete':
             currentRegion.remove();
