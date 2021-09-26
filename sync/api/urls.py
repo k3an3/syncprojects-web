@@ -10,6 +10,4 @@ router.register(r'logs', views.ClientLogViewSet, 'log')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('backend_creds/', views.get_backend_creds, name='backend_creds'),
-    path('sync/audio_sync/', views.audio_sync, name='audio_sync'),
 ]

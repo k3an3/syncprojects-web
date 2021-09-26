@@ -7,6 +7,7 @@ from api.views import ProjectViewSet, update_webhook, peaks, \
 from comments.api.urls import router as comments_router
 from player.api.urls import router as player_router
 from sync.api.urls import router as sync_router
+from sync.api.views import get_backend_creds, audio_sync
 from users.api.urls import router as users_router
 
 router = routers.DefaultRouter()
@@ -30,4 +31,6 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('webauth/', include('rest_framework.urls', namespace='rest_framework')),
     path('webhook/update/', update_webhook, name='update_webhook'),
+    path('backend_creds/', get_backend_creds, name='backend_creds'),
+    path('sync/audio_sync/', audio_sync, name='audio_sync'),
 ]
