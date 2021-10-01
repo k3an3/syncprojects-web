@@ -5,9 +5,15 @@ from sync.api.serializers import SyncSerializer
 
 
 class LockSerializer(serializers.ModelSerializer):
+    start_time = serializers.SerializerMethodField()
+
     class Meta:
         model = Lock
         fields = "__all__"
+
+    @staticmethod
+    def get_start_time(lock):
+        return lock.start_time.timestamp()
 
 
 class SongSerializer(serializers.ModelSerializer):

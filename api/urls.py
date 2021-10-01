@@ -7,7 +7,7 @@ from api.views import ProjectViewSet, update_webhook, peaks, \
 from comments.api.urls import router as comments_router
 from player.api.urls import router as player_router
 from sync.api.urls import router as sync_router
-from sync.api.views import get_backend_creds, audio_sync
+from sync.api.views import get_backend_creds
 from users.api.urls import router as users_router
 
 router = routers.DefaultRouter()
@@ -23,6 +23,7 @@ router.registry.extend(sync_router.registry)
 urlpatterns = [
     path('', include(router.urls)),
     path('player/', include(player_router.urls)),
+    path('sync/', include('sync.api.urls')),
     path('sign/', sign_data, name='sign_data'),
     path('peaks/', peaks, name='peaks'),
     path('token/fetch/', fetch_user_tokens),
@@ -32,5 +33,4 @@ urlpatterns = [
     path('webauth/', include('rest_framework.urls', namespace='rest_framework')),
     path('webhook/update/', update_webhook, name='update_webhook'),
     path('backend_creds/', get_backend_creds, name='backend_creds'),
-    path('sync/audio_sync/', audio_sync, name='audio_sync'),
 ]

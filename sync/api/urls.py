@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 from rest_framework import routers
 
 from sync.api import views
@@ -9,5 +9,6 @@ router.register(r'updates', views.ClientUpdateViewSet, 'update')
 router.register(r'logs', views.ClientLogViewSet, 'log')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('audio_sync/', views.audio_sync, name='audio_sync'),
+    path('checkouts/', views.get_checkouts, name='get_checkouts'),
 ]

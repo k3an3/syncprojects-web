@@ -3,8 +3,9 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 
 from api.permissions import UserHasProjectAccess, CreateOrReadOnly, IsAdminOrWriteOnly
+from api.serializers import LockSerializer
 from api.views import HTTP_403_RESPONSE, HTTP_404_RESPONSE
-from core.models import Song, Project
+from core.models import Song, Project, Lock
 from sync.api.serializers import ClientUpdateSerializer, SyncSerializer, ChangelogEntrySerializer, ClientLogSerializer
 from sync.models import SupportedClientTarget, ClientUpdate, Sync, ChangelogEntry, ClientLog, AudioSync
 from syncprojectsweb.settings import BACKEND_ACCESS_ID, BACKEND_SECRET_KEY
@@ -105,3 +106,9 @@ def audio_sync(request):
     song.peaks = ""
     song.save()
     return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_checkouts(request):
+    return Response({'checkouts': LockSerializer(Lock.objects.filter(user=request.user), many=True).data})
