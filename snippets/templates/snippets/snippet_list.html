@@ -2,19 +2,10 @@
 {% load static %}
 
 {% block head %}
-    {% if song.url %}
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    {% endif %}
 {% endblock %}
 
 {% block header %}
-    <h1 class="h2">{{ song.name }}</h1>
-    {% if song.bpm %}
-        <h5 class="text-muted">{{ song.bpm }} BPM</h5>
-    {% endif %}
-    {% if song.key_tuning %}
-        <h5 class="text-muted">{{ song.key_tuning }}</h5>
-    {% endif %}
+    <h1 class="h2">{{ project.name }}</h1>
     {% if member %}
         <span class="badge bg-primary">Member</span>
     {% elif can_sync %}
@@ -22,21 +13,18 @@
     {% else %}
         <span class="badge bg-success">Follower</span>
     {% endif %}
-    {% if song.archived %}
-        <span class="badge bg-danger">Archived</span>
-    {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <a href="{% url 'snippets:song-new' project.id song.id %}" class="btn btn-sm btn-outline-secondary">Edit
-                Song</a>
+            <a href="{% url 'snippets:new-snippet' project.id %}" class="btn btn-sm btn-outline-secondary">New
+                Snippet</a>
         </div>
     </div>
 {% endblock %}
 
 {% block sidebar %}
-    {% if song.project.image %}
+    {% if project.image %}
         <div class="nav flex-column">
-            <img src="{{ song.project.image.url }}" width="75%"
+            <img src="{{ project.image.url }}" width="75%"
                  style="padding-left: 10px; object-fit: cover; object-position: center">
         </div>
     {% endif %}
@@ -46,30 +34,25 @@
 {% endblock %}
 
 {% block content %}
-    {% include 'sync/sync.html' %}
-    {% if song.signed_url %}
-        <span id="song_url_present" hidden></span>
-        <div class="col-sm-1">
-            <div id="MyClockDisplay" class="timecode"></div>
-        </div>
-        <div class="col-lg-9 col-sm-12">
-            {% include 'player/player.html' %}
-        </div>
-        <span class="text-muted">Audio last updated: {% if song.last_audio_sync %}{{ song.last_audio_sync.date }} by
-            {{ song.last_audio_sync.user }}{% else %}unknown{% endif %}</span>
-        <span class="text-muted"><a href="{{ song.signed_url }}"><span class="fas fa-download"></span></a></span>
+    <h3>Snippets</h3>
+    {% if snippets %}
+        {% for snippet in snippet_list %}
+            <div class="card">
+                <div class="card-header">
+                    {{ snippet.name }} &mdash; {{ snippet.date }} &mdash; {{ snippet.user.display_name }}
+                </div>
+                <div class="card-body">
+                    <audio controls src="{{ snippet.url }}" crossorigin="anonymous" preload="metadata"></audio>
+                </div>
+            </div>
+        {% endfor %}
     {% else %}
-        <div class="alert alert-dismissable alert-secondary"><strong>No audio!</strong> There is currently not an audio
-            URL defined for this song. Add one to enable the player and other features.
+        <div class="alert alert-primary" role="alert">
+            No snippets here! <a href="{% url 'snippets:new-snippet' project.id %}">Create</a> one.
         </div>
     {% endif %}
     {% include 'comments/comments.html' %}
-    {% include 'sync/recent_syncs.html' %}
 {% endblock %}
 
 {% block script %}
-    {% include 'sync/script.html' %}
-    {% if song.signed_url %}
-        {% include 'player/script.html' %}
-    {% endif %}
 {% endblock %}

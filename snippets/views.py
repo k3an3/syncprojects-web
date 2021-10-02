@@ -3,23 +3,26 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.views import generic
 
-from core.models import Project, Song
+from core.models import Project
 from snippets.models import Snippet
 
 
+# TODO no security
 class SnippetListView(LoginRequiredMixin, generic.ListView):
     model = Snippet
 
     def get_queryset(self):
-        if 'project' in self.kwargs:
-            obj = get_object_or_404(Project, id=self.kwargs['project'])
-        elif 'song' in self.kwargs:
-            obj = get_object_or_404(Song, id=self.kwargs['song'])
-        else:
-            return Snippet.objects.none()
+        project = get_object_or_404(Project, id=self.kwargs['project'])
 
-        if not self.request.user.can_sync(obj):
+        if not self.request.user.can_sync(project):
             # better to use UserPassesTest?
             raise PermissionDenied()
 
-        return obj.snippets.all()
+        return project.snippet_set.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project = get_object_or_404(Project, id=self.kwargs['project'])
+        context['project'] = project
+        context['member'] = self.request.user.has_member_access(project)
+        return context

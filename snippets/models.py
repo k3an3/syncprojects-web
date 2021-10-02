@@ -1,16 +1,17 @@
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils import timezone
 
+from core.models import Project
 from core.s3 import get_presigned_url, get_client
+from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
 class Snippet(models.Model):
     url = models.URLField(null=True, blank=True)
     name = models.CharField(max_length=50)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    object = GenericForeignKey('content_type', 'object_id')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    user = models.ForeignKey(AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
     # TODO: security
 
@@ -23,3 +24,6 @@ class Snippet(models.Model):
             url = get_presigned_url(get_client(), key, method="upload")
             self.url, fields = url['url'], url['fields']
             return self.url, fields
+
+    def __str__(self):
+        return self.name

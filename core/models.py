@@ -11,7 +11,6 @@ from django.urls import reverse
 from django.utils import timezone
 
 from core.s3 import get_client, get_presigned_url, PRESIGNED_URL_DURATION, get_song_names, FAILURE_RETRY_INTERVAL
-from snippets.models import Snippet
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
@@ -74,7 +73,6 @@ class Project(models.Model, LockableModel):
     locks = GenericRelation(Lock)
     website = models.URLField(null=True, blank=True)
     links = GenericRelation(Link)
-    snippets = GenericRelation(Snippet)
 
     def __str__(self):
         return self.name
@@ -132,7 +130,6 @@ class Song(models.Model, LockableModel):
     key_tuning = models.CharField(max_length=40, verbose_name="Key/tuning", null=True, blank=True,
                                   help_text="E.g. G# Minor, Half-step down tuning")
     links = GenericRelation(Link)
-    snippets = GenericRelation(Snippet)
 
     def __str__(self):
         return self.name

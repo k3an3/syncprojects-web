@@ -20,17 +20,15 @@
         </li>
         {% if member %}
             <li class="nav-item">
-                <a class="nav-link" href="#" disabled>
+                <a class="nav-link" href="{% url 'snippets:list-snippets' project.id %}">
                     <span data-feather="users"></span>
-                    Snippets (coming soon)
+                    Snippets
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'todo:list-todo' project.id %}">
                     <span data-feather="users"></span>
                     TODOs
-                </a>
-            </li>
         {% endif %}
         </ul>
         {% if member %}
