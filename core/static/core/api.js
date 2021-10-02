@@ -65,3 +65,7 @@ async function addRegion(data, id = null) {
         return await APIRequest('player/regions/', 'POST', data);
     }
 }
+
+async function deleteRegion(id) {
+    return await APIRequest('player/regions/' + id + '/', 'DELETE');
+}

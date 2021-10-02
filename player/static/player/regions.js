@@ -144,6 +144,7 @@ async function regionControl(e) {
             delete allRegions[currentRegion.id];
             fadeOut(regionMenu);
             showToast("Regions", "Region deleted", "success");
+            deleteRegion(currentRegion.id);
             break;
         case 'add':
             regionModal.show();
