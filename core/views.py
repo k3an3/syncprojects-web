@@ -26,7 +26,7 @@ except subprocess.CalledProcessError:
 
 class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
-        return self.request.user.projects.order_by('-name')
+        return self.request.user.projects.order_by('name')
 
     def get_context_data(self, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
