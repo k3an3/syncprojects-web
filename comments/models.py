@@ -47,8 +47,13 @@ class Comment(models.Model):
         return result + f"{minutes}:{seconds:02}"
 
     def __str__(self):
-        return self.user.username + " at " + self.posted_date.isoformat() + " says \"" + self.text[:50] + (
-            "..." if len(self.text) > 50 else "") + "\""
+        if self.song:
+            name = self.song.name
+        else:
+            name = self.project.name
+        return name + ": " + self.user.username + " at " + self.posted_date.isoformat() + " says \"" + self.text[
+                                                                                                       :50] + (
+                   "..." if len(self.text) > 50 else "") + "\""
 
     @property
     def likes(self):
