@@ -15,7 +15,7 @@
     {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <a href="{% url 'snippets:new-snippet' project.id %}" class="btn btn-sm btn-outline-secondary">New
+            <a href="" class="btn btn-sm btn-outline-secondary">New
                 Snippet</a>
         </div>
     </div>
@@ -35,6 +35,7 @@
 
 {% block content %}
     <h3>Snippets</h3>
+    <button class="btn btn-block btn-primary record" id="snippet-record">Record</button>
     {% if snippets %}
         {% for snippet in snippet_list %}
             <div class="card">
@@ -48,11 +49,12 @@
         {% endfor %}
     {% else %}
         <div class="alert alert-primary" role="alert">
-            No snippets here! <a href="{% url 'snippets:new-snippet' project.id %}">Create</a> one.
+            No snippets here! Create one above.
         </div>
     {% endif %}
     {% include 'comments/comments.html' %}
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'snippets/snippets.js' %}"></script>
 {% endblock %}
