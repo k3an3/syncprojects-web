@@ -1,8 +1,11 @@
 const record = document.querySelector('.record');
 const stop = document.querySelector('.stop');
+const canvas = document.querySelector('.visualizer');
+const modal = new bootstrap.Modal(document.querySelector('#snippet-modal'));
 
 let recording = false;
 let audioCtx;
+const canvasCtx = canvas.getContext("2d");
 let chunks = [];
 
 
@@ -38,6 +41,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     record.innerText = "Record";
                     recording = false;
                 }
+            }
+
+            mediaRecorder.onstop = function (e) {
+                console.log("data available after MediaRecorder.stop() called.");
+
+                //modal.show();
+                const clipName = prompt('Enter a name for your sound clip:');
+
+                console.log(chunks);
+                console.log("recorder stopped");
+
             }
 
             mediaRecorder.ondataavailable = function (e) {

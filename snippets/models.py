@@ -23,6 +23,7 @@ class Snippet(models.Model):
             key = f"{'.'.join(name)}-{object.name}-{suffix}.{extension}"
             url = get_presigned_url(get_client(), key, method="upload")
             self.url, fields = url['url'], url['fields']
+            self.save()
             return self.url, fields
 
     def __str__(self):
