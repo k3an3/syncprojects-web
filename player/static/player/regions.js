@@ -166,6 +166,7 @@ async function regionControl(e) {
             allRegions[currentRegion.id] = newRegion;
             showToast("Regions", "Region created successfully", "success");
             currentRegion = null;
+            wavesurfer.disableDragSelection();
             break;
         case 'commit':
             let nameField = document.getElementById('region-name');
