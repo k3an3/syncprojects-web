@@ -48,3 +48,13 @@ class TodoCreateView(LoginRequiredMixin, ProjectContextMixin, generic.CreateView
         form.instance.project = project
         form.instance.save()
         return super().form_valid(form)
+
+
+class TodoDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    model = Todo
+
+    def test_func(self):
+        return self.request.user.can_sync(self.get_object().project)
+
+    def get_success_url(self):
+        return reverse('todo:list-todo', args=[self.object.project.pk])

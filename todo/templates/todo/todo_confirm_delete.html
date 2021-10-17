@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% load bootstrap5 %}
+
+
+{% block header %}
+    <h1 class="h2">Delete TODO</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+{% block content %}
+    {% bootstrap_messages %}
+    <div class="alert alert-danger">
+        <p class="lead">Are you sure?</p>
+    </div>
+    <li class="list-group-item">
+        <input id="todo-{{ todo.id }}" class="form-check-input me-1 todo-checkbox" type="checkbox" value=""
+               aria-label="..." {% if todo.done %}checked{% endif %} disabled>
+        <span id="todo-text-{{ todo.id }}"{% if todo.done %}
+              class="text-muted text-decoration-line-through"{% endif %}>{% if todo.song %}
+            <a href="{% url 'core:song-detail' todo.project.id todo.song.id %}">{{ todo.song.name }}</a>
+            &mdash; {% endif %}{{ todo.text }}{% if todo.assignee %} &rarr; (
+            <a href="{% url 'users:user-profile' todo.assignee.id %}">{{ todo.assignee.display_name }}</a>
+            ){% endif %}</span>
+    </li>
+    <br>
+    <form class="form" method="post">
+        {% csrf_token %}
+        <button class="btn btn-lg btn-danger" type="submit">DELETE</button>
+    </form>
+{% endblock %}

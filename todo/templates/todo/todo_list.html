@@ -38,7 +38,10 @@
                           class="text-muted text-decoration-line-through"{% endif %}>{% if todo.song %}
                         <a href="{% url 'core:song-detail' project.id todo.song.id %}">{{ todo.song.name }}</a>
                         &mdash; {% endif %}{{ todo.text }}{% if todo.assignee %} &rarr; (
-                        {{ todo.assignee.display_name }}){% endif %}</span>
+                        <a href="{% url 'users:user-profile' todo.assignee.id %}">{{ todo.assignee.display_name }}</a>
+                        ){% endif %}</span>
+                    <a style="text-decoration: none" href="{% url 'todo:delete-todo' todo.id %}">
+                        <span style="font-size: 6pt; color: #c7c7c7;" class="fas fa-trash"></span></a>
                 </li>
             {% endfor %}
         </ul>
