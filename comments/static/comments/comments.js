@@ -2,7 +2,10 @@ const comment_div = document.querySelector('#comment-div');
 const comment_div_inner = document.querySelector('#comment-div-inner');
 const comment_field = document.querySelector('#comment-field');
 const comment_form = document.querySelector('#comment-form');
-const comment_delete_modal = new bootstrap.Modal(document.querySelector('#comment-delete-modal'));
+const comment_delete_modal_e = document.querySelector('#comment-delete-modal');
+if (comment_delete_modal_e) {
+    const comment_delete_modal = new bootstrap.Modal();
+}
 
 async function addComment(comment) {
     let content = `<div class="card col-md-8" id="comment-${comment.id}"><div class="card-header">`;
@@ -66,7 +69,10 @@ async function doDeleteComment() {
     comment_delete_modal.hide()
 }
 
-document.querySelector('#confirm-comment-delete').addEventListener('click', doDeleteComment);
+const cdc = document.querySelector('#confirm-comment-delete');
+if (cdc) {
+    cdc.addEventListener('click', doDeleteComment);
+}
 
 async function clearComment() {
     comment_field.value = "";

@@ -1,25 +1,23 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-
 {% block header %}
-    <h1 class="h2">Edit Project</h1>
+    <h1 class="h2">Create New TODO for Project {{ project.name }}</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
     </div>
 {% endblock %}
 
 {% block sidebar %}
-
     {% include 'core/sidebar.html' %}
 {% endblock %}
 
 {% block content %}
     {% bootstrap_messages %}
-    <form enctype="multipart/form-data" method="post" action="">
+    <form class="form" method="post">
         {% bootstrap_form form %}
         {% csrf_token %}
         <br>
-        <button class="btn btn-lg btn-primary" type="submit">Save Changes</button>
-        <a href="{% url 'core:project-detail' project.id %}" class="btn btn-secondary">Cancel</a>
+        <button class="btn btn-lg btn-primary" type="submit">Create</button>
+        <a href="{% url 'todo:list-todo' project.id %}" class="btn btn-secondary">Cancel</a>
     </form>
 {% endblock %}

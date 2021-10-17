@@ -8,13 +8,6 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% if project.image %}
-        <div class="nav flex-column">
-            <img src="{{ project.image.url }}" width="75%"
-                 style="padding-left: 10px; object-fit: cover; object-position: center">
-        </div>
-    {% endif %}
-
     {% include 'core/sidebar.html' %}
 {% endblock %}
 

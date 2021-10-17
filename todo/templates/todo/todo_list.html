@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block head %}
+{% endblock %}
+
+{% block header %}
+    <h1 class="h2">{{ project.name }}</h1>
+    {% if member %}
+        <span class="badge bg-primary">Member</span>
+    {% elif can_sync %}
+        <span class="badge bg-info">Collaborator</span>
+    {% else %}
+        <span class="badge bg-success">Follower</span>
+    {% endif %}
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'todo:create-todo' project.id %}" class="btn btn-sm btn-primary">New TODO <span
+                    class="fas fa-plus"></span></a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'core/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+    <h3>TODOs</h3>
+
+    {% if todo_list %}
+        <ul class="list-group">
+            {% for todo in todo_list %}
+                <li class="list-group-item">
+                    <input id="todo-{{ todo.id }}" class="form-check-input me-1 todo-checkbox" type="checkbox" value=""
+                           aria-label="..." {% if todo.done %}checked{% endif %}>
+                    <span id="todo-text-{{ todo.id }}"{% if todo.done %}
+                          class="text-muted text-decoration-line-through"{% endif %}>{% if todo.song %}
+                        <a href="{% url 'core:song-detail' project.id todo.song.id %}">{{ todo.song.name }}</a>
+                        &mdash; {% endif %}{{ todo.text }}{% if todo.assignee %} &rarr; (
+                        {{ todo.assignee.display_name }}){% endif %}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-primary" role="alert">
+            No todos here! <a href="{% url 'todo:create-todo' project.id %}">Create one</a>.
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'todo/todo.js' %}"></script>
+{% endblock %}

@@ -23,6 +23,7 @@ from syncprojectsweb.settings import MEDIA_ROOT, MEDIA_URL
 urlpatterns = [
                   path('', include('core.urls')),
                   path('sync/', include('sync.urls')),
+                  path('todo/', include('todo.urls')),
                   path('admin/', admin.site.urls),
                   path('__debug__/', include(debug_toolbar.urls)),
                   path('api/v1/', include('api.urls')),

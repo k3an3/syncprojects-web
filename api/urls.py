@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('player/', include(player_router.urls)),
     path('sync/', include('sync.api.urls')),
+    path('todo/', include('todo.api.urls')),
     path('sign/', sign_data, name='sign_data'),
     path('peaks/', peaks, name='peaks'),
     path('token/fetch/', fetch_user_tokens),

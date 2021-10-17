@@ -1,34 +1,34 @@
+{% if project.image %}
+    <div class="nav flex-column">
+        <img src="{{ project.image.url }}" width="75%"
+             style="padding-left: 10px; object-fit: cover; object-position: center">
+    </div>
+{% endif %}
 <ul class="nav flex-column">
     {% if project %}
         <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'core:project-detail' project.id %}">
                 <span data-feather="home"></span>
-                {{ project.name }} Dashboard
+                Dashboard
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="#" disabled>
                 <span data-feather="file"></span>
-                Lyrics
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span data-feather="shopping-cart"></span>
-                Sound
+                Lyrics (coming someday)
             </a>
         </li>
         {% if member %}
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="#" disabled>
                     <span data-feather="users"></span>
-                    Assignments
+                    Snippets (coming soon)
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <span data-feather="layers"></span>
-                    Accounting
+                <a class="nav-link" href="{% url 'todo:list-todo' project.id %}">
+                    <span data-feather="users"></span>
+                    TODOs
                 </a>
             </li>
         {% endif %}
