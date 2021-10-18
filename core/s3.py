@@ -17,7 +17,11 @@ def get_client():
     )
 
 
-def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION, method: str = 'get') -> str:
+def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION, method: str = 'get',
+                      content_type: str = "") -> str:
+    extra = {}
+    if content_type:
+        extra['ContentType'] = content_type
     if method == "get":
         return client.generate_presigned_url(
             ClientMethod=f'get_object',
@@ -26,6 +30,11 @@ def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION, 
                 'Key': key,
             }, ExpiresIn=duration
         )
+    elif method == "put":
+        return boto3.client('s3').generate_presigned_url(
+            ClientMethod='put_object',
+            Params={'Bucket': BACKEND_BUCKET, 'Key': key, **extra},
+            ExpiresIn=3600)
     elif method == "upload":
         return boto3.client('s3').generate_presigned_post(BACKEND_BUCKET, key)
     else:

@@ -22,15 +22,7 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% if project.image %}
-        <div class="nav flex-column">
-            <img src="{{ project.image.url }}" width="75%"
-                 style="padding-left: 10px; object-fit: cover; object-position: center">
-        </div>
-    {% endif %}
-
     {% include 'core/sidebar.html' %}
-
 {% endblock %}
 
 {% block content %}
@@ -41,14 +33,14 @@
         <br>
         <button class="btn btn-block btn-primary record" id="snippet-record">Record</button>
     </div>
-    {% if snippets %}
+    {% if snippet_list %}
         {% for snippet in snippet_list %}
             <div class="card">
                 <div class="card-header">
-                    {{ snippet.name }} &mdash; {{ snippet.date }} &mdash; {{ snippet.user.display_name }}
+                    {{ snippet.display_name }} &mdash; {{ snippet.date }} &mdash; {{ snippet.user.display_name }}
                 </div>
                 <div class="card-body">
-                    <audio controls src="{{ snippet.url }}" crossorigin="anonymous" preload="metadata"></audio>
+                    <audio controls src="{{ snippet.signed_url }}" crossorigin="anonymous" preload="metadata"></audio>
                 </div>
             </div>
         {% endfor %}

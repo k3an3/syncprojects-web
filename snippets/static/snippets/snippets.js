@@ -18,12 +18,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         })
 
         // Success callback
-        .then(function (stream) {
+        .then(async function (stream) {
             const mediaRecorder = new MediaRecorder(stream);
 
             visualize(stream);
 
-            record.onclick = function () {
+            record.onclick = async function () {
                 if (!recording) {
                     mediaRecorder.start();
                     console.log(mediaRecorder.state);
@@ -43,15 +43,27 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 }
             }
 
-            mediaRecorder.onstop = function (e) {
+            mediaRecorder.onstop = async function (e) {
                 console.log("data available after MediaRecorder.stop() called.");
 
                 //modal.show();
-                const clipName = prompt('Enter a name for your sound clip:');
-
-                console.log(chunks);
-                console.log("recorder stopped");
-
+                const clipName = prompt('Enter a name for your sound clip:') + ".ogg";
+                let snip = await addSnippet({'name': clipName, 'project': context.project});
+                console.log(snip);
+                const blob = new Blob(chunks, {'type': 'audio/ogg; codecs=opus'});
+                showToast("Snippets", "Snippet created successfully!");
+                await fetch(snip.upload_url, {
+                    method: 'PUT',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    redirect: 'error',
+                    body: blob
+                }).then(_ => {
+                    showToast("Snippets", "Snippet uploaded! Reloading...", "success");
+                    setTimeout(window.location.reload.bind(window.location), 2000);
+                }).catch(_ => {
+                    showToast("Snippets", "Error in snippet upload!", "danger");
+                });
             }
 
             mediaRecorder.ondataavailable = function (e) {

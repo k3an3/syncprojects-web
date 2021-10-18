@@ -4,6 +4,8 @@ from snippets.models import Snippet
 
 
 class SnippetSerializer(serializers.ModelSerializer):
+    upload_url = serializers.ReadOnlyField()
+
     class Meta:
         model = Snippet
-        fields = ['project', 'name', 'url']
+        fields = ['project', 'name', 'upload_url', 'id']

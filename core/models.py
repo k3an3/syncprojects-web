@@ -101,13 +101,42 @@ class Album(models.Model):
         return self.name
 
 
-class Song(models.Model, LockableModel):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    url = models.CharField(max_length=300, null=True, blank=True,
-                           help_text="URL to audio file for this song (optional)")
+class S3ExpiringModelMixin(models.Model):
     url_last_fetched = models.DateTimeField(null=True, blank=True)
     url_last_error = models.DateTimeField(null=True, blank=True)
+    url = models.CharField(max_length=300, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def should_fetch_url(self) -> bool:
+        now = timezone.now()
+        if not self.url_last_fetched:
+            if not self.url_last_error or now >= self.url_last_error + timedelta(seconds=FAILURE_RETRY_INTERVAL):
+                return True
+        elif now >= self.url_last_fetched + timedelta(seconds=PRESIGNED_URL_DURATION):
+            return True
+        return False
+
+    @property
+    def signed_url(self):
+        if self.should_fetch_url():
+            if self.match_required and self.name.lower() in (names := get_song_names(get_client(), self.project)):
+                self.url = get_presigned_url(get_client(), names[self.name.lower()])
+                self.url_last_fetched = timezone.now()
+            elif not self.match_required:
+                self.url = get_presigned_url(get_client(), self.name)
+                self.url_last_fetched = timezone.now()
+            else:
+                self.url_last_error = timezone.now()
+            self.save()
+        return self.url
+
+
+class Song(S3ExpiringModelMixin, LockableModel):
+    match_required = True
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     sync_enabled = models.BooleanField(default=True)
@@ -147,26 +176,6 @@ class Song(models.Model, LockableModel):
     @property
     def revision(self) -> int:
         return self.sync_set.all().count()
-
-    def should_fetch_url(self) -> bool:
-        now = timezone.now()
-        if not self.url_last_fetched:
-            if not self.url_last_error or now >= self.url_last_error + timedelta(seconds=FAILURE_RETRY_INTERVAL):
-                return True
-        elif now >= self.url_last_fetched + timedelta(seconds=PRESIGNED_URL_DURATION):
-            return True
-        return False
-
-    @property
-    def signed_url(self):
-        if self.should_fetch_url():
-            if self.name.lower() in (names := get_song_names(get_client(), self.project)):
-                self.url = get_presigned_url(get_client(), names[self.name.lower()])
-                self.url_last_fetched = timezone.now()
-            else:
-                self.url_last_error = timezone.now()
-            self.save()
-        return self.url
 
     def last_audio_sync(self):
         from sync.models import AudioSync
