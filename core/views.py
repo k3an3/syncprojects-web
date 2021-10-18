@@ -63,7 +63,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
             else:
                 album_set = project.album_set.none()
         else:
-            album_set = project.album_set.all()
+            album_set = project.album_set.order_by('-release_date')
         for album in album_set:
             songs = []
             for song in album.song_set.order_by('album_order'):
