@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
@@ -25,7 +26,7 @@ class TodoListView(LoginRequiredMixin, ProjectContextMixin, generic.ListView):
 
     def get_queryset(self):
         project = get_object_or_404(Project, id=self.kwargs['project'])
-        return project.todo_set.all()
+        return project.todo_set.order_by('done', F('due').asc(nulls_last=True))
 
 
 class TodoCreateView(LoginRequiredMixin, ProjectContextMixin, generic.CreateView):
