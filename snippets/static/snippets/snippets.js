@@ -1,13 +1,37 @@
 const record = document.querySelector('.record');
 const stop = document.querySelector('.stop');
 const canvas = document.querySelector('.visualizer');
-const modal = new bootstrap.Modal(document.querySelector('#snippet-modal'));
+const fileUpload = document.getElementById('upload-file');
 
 let recording = false;
 let audioCtx;
 const canvasCtx = canvas.getContext("2d");
 let chunks = [];
 
+async function handleFile() {
+    const fileList = this.files;
+    let snip = await addSnippet({'name': fileList[0].name, 'project': context.project});
+    showToast("Snippets", "Snippet created successfully!");
+    await uploadSnippet(snip, fileList[0]);
+}
+
+async function uploadSnippet(snip, blob) {
+    await fetch(snip.upload_url, {
+        method: 'PUT',
+        mode: 'cors',
+        credentials: 'omit',
+        redirect: 'error',
+        body: blob
+    }).then(_ => {
+        showToast("Snippets", "Snippet uploaded! Reloading...", "success");
+        setTimeout(window.location.reload.bind(window.location), 2000);
+    }).catch(_ => {
+        chunks = [];
+        showToast("Snippets", "Error in snippet upload!", "danger");
+    });
+}
+
+fileUpload.addEventListener('change', handleFile, false);
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     console.log('getUserMedia supported.');
@@ -52,18 +76,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 console.log(snip);
                 const blob = new Blob(chunks, {'type': 'audio/ogg; codecs=opus'});
                 showToast("Snippets", "Snippet created successfully!");
-                await fetch(snip.upload_url, {
-                    method: 'PUT',
-                    mode: 'cors',
-                    credentials: 'omit',
-                    redirect: 'error',
-                    body: blob
-                }).then(_ => {
-                    showToast("Snippets", "Snippet uploaded! Reloading...", "success");
-                    setTimeout(window.location.reload.bind(window.location), 2000);
-                }).catch(_ => {
-                    showToast("Snippets", "Error in snippet upload!", "danger");
-                });
+                await uploadSnippet(snip, blob);
             }
 
             mediaRecorder.ondataavailable = function (e) {

@@ -25,4 +25,7 @@ class Snippet(S3ExpiringModelMixin):
         return url
 
     def __str__(self):
-        return self.display_name + ", " + self.project.name
+        try:
+            return self.display_name + ", " + self.project.name
+        except TypeError:
+            return self.name + ", " + self.project.name

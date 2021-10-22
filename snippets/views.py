@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.views import generic
@@ -7,7 +7,6 @@ from core.models import Project
 from snippets.models import Snippet
 
 
-# TODO no security
 class SnippetListView(LoginRequiredMixin, generic.ListView):
     model = Snippet
 
@@ -26,3 +25,10 @@ class SnippetListView(LoginRequiredMixin, generic.ListView):
         context['project'] = project
         context['member'] = self.request.user.has_member_access(project)
         return context
+
+
+class SnippetDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    model = Snippet
+
+    def test_func(self):
+        return self.request.user.can_sync(self.get_object().project) or self.request.user.is_superuser

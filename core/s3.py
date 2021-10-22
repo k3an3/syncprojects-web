@@ -31,12 +31,12 @@ def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION, 
             }, ExpiresIn=duration
         )
     elif method == "put":
-        return boto3.client('s3').generate_presigned_url(
+        return client.generate_presigned_url(
             ClientMethod='put_object',
             Params={'Bucket': BACKEND_BUCKET, 'Key': key, **extra},
             ExpiresIn=3600)
     elif method == "upload":
-        return boto3.client('s3').generate_presigned_post(BACKEND_BUCKET, key)
+        return client.generate_presigned_post(BACKEND_BUCKET, key)
     else:
         raise NotImplementedError()
 
