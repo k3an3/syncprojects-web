@@ -18,7 +18,7 @@ class SnippetListView(LoginRequiredMixin, generic.ListView):
             # better to use UserPassesTest?
             raise PermissionDenied()
 
-        return project.snippet_set.all()
+        return project.snippet_set.order_by('-id')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
