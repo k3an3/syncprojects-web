@@ -5,6 +5,11 @@ from core.models import Project, S3ExpiringModelMixin
 from core.s3 import get_presigned_url, get_client
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
+CONTENT_TYPES = {
+    'ogg': 'audio/ogg; codecs=opus',
+    'mp3': 'audio/mpeg',
+}
+
 
 class Snippet(S3ExpiringModelMixin):
     match_required = False
@@ -20,7 +25,8 @@ class Snippet(S3ExpiringModelMixin):
         *name, extension = self.name.split('.')
         self.display_name = '.'.join(name)
         self.name = f"snippets/{self.project.name}-{'.'.join(name)}_{suffix}.{extension}"
-        url = get_presigned_url(get_client(), self.name, method="put", content_type="audio/ogg; codecs=opus")
+        content_type = CONTENT_TYPES.get(extension, f'audio/{extension}')
+        url = get_presigned_url(get_client(), self.name, method="put", content_type=content_type)
         self.save()
         return url
 

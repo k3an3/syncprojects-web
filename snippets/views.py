@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.views import generic
 
 from core.models import Project
@@ -29,6 +30,9 @@ class SnippetListView(LoginRequiredMixin, generic.ListView):
 
 class SnippetDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
     model = Snippet
+
+    def get_success_url(self):
+        return reverse('snippets:list-snippets', args=(self.get_object().project.id,))
 
     def test_func(self):
         return self.request.user.can_sync(self.get_object().project) or self.request.user.is_superuser

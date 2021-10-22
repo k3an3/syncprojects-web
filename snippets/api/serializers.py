@@ -11,7 +11,7 @@ class SnippetSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def validate_name(name):
-        if not re.match(r'.*\.(mp3|ogg|wav|flac|m4a)', name, re.IGNORECASE):
+        if not re.match(r'.*\.(mp3|ogg|wav|flac|m4a|aiff)', name, re.IGNORECASE):
             raise serializers.ValidationError('The file must be of supported type.')
         return name
 
