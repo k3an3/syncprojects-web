@@ -1,3 +1,6 @@
+const csrf_token_e = document.querySelector('[name=csrfmiddlewaretoken]');
+const csrf_token = csrf_token_e != null ? csrf_token_e.value : "";
+
 async function APIRequest(path, method = 'GET', data, jsonResponse = true) {
     const response = await fetch("/api/v1/" + path, {
         method: method,
@@ -68,4 +71,8 @@ async function addRegion(data, id = null) {
 
 async function deleteRegion(id) {
     return await APIRequest('player/regions/' + id + '/', 'DELETE');
+}
+
+async function addSnippet(data) {
+    return await APIRequest('snippets/', 'POST', data);
 }

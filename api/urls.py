@@ -6,6 +6,7 @@ from api.views import ProjectViewSet, update_webhook, peaks, \
     sign_data, SongViewSet, fetch_user_tokens
 from comments.api.urls import router as comments_router
 from player.api.urls import router as player_router
+from snippets.api.urls import router as snippets_router
 from sync.api.urls import router as sync_router
 from sync.api.views import get_backend_creds
 from users.api.urls import router as users_router
@@ -19,6 +20,7 @@ router.registry.extend(player_router.registry)
 router.registry.extend(users_router.registry)
 router.registry.extend(comments_router.registry)
 router.registry.extend(sync_router.registry)
+router.registry.extend(snippets_router.registry)
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -1,6 +1,3 @@
-const csrf_token_e = document.querySelector('[name=csrfmiddlewaretoken]');
-
-const csrf_token = csrf_token_e != null ? csrf_token_e.value : "";
 
 async function localRequest(path, method = 'GET', data = {}, sign = true) {
     let body = null;

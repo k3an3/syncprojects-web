@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% load bootstrap5 %}
+
+
+{% block header %}
+    <h1 class="h2">Delete Snippet</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+{% block content %}
+    {% bootstrap_messages %}
+    <div class="alert alert-danger">
+        <p class="lead">Are you sure?</p>
+    </div>
+    <br>
+    <div class="card">
+        <div class="card-header">
+            {{ snippet.display_name }} &mdash; {{ snippet.date }} &mdash; {{ snippet.user.display_name }}
+        </div>
+        <div class="card-body">
+            <audio controls src="{{ snippet.signed_url }}" crossorigin="anonymous" preload="metadata"></audio>
+        </div>
+    </div>
+    <form class="form" method="post">
+        {% csrf_token %}
+        <button class="btn btn-lg btn-danger" type="submit">DELETE</button>
+    </form>
+{% endblock %}

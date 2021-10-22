@@ -7,7 +7,16 @@ const proj_re = /projects\/(?<project>[0-9]+)\/(songs\/(?<song>[0-9]+)\/)?/;
 const username = document.querySelector('#username').textContent;
 const userid = document.querySelector('#userid').textContent;
 let playerActive = false;
-const context = getContext();
+let context = getContext();
+
+if (context.project == null && context.song == null) {
+    let project = document.getElementById('project').innerText;
+    if (project)
+        context.project = project;
+    let song = document.getElementById('song');
+    if (song)
+        context.song = song.innerText;
+}
 
 function getContext() {
     let matches = window.location.pathname.match(proj_re);

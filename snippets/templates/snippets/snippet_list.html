@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block head %}
+{% endblock %}
+
+{% block header %}
+    <h1 class="h2">{{ project.name }}</h1>
+    {% if member %}
+        <span class="badge bg-primary">Member</span>
+    {% elif can_sync %}
+        <span class="badge bg-info">Collaborator</span>
+    {% else %}
+        <span class="badge bg-success">Follower</span>
+    {% endif %}
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'core/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+    <h3>Snippets</h3>
+    <div class="row">
+        <div class="col-3">
+            <h5>Record New Snippet</h5>
+            <canvas class="visualizer" height="60px"></canvas>
+            <br>
+            <button class="btn btn-block btn-primary record" id="snippet-record">Record</button>
+        </div>
+        <div class="col-3">
+            <h5>Upload Audio File</h5>
+            <div class="btn-group me-2">
+                <input type="file" class="form-control" id="upload-file">
+            </div>
+        </div>
+    </div>
+    {% if snippet_list %}
+        <br>
+        {% for snippet in snippet_list %}
+            <div class="card">
+                <div class="card-header">
+                    {{ snippet.display_name }} &mdash; {{ snippet.date }} &mdash; {{ snippet.user.display_name }}
+                    <a style="text-decoration: none" href="{% url 'snippets:delete-snippet' snippet.id %}">
+                        <span style="font-size: 8pt; color: red;" class="fas fa-trash"></span></a>
+                </div>
+                <div class="card-body">
+                    <audio controls src="{{ snippet.signed_url }}" crossorigin="anonymous" preload="metadata"></audio>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-primary" role="alert">
+            No snippets here! Create one above.
+        </div>
+    {% endif %}
+    <div id="snippet-modal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="alert alert-info" role="alert">
+        Eventually, you will be able to select a snippet to comment on. For now, comments will go to the project
+        dashboard.
+    </div>
+    {% include 'comments/comments.html' %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'snippets/snippets.js' %}"></script>
+{% endblock %}
