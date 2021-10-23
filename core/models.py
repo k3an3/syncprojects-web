@@ -159,6 +159,7 @@ class Song(S3ExpiringModelMixin, LockableModel):
     key_tuning = models.CharField(max_length=40, verbose_name="Key/tuning", null=True, blank=True,
                                   help_text="E.g. G# Minor, Half-step down tuning")
     links = GenericRelation(Link)
+    show_in_player = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

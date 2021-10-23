@@ -29,7 +29,7 @@
     <ul id="playlist-audio1">
         {% for album, songs in albums %}
             {% for song in songs %}
-                {% if song.signed_url %}
+                {% if song.show_in_player and song.signed_url %}
                 <li class="awp-playlist-item" data-type="audio" data-mp3="{{ song.signed_url }}"
                     data-artist="{{ album.name }}" data-title="{{ song.name }}" data-download="{{ song.signed_url }}"
                     data-thumb="

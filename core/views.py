@@ -11,10 +11,10 @@ from core.models import Project, Song, Album, FeatureChangelog
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
 from core.utils import get_syncs
 
-project_fields = ['name', 'image', 'website', 'sync_enabled']
-song_fields = ['name', 'sync_enabled', 'directory_name', 'project_file', 'shared_with_followers', 'album',
+PROJECT_FIELDS = ['name', 'image', 'website', 'sync_enabled']
+SONG_FIELDS = ['name', 'sync_enabled', 'directory_name', 'project_file', 'shared_with_followers', 'album',
                'album_order', 'bpm',
-               'key_tuning', 'archived']
+               'key_tuning', 'archived', 'show_in_player']
 
 try:
     version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
@@ -85,7 +85,7 @@ class ProjectDetailView(LoginRequiredMixin, UserIsFollowerOrMemberPermissionMixi
 
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     model = Project
-    fields = project_fields
+    fields = PROJECT_FIELDS
 
     def form_valid(self, form):
         obj = form.save()
@@ -95,7 +95,7 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
 
 class ProjectUpdateView(UserIsMemberPermissionMixin, generic.UpdateView):
     model = Project
-    fields = project_fields
+    fields = PROJECT_FIELDS
     template_name_suffix = '_update_form'
 
 
@@ -135,7 +135,7 @@ class ProjectCreateBaseView(LoginRequiredMixin, UserPassesTestMixin, generic.Cre
 
 class SongCreateView(ProjectCreateBaseView):
     model = Song
-    fields = song_fields
+    fields = SONG_FIELDS
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -170,7 +170,7 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
 
 class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
     model = Song
-    fields = song_fields
+    fields = SONG_FIELDS
     template_name_suffix = '_update_form'
 
     def get_form(self, form_class=None):
