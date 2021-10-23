@@ -10,9 +10,9 @@ let playerActive = false;
 let context = getContext();
 
 if (context.project == null && context.song == null) {
-    let project = document.getElementById('project').innerText;
+    let project = document.getElementById('project');
     if (project)
-        context.project = project;
+        context.project = project.innerText;
     let song = document.getElementById('song');
     if (song)
         context.song = song.innerText;
