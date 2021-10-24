@@ -37,9 +37,14 @@
                     <span id="todo-text-{{ todo.id }}"{% if todo.done %}
                           class="text-muted text-decoration-line-through"{% endif %}>{% if todo.song %}
                         <a href="{% url 'core:song-detail' project.id todo.song.id %}">{{ todo.song.name }}</a>
-                        &mdash; {% endif %}{{ todo.text }}{% if todo.assignee %} &rarr; (
-                        <a href="{% url 'users:user-profile' todo.assignee.id %}">{{ todo.assignee.display_name }}</a>
-                        ){% endif %}</span>
+                        &mdash; {% endif %}{{ todo.text }}{% if todo.assignee %} &rarr;
+                        (<a href="{% url 'users:user-profile' todo.assignee.id %}">{{ todo.assignee.display_name }}</a>)
+                    {% endif %}</span>
+                    {% if todo.due %}
+                        <span class="text-muted">by {{ todo.due.date }}</span>
+                    {% endif %}
+                    <a style="text-decoration: none" href="{% url 'todo:update-todo' todo.id %}">
+                        <span style="font-size: 6pt; color: #c7c7c7;" class="fas fa-pencil-alt"></span></a>
                     <a style="text-decoration: none" href="{% url 'todo:delete-todo' todo.id %}">
                         <span style="font-size: 6pt; color: #c7c7c7;" class="fas fa-trash"></span></a>
                 </li>

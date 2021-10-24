@@ -3,6 +3,11 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from core.models import Project
 
 
+class UserCanSyncMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.can_sync(self.get_object())
+
+
 class UserIsMemberPermissionMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.has_member_access(self.get_object())

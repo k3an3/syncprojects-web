@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
@@ -16,3 +17,11 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.project.name + " " + self.text
+
+    def clean(self):
+        if self.song and self.song not in self.project.song_set.all():
+            return ValidationError("Song is not within project")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)

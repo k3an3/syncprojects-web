@@ -5,7 +5,10 @@ from django.urls import reverse
 from django.views import generic
 
 from core.models import Project
+from core.permissions import UserCanSyncMixin
 from todo.models import Todo
+
+TODO_FIELDS = ['song', 'assignee', 'due', 'text']
 
 
 class ProjectContextMixin(UserPassesTestMixin):
@@ -31,7 +34,7 @@ class TodoListView(LoginRequiredMixin, ProjectContextMixin, generic.ListView):
 
 class TodoCreateView(LoginRequiredMixin, ProjectContextMixin, generic.CreateView):
     model = Todo
-    fields = ['song', 'assignee', 'due', 'text']
+    fields = TODO_FIELDS
 
     def get_success_url(self):
         return reverse('todo:list-todo', args=[self.object.project.pk])
@@ -51,11 +54,16 @@ class TodoCreateView(LoginRequiredMixin, ProjectContextMixin, generic.CreateView
         return super().form_valid(form)
 
 
-class TodoDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+class TodoDeleteView(LoginRequiredMixin, UserCanSyncMixin, generic.DeleteView):
     model = Todo
 
-    def test_func(self):
-        return self.request.user.can_sync(self.get_object().project)
+    def get_success_url(self):
+        return reverse('todo:list-todo', args=[self.object.project.pk])
+
+
+class TodoUpdateView(LoginRequiredMixin, UserCanSyncMixin, generic.UpdateView):
+    model = Todo
+    fields = TODO_FIELDS
 
     def get_success_url(self):
         return reverse('todo:list-todo', args=[self.object.project.pk])
