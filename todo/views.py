@@ -65,5 +65,12 @@ class TodoUpdateView(LoginRequiredMixin, UserCanSyncMixin, generic.UpdateView):
     model = Todo
     fields = TODO_FIELDS
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['song'].queryset = form.instance.project.song_set.all()
+        if form.instance:
+            form.fields['song'].initial = form.instance.song
+        return form
+
     def get_success_url(self):
         return reverse('todo:list-todo', args=[self.object.project.pk])
