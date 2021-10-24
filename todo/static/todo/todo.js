@@ -1,5 +1,3 @@
-const csrf_token = "";
-
 async function handleCheck(e) {
     let todo = e.currentTarget.id.split('-')[1];
     let checkbox = document.getElementById('todo-' + todo);

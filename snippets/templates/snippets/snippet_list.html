@@ -24,21 +24,21 @@
 {% block content %}
     <h3>Snippets</h3>
     <div class="row">
-        <div class="col-3">
+        <div class="col-12 col-lg-3">
             <h5>Record New Snippet</h5>
             <canvas class="visualizer" height="60px"></canvas>
             <br>
             <button class="btn btn-block btn-primary record" id="snippet-record">Record</button>
         </div>
-        <div class="col-3">
+        <div class="col-12 col-lg-3">
             <h5>Upload Audio File</h5>
             <div class="btn-group me-2">
                 <input type="file" class="form-control" id="upload-file">
             </div>
         </div>
     </div>
+    <br>
     {% if snippet_list %}
-        <br>
         {% for snippet in snippet_list %}
             <div class="card">
                 <div class="card-header">
