@@ -29,7 +29,7 @@ class UserHasProjectAccess(permissions.BasePermission):
         return bool(
             (request.method in SAFE_METHODS or view.action == 'lock') and
             request.user.has_subscriber_access(obj) or
-            request.user.has_member_access(obj)
+            request.user.can_sync(obj)
         )
 
 

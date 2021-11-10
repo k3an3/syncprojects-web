@@ -104,7 +104,10 @@ async function commentFormSubmit(event) {
     await addComment(data);
     await clearComment();
     showToast("Comments", "Comment posted successfully!", "success");
-    await setUpMarkers();
+    try {
+        await setUpMarkers();
+    } catch (e) {
+    }
 }
 
 async function resolveComment(event) {

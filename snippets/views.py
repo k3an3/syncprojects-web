@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
@@ -16,7 +15,7 @@ class SnippetListView(LoginRequiredMixin, generic.ListView):
 
         if not self.request.user.can_sync(project):
             # better to use UserPassesTest?
-            raise PermissionDenied()
+            raise Snippet.objects.none()
 
         return project.snippet_set.order_by('-id')
 

@@ -1,5 +1,4 @@
 import re
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -36,7 +35,7 @@ class User(AbstractUser):
         return self.first_name or self.email
 
     @staticmethod
-    def check_object_access(obj, projects):
+    def check_object_access(obj, projects) -> bool:
         if isinstance(obj, Project):
             try:
                 return projects.get(id=obj.id)

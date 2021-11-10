@@ -25,7 +25,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             except _class.DoesNotExist:
                 return Comment.objects.none()
             if not self.request.user.can_sync(obj):
-                return HTTP_403_RESPONSE
+                return Comment.objects.none()
             return Comment.objects.filter(**{name: obj})
         return self.request.user.comment_set.all()
 

@@ -16,6 +16,6 @@ class UserIsMemberPermissionMixin(UserPassesTestMixin):
 class UserIsFollowerOrMemberPermissionMixin(UserPassesTestMixin):
     def test_func(self):
         obj = self.get_object()
-        return self.request.user.has_member_access(obj) \
+        return self.request.user.can_sync(obj) \
                or self.request.user.has_subscriber_access(obj) \
                and (isinstance(obj, Project) or obj.shared_with_followers)
