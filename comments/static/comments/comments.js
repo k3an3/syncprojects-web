@@ -3,8 +3,9 @@ const comment_div_inner = document.querySelector('#comment-div-inner');
 const comment_field = document.querySelector('#comment-field');
 const comment_form = document.querySelector('#comment-form');
 const comment_delete_modal_e = document.querySelector('#comment-delete-modal');
+let comment_delete_modal;
 if (comment_delete_modal_e) {
-    const comment_delete_modal = new bootstrap.Modal();
+    comment_delete_modal = new bootstrap.Modal(comment_delete_modal_e);
 }
 
 async function addComment(comment) {
