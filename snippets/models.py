@@ -8,6 +8,7 @@ from syncprojectsweb.settings import AUTH_USER_MODEL
 CONTENT_TYPES = {
     'ogg': 'audio/ogg; codecs=opus',
     'mp3': 'audio/mpeg',
+    'm4a': 'audio/x-m4a'
 }
 
 
