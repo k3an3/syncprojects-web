@@ -13,8 +13,8 @@ CONTENT_TYPES = {
 
 class Snippet(S3ExpiringModelMixin):
     match_required = False
-    display_name = models.CharField(max_length=50, null=True, blank=True)
-    name = models.CharField(max_length=50)
+    display_name = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
