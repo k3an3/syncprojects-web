@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
@@ -35,6 +36,8 @@ class CommentViewSet(viewsets.ModelViewSet):
             obj = Song.objects.get(id=self.request.data['song'])
         else:
             obj = Project.objects.get(id=self.request.data['project'])
+        if not self.request.user.can_sync(obj) and not self.request.user.has_subscriber_access(obj):
+            raise ValidationError("Access denied")
         serializer.save(user=self.request.user, internal=self.request.user.can_sync(obj))
 
     # noinspection PyUnusedLocal
