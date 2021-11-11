@@ -38,12 +38,14 @@ class User(AbstractUser):
     def check_object_access(obj, projects) -> bool:
         if isinstance(obj, Project):
             try:
-                return projects.get(id=obj.id)
+                projects.get(id=obj.id)
+                return True
             except Project.DoesNotExist:
                 return False
         elif isinstance(obj, Song) or isinstance(obj, Album):
             try:
-                return projects.get(id=obj.project.id)
+                projects.get(id=obj.project.id)
+                return True
             except Project.DoesNotExist:
                 return False
         elif isinstance(obj, Sync):

@@ -6,6 +6,11 @@ from core.models import Song, Project
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+
 class Comment(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     assignee = models.ForeignKey(AUTH_USER_MODEL, related_name='assignee', null=True, blank=True,
@@ -20,6 +25,8 @@ class Comment(models.Model):
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.SET_NULL)
     hidden = models.BooleanField(default=False)
+    tags = models.ManyToManyField(Tag)
+    internal = models.BooleanField(default=True)
 
     def hide_tree(self):
         for comment in self.tree():

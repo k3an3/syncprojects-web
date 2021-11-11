@@ -3,15 +3,16 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from api.permissions import UserHasProjectMemberAccess
 from api.views import HTTP_403_RESPONSE
-from comments.api.serializers import CommentSerializer
-from comments.models import Comment, CommentLike
+from comments.api.serializers import CommentSerializer, TagSerializer
+from comments.models import Comment, CommentLike, Tag
 from core.models import Song, Project
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectMemberAccess]
 
     def get_queryset(self):
         project = self.request.query_params.get('project')
@@ -30,7 +31,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         return self.request.user.comment_set.all()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        if self.request.data.get('song'):
+            obj = Song.objects.get(id=self.request.data['song'])
+        else:
+            obj = Project.objects.get(id=self.request.data['project'])
+        serializer.save(user=self.request.user, internal=self.request.user.can_sync(obj))
 
     # noinspection PyUnusedLocal
     @action(detail=True, methods=['post'])
@@ -70,3 +75,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         if not created:
             like.delete()
         return JsonResponse({'likes': comment.likes, 'liked': created})
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectMemberAccess]
+
+    def get_queryset(self):
+        project = self.request.query_params.get('project')
+        try:
+            project = Project.objects.get(id=project)
+        except Project.DoesNotExist:
+            return Tag.objects.none()
+        if not self.request.user.can_sync(project):
+            return Tag.objects.none()
+        return Tag.objects.filter(project=project)

@@ -1,21 +1,23 @@
 {% load comment_extras %}
 <div>
     {% for comment in comments %}
-        <div>
-            <div class="card col-md-9" id="comment-{{ comment.id }}">
-                <div class="card-header">
-                    <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
-                    &mdash; {{ comment.when_str }} ({{ comment.posted_date }})
-                    {% if comment.edited %} (edited){% endif %}
-                    {% if comment.requires_resolution and not comment.resolved %}
-                        <span id="comment-unresolved-{{ comment.id }}" class="badge bg-warning">Unresolved</span>
-                    {% endif %}
-                </div>
-                <div class="card-body">
-                    {% if comment.song_time %}
-                        <a role="button" class="timecode-link" id="time-{{ comment.song_time.total_seconds }}"
-                           onclick="wavesurfer.play({{ comment.song_time.total_seconds }});"><h5
-                                class="card-title">{{ comment.timecode }}</h5></a>
+        {% if can_sync or not comment.internal %}
+            <div>
+                <div class="card col-md-9" id="comment-{{ comment.id }}">
+                    <div class="card-header">
+                        <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
+                        &mdash; {{ comment.when_str }} ({{ comment.posted_date }}) {% if not comment.internal %}
+                        <span class="badge bg-danger">Follower</span>{% endif %}
+                        {% if comment.edited %} (edited){% endif %}
+                        {% if comment.requires_resolution and not comment.resolved %}
+                            <span id="comment-unresolved-{{ comment.id }}" class="badge bg-warning">Unresolved</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        {% if comment.song_time %}
+                            <a role="button" class="timecode-link" id="time-{{ comment.song_time.total_seconds }}"
+                               onclick="wavesurfer.play({{ comment.song_time.total_seconds }});"><h5
+                                    class="card-title">{{ comment.timecode }}</h5></a>
                     {% endif %}
                     <p class="card-text">{{ comment.text }}</p>
                 </div>
@@ -53,5 +55,6 @@
                 </div>
             {% endif %}
         </div>
+        {% endif %}
     {% endfor %}
 </div>

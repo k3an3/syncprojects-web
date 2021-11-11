@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from comments.models import Comment
+from comments.models import Comment, Tag
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -18,3 +18,9 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_song_time_seconds(comment):
         if comment.song_time:
             return comment.song_time.total_seconds()
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['name']
