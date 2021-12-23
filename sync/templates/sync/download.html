@@ -4,16 +4,21 @@
 {% block sidebar_container %}{% endblock %}
 
 {% block header %}
-    <h1 class="h2">Download Syncprojects Client</h1>
+    {% if show_dl %}
+        <h1 class="h2">Download Syncprojects Client</h1>
+    {% else %}
+        <h1 class="h2">Syncprojects Client</h1>
+    {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
     </div>
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        {% if supported_targets %}
-            {% for target in supported_targets %}
-                {% if target.latest_release %}
+    {% if show_dl %}
+        <div class="row">
+            {% if supported_targets %}
+                {% for target in supported_targets %}
+                    {% if target.latest_release %}
                     <div class="col-md-2">
                         <div class="card" style="margin-top: 10px;">
                             <div class="card-body">
@@ -31,6 +36,7 @@
             </div>
         {% endif %}
     </div>
+    {% endif %}
     <div class="row">
         {% include 'sync/client_changes.html' %}
     </div>

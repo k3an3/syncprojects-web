@@ -1,7 +1,9 @@
 {% load markdownify %}
 {% if client_changes %}
     <div id="sync-changes-body">
+    {% if show_dl %}
         <hr>
+    {% endif %}
         <h3>Client Changelog</h3>
         {% for change in client_changes %}
             <div class="row">
