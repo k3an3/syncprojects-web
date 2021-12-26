@@ -87,8 +87,10 @@
                                 <span style="font-size: 8pt; color: red;" class="fas fa-trash"></span></a>
                         </h3>
                         {% if album.release_date %}
-                            <h6 class="text-muted">{% if album.released %}Released{% else %}Est.
-                                release{% endif %} {{ album.release_date }}</h6>
+                            <h6 class="text-muted">
+                                {% if album.released %}{% if album.is_released %}Released{% else %}Upcoming
+                                    release{% endif %}{% else %}Est.
+                                    release{% endif %} {{ album.release_date }}</h6>
                         {% else %}
                             <h6 class="text-muted">{% if album.released %}Released{% else %}Unreleased{% endif %}</h6>
                         {% endif %}

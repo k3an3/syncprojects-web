@@ -1,7 +1,6 @@
 import base64
 import re
 from datetime import timedelta
-
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -99,6 +98,9 @@ class Album(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def is_released(self) -> bool:
+        return self.released and timezone.now().date() >= self.release_date
 
 
 class S3ExpiringModelMixin(models.Model):
