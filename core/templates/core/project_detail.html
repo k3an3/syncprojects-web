@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load core_extras %}
 
 {% block head %}
     {% include 'player/awp_player_res.html' %}
@@ -123,6 +124,12 @@
                                         {% if song.unresolved_comments.count %}
                                             <span class="fas fa-comment"></span>
                                             <span class="text-muted">{{ song.unresolved_comments.count }}</span>
+                                        {% endif %}
+                                        {% if song.is_locked %}
+                                            <span class="fas {% get_lock_icon song user %}"></span>
+                                        {% endif %}
+                                        {% if song.archived %}
+                                            <span class="fas fa-box"></span>
                                         {% endif %}
                                     </td>
                                 </tr>

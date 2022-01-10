@@ -10,3 +10,13 @@ register = template.Library()
 @mark_safe
 def sentry_js_script():
     return SENTRY_JS_SCRIPT
+
+
+@register.simple_tag
+@mark_safe
+def get_lock_icon(song, user):
+    if song.is_locked_by_user(user):
+        return "fa-check"
+    elif song.is_locked():
+        return "fa-lock"
+    return "fudge"
