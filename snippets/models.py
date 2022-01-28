@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 from core.models import Project, S3ExpiringModelMixin
-from core.s3 import get_presigned_url, get_client
+from core.s3 import get_presigned_url, S3Client
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
 CONTENT_TYPES = {
@@ -27,7 +27,7 @@ class Snippet(S3ExpiringModelMixin):
         self.display_name = '.'.join(name)
         self.name = f"snippets/{self.project.name}-{'.'.join(name)}_{suffix}.{extension}"
         content_type = CONTENT_TYPES.get(extension, f'audio/{extension}')
-        url = get_presigned_url(get_client(), self.name, method="put", content_type=content_type)
+        url = get_presigned_url(S3Client().client, self.name, method="put", content_type=content_type)
         self.save()
         return url
 

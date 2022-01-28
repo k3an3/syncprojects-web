@@ -1,7 +1,6 @@
 import subprocess
-
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views import generic, View
 from django.views.generic.detail import SingleObjectMixin
@@ -9,6 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 from core.forms import AlbumForm
 from core.models import Project, Song, Album, FeatureChangelog
 from core.permissions import UserIsMemberPermissionMixin, UserIsFollowerOrMemberPermissionMixin
+from core.s3 import get_versions, S3Client
 from core.utils import get_syncs
 
 PROJECT_FIELDS = ['name', 'image', 'website', 'sync_enabled']
@@ -169,7 +169,6 @@ class SongDetailView(SongLookupBaseView, UserIsFollowerOrMemberPermissionMixin, 
 
 
 class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.UpdateView):
-    model = Song
     fields = SONG_FIELDS
     template_name_suffix = '_update_form'
 
@@ -178,6 +177,13 @@ class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.Up
         form.fields['album'].queryset = Project.objects.get(
             id=self.kwargs.get('pk', self.kwargs.get('proj'))).album_set.all()
         return form
+
+
+class SongVersionView(SongLookupBaseView, UserIsMemberPermissionMixin, View):
+    def get(self, request, *args, **kwargs):
+        song = self.get_object()
+        return render(request, 'song_versions.html',
+                      versions=get_versions(S3Client().resource, song.project.name, song.name))
 
 
 class ClearSongPeaksView(SongLookupBaseView, UserPassesTestMixin, View):

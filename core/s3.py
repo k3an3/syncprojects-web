@@ -1,7 +1,7 @@
 from os.path import basename
-from typing import Set
 
 import boto3
+from typing import Set, List
 
 from syncprojectsweb.settings import BACKEND_ACCESS_ID, BACKEND_SECRET_KEY, BACKEND_BUCKET
 
@@ -9,12 +9,24 @@ PRESIGNED_URL_DURATION = 3600 * 24 * 30
 FAILURE_RETRY_INTERVAL = 60 * 15
 
 
-def get_client():
-    return boto3.client(
-        's3',
-        aws_access_key_id=BACKEND_ACCESS_ID,
-        aws_secret_access_key=BACKEND_SECRET_KEY
-    )
+class S3Client:
+    _session = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._session:
+            cls._session = boto3.Session(
+                aws_access_key_id=BACKEND_ACCESS_ID,
+                aws_secret_access_key=BACKEND_SECRET_KEY
+            )
+        return cls._session
+
+    @property
+    def client(self):
+        return self._session.client('s3')
+
+    @property
+    def resource(self):
+        return self._session.resource('s3')
 
 
 def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION, method: str = 'get',
@@ -54,3 +66,9 @@ def get_remote_files(client, prefix: str):
 def get_song_names(client, project: str) -> Set:
     files = get_remote_files(client, f"{project}/")
     return {'.'.join(basename(f['Key']).split('.')[:-1]).lower(): f['Key'] for f in files}
+
+
+def get_versions(resource, project: str, song: str) -> List:
+    path = '/'.join(project, song)
+    versions = resource.Bucket(BACKEND_BUCKET).object_versions.filter(Prefix=path)
+    return [v for v in sorted(versions, key=lambda x: x.last_modified)]

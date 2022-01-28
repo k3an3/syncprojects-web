@@ -9,7 +9,8 @@ from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 
-from core.s3 import get_client, get_presigned_url, PRESIGNED_URL_DURATION, get_song_names, FAILURE_RETRY_INTERVAL
+from core.s3 import get_presigned_url, PRESIGNED_URL_DURATION, get_song_names, FAILURE_RETRY_INTERVAL, \
+    S3Client
 from syncprojectsweb.settings import AUTH_USER_MODEL
 
 
@@ -123,11 +124,11 @@ class S3ExpiringModelMixin(models.Model):
     @property
     def signed_url(self):
         if self.should_fetch_url():
-            if self.match_required and self.name.lower() in (names := get_song_names(get_client(), self.project)):
-                self.url = get_presigned_url(get_client(), names[self.name.lower()])
+            if self.match_required and self.name.lower() in (names := get_song_names(S3Client().client, self.project)):
+                self.url = get_presigned_url(S3Client().client, names[self.name.lower()])
                 self.url_last_fetched = timezone.now()
             elif not self.match_required:
-                self.url = get_presigned_url(get_client(), self.name)
+                self.url = get_presigned_url(S3Client().client, self.name)
                 self.url_last_fetched = timezone.now()
             else:
                 self.url_last_error = timezone.now()
