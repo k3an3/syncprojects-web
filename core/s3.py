@@ -74,4 +74,4 @@ def get_versions(s3, project: str, song: str) -> List:
     versions = []
     for version in s3.resource.Bucket(BACKEND_BUCKET).object_versions.filter(Prefix=path):
         versions.append((version, get_presigned_url(s3.client, version.key, VersionId=version.version_id)))
-    return sorted(versions, key=lambda x: x[0].last_modified)
+    return sorted(versions, key=lambda x: x[0].last_modified, reverse=True)
