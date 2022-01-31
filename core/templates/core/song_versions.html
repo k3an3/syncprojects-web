@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+
+{% block header %}
+    <h1 class="h2">Audio Versions for Song <a href="{% url 'core:song-detail' project.id song.id %}">{{ song.name }}</a>
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'core/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for version, url in versions %}
+            <h5>{{ version.last_modified }}{% if version.is_latest %} <span class="badge bg-primary">Latest</span></h5>
+            {% endif %}
+            <audio controls src="{{ url }}">Couldn't load audio</audio>
+        {% endfor %}
+    </div>
+{% endblock %}

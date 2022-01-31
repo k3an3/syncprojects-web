@@ -18,7 +18,7 @@ class S3Client:
                 aws_access_key_id=BACKEND_ACCESS_ID,
                 aws_secret_access_key=BACKEND_SECRET_KEY
             )
-        return cls._session
+        return super().__new__(cls)
 
     @property
     def client(self):
@@ -30,7 +30,7 @@ class S3Client:
 
 
 def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION, method: str = 'get',
-                      content_type: str = "") -> str:
+                      content_type: str = "", **kwargs) -> str:
     extra = {}
     if content_type:
         extra['ContentType'] = content_type
@@ -40,6 +40,7 @@ def get_presigned_url(client, key: str, duration: int = PRESIGNED_URL_DURATION, 
             Params={
                 'Bucket': BACKEND_BUCKET,
                 'Key': key,
+                **kwargs
             }, ExpiresIn=duration
         )
     elif method == "put":
@@ -68,7 +69,9 @@ def get_song_names(client, project: str) -> Set:
     return {'.'.join(basename(f['Key']).split('.')[:-1]).lower(): f['Key'] for f in files}
 
 
-def get_versions(resource, project: str, song: str) -> List:
-    path = '/'.join(project, song)
-    versions = resource.Bucket(BACKEND_BUCKET).object_versions.filter(Prefix=path)
-    return [v for v in sorted(versions, key=lambda x: x.last_modified)]
+def get_versions(s3, project: str, song: str) -> List:
+    path = '/'.join((project, song))
+    versions = []
+    for version in s3.resource.Bucket(BACKEND_BUCKET).object_versions.filter(Prefix=path):
+        versions.append((version, get_presigned_url(s3.client, version.key, VersionId=version.version_id)))
+    return sorted(versions, key=lambda x: x[0].last_modified)

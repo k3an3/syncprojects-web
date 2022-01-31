@@ -182,8 +182,11 @@ class SongUpdateView(SongLookupBaseView, UserIsMemberPermissionMixin, generic.Up
 class SongVersionView(SongLookupBaseView, UserIsMemberPermissionMixin, View):
     def get(self, request, *args, **kwargs):
         song = self.get_object()
-        return render(request, 'song_versions.html',
-                      versions=get_versions(S3Client().resource, song.project.name, song.name))
+        return render(request, 'core/song_versions.html',
+                      context={'project': song.project,
+                               'song': song,
+                               'versions': get_versions(S3Client(), song.project.name, song.name)
+                               })
 
 
 class ClearSongPeaksView(SongLookupBaseView, UserPassesTestMixin, View):

@@ -12,6 +12,7 @@ urlpatterns = [
     path('projects/<int:pk>/unsubscribe/', views.ProjectUnsubscribeView.as_view(), name='project-unsubscribe'),
     path('projects/<int:pk>/songs/create/', views.SongCreateView.as_view(), name='song-create'),
     path('projects/<int:proj>/songs/<int:song>/', views.SongDetailView.as_view(), name='song-detail'),
+    path('projects/<int:proj>/songs/<int:song>/versions/', views.SongVersionView.as_view(), name='song-versions'),
     path('projects/<int:proj>/songs/<int:song>/edit/', views.SongUpdateView.as_view(), name='song-update'),
     path('projects/<int:proj>/songs/<int:song>/delete/', views.SongDeleteView.as_view(), name='song-delete'),
     path('projects/<int:proj>/songs/<int:song>/clear_peaks/', views.ClearSongPeaksView.as_view(),
