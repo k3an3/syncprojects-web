@@ -1,5 +1,5 @@
 const url =
-    'ws://'
+    'wss://'
     + window.location.host
     + '/ws/notify/';
 const notifySocket = new ReconnectingWebSocket(url);
