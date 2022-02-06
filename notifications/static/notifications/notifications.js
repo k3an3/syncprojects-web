@@ -7,6 +7,7 @@ let hasDisconnected = false;
 
 notifySocket.onmessage = e => {
     const data = JSON.parse(e.data);
+    playNotificationSound();
     showToast(data.title, data.content, data.type, data.icon, 10000);
 };
 
@@ -21,3 +22,9 @@ notifySocket.onopen = _ => {
         showToast("WebSocket Status", "Reconnected!", "success");
     }
 };
+
+const a = new Audio("/static/notifications/swiftly.mp3");
+
+function playNotificationSound() {
+    a.play();
+}
