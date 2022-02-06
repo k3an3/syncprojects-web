@@ -2,14 +2,22 @@ const url =
     'ws://'
     + window.location.host
     + '/ws/notify/';
-let notifySocket = new ReconnectingWebSocket(url);
+const notifySocket = new ReconnectingWebSocket(url);
+let hasDisconnected = false;
 
 notifySocket.onmessage = e => {
     const data = JSON.parse(e.data);
     showToast(data.title, data.content, data.type, data.icon, 10000);
 };
 
-notifySocket.onclose = e => {
+notifySocket.onclose = _ => {
     console.error('Notification socket closed unexpectedly');
     showToast("WebSocket Status", "You are disconnected", "danger");
+    hasDisconnected = true;
+};
+
+notifySocket.onopen = _ => {
+    if (hasDisconnected) { // just don't show on initial connect
+        showToast("WebSocket Status", "Reconnected!", "success");
+    }
 };

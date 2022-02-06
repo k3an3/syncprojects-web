@@ -14,8 +14,8 @@ def comment_handler(sender, instance, **kwargs):
     else:
         name = instance.project.name
         url = reverse('core:project-detail', args=(instance.project.id,))
-    msg = f"{instance.user.display_name()} commented on <a href=\"{url}\">{name}</a>"
-    NotifyConsumer.send_notification("Comments", msg)
+    msg = f"{instance.user.display_name()} commented on <a href=\"{url}#comment-{instance.id}\">{name}</a>"
+    NotifyConsumer.send_notification(instance.project.id, instance.user.id, "Comments", msg)
 
 
 @receiver(post_save, sender=CommentLike)
@@ -25,4 +25,4 @@ def comment_like_handler(sender, instance, **kwargs):
     else:
         url = reverse('core:project-detail', args=(instance.comment.project.id,))
     msg = f"{instance.user.display_name()} liked your <a href=\"{url}#comment-{instance.id}\">comment</a>"
-    NotifyConsumer.send_notification("Comments", msg)
+    NotifyConsumer.send_notification(instance.comment.project.id, instance.user.id, "Comments", msg)
