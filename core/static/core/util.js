@@ -65,14 +65,14 @@ function showAlert(msg, klass = "info") {
     }, 5000);
 }
 
-function showToast(title, content, type = "primary", icon = "") {
+function showToast(title, content, type = "primary", icon = "", delay = 5000) {
     new BsToast({
         title: title,
         subtitle: 'now',
         content: content,
         type: type,
         pause_on_hover: true,
-        delay: 5000,
+        delay: delay,
         position: 'top-right',
         img: {src: icon},
         icon: null,

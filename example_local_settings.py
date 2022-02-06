@@ -57,3 +57,12 @@ OwgUzQKBgH0F2WsoYiPM2Bnwqd4ryNXkMRWeh//sY+eM7IQE8QO6wslXX1fWFref
 hqPpfD6ZAHBWEU+m+ecP6a8XcVjlOH5WH34wwTondDMJlWAAnWt154o9kTMmZI7B
 x6sSqG4R9CuKVULL6A/TwzaUPmAaWWdR53LM4ugzqt9kbKNdlOuo
 -----END RSA PRIVATE KEY-----"""
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

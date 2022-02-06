@@ -29,6 +29,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'notifications',
     'core.apps.CoreConfig',
     'sync.apps.SyncConfig',
     'users.apps.UsersConfig',
@@ -79,6 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'syncprojectsweb.wsgi.application'
+ASGI_APPLICATION = 'syncprojectsweb.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
