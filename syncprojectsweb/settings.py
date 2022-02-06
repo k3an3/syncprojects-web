@@ -155,6 +155,7 @@ PRIVATE_KEY = ""
 
 LOGIN_REDIRECT_URL = '/'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SYSTEMD_UNIT = "syncprojects"
 GOGS_SECRET = ""
