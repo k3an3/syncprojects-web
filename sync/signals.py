@@ -8,7 +8,7 @@ from sync.models import Sync
 
 @receiver(post_save, sender=Sync)
 def sync_handler(sender, instance, **kwargs):
-    msg = f"{instance.user.display_name()} just synced {len(instance.songs)} song(s) in project {instance.project.name}"
+    msg = f"{instance.user.display_name()} just synced {instance.songs.count()} song(s) in project {instance.project.name}"
     NotifyConsumer.send_notification(instance.project.id, instance.user.id, "Sync", msg)
 
 
