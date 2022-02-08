@@ -76,9 +76,9 @@
         </div>
         <span class="text-muted">Audio last updated: {% if song.last_audio_sync %}{{ song.last_audio_sync.date }} by
             {{ song.last_audio_sync.user }}{% else %}unknown{% endif %}</span>
-        <span class="text-muted"><a href="{{ song.signed_url }}"><span class="fas fa-download"></span></a></span>
-        <a href="{% url 'core:song-versions' project.id song.id %}">Previous Versions <span
-                class="fas fa-history"></span></a>
+        <span class="text-muted"><a href="{{ song.signed_url }}"><span title="Download" class="fas fa-download"></span></a></span>
+        <a href="{% url 'core:song-versions' project.id song.id %}"><span
+                class="fas fa-history" title="Previous versions"></span></a>
     {% else %}
         <div class="alert alert-dismissable alert-secondary"><strong>No audio!</strong> There is currently not an audio
             URL defined for this song. Add one to enable the player and other features.

@@ -123,13 +123,13 @@
                                         {% endif %}
                                         {% if song.unresolved_comments.count %}
                                             <span class="fas fa-comment"></span>
-                                            <span class="text-muted">{{ song.unresolved_comments.count }}</span>
+                                            <span class="text-muted" title="Unresolved comments">{{ song.unresolved_comments.count }}</span>
                                         {% endif %}
                                         {% if song.is_locked %}
-                                            <span class="fas {% get_lock_icon song user %}"></span>
+                                            <span title="Song is checked out" class="fas {% get_lock_icon song user %}"></span>
                                         {% endif %}
                                         {% if song.archived %}
-                                            <span class="fas fa-box"></span>
+                                            <span title="Archived" class="fas fa-box"></span>
                                         {% endif %}
                                     </td>
                                 </tr>

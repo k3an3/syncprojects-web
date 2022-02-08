@@ -7,7 +7,7 @@
                     <div class="card-header">
                         <a href="{% url 'users:user-profile' comment.user.id %}">{{ comment.user.display_name }}</a>
                         &mdash; {{ comment.when_str }} ({{ comment.posted_date }}) {% if not comment.internal %}
-                        <span class="badge bg-danger">Follower</span>{% endif %}
+                        <span class="badge bg-danger" title="This user isn't a member of the project">Follower</span>{% endif %}
                         {% if comment.edited %} (edited){% endif %}
                         {% if comment.requires_resolution and not comment.resolved %}
                             <span id="comment-unresolved-{{ comment.id }}" class="badge bg-warning">Unresolved</span>
