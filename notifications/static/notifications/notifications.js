@@ -1,5 +1,5 @@
 const url =
-    'wss://'
+    location.protocol === 'https' ? 'wss://' : 'ws://'
     + window.location.host
     + '/ws/notify/';
 const notifySocket = new ReconnectingWebSocket(url);
@@ -12,8 +12,8 @@ notifySocket.onmessage = e => {
 };
 
 notifySocket.onclose = _ => {
-    console.error('Notification socket closed unexpectedly');
-    showToast("WebSocket Status", "You are disconnected", "danger");
+    console.error('Notification socket closed');
+    setTimeout(showToast, 3000, "WebSocket Status", "You are disconnected", "danger");
     hasDisconnected = true;
 };
 
