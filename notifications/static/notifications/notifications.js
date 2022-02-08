@@ -1,5 +1,5 @@
 const url =
-    location.protocol === 'https:' ? 'wss://' : 'ws://'
+    (location.protocol === 'https:' ? 'wss://' : 'ws://')
     + window.location.host
     + '/ws/notify/';
 const notifySocket = new ReconnectingWebSocket(url);
