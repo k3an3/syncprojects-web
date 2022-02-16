@@ -140,7 +140,7 @@ function disableDawButton(status = true) {
         daw_button.disabled = status;
         undo_button.setAttribute("hidden", "hidden");
         if (!status) {
-            daw_button.innerHTML = "Sync & Open <span class=\"fas fa-bacon\"></span>";
+            daw_button.innerHTML = "Sync & Open <span class=\"fas fa-arrow-up-right-from-square\"></span>";
             daw_button.className = "btn btn-sm btn-success";
         }
     }
