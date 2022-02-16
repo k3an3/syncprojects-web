@@ -22,7 +22,7 @@ class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = ["id", "name", "created_at", "updated_at", "sync_enabled", "directory_name", "last_mtime", "project",
-                  "is_locked", "revision", "url", "archived"]
+                  "is_locked", "revision", "url", "archived", "project_file"]
 
 
 class ProjectSerializer(serializers.ModelSerializer):
