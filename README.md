@@ -6,7 +6,7 @@ The application is built with Django, and also uses the Django REST Framework an
 
 Note that due to some licensing restrictions of 3rd party code, one of the audio player components has been forcefully stripped out of this version.
 
-![Syncprojects Web](https://github.com/k3an3/syncprojects-web/static/img/readme1.png)
+![Syncprojects Web](https://github.com/k3an3/syncprojects-web/raw/main/static/img/readme1.png)
 
 ## Features
 * Control the `syncprojects-client` application; trigger the client to sync or open the DAW/project. Changelog for DAW project changes.
