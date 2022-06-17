@@ -12,5 +12,5 @@ Pillow==8.1.0
 PyJWT[crypto]==2.0.1
 pytz==2021.1
 requests
-sqlparse==0.4.1
+sqlparse==0.4.2
 timeago==1.0.15
