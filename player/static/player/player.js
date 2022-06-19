@@ -30,6 +30,14 @@ wavesurfer.on('ready', async function () {
     fadeOut(document.getElementById('audio-spinner'));
     fadeIn(playerControls);
     await Promise.all([setUpMarkers(), setUpRegions()]);
+    let vol = localStorage.getItem('player_volume');
+    if (vol != null) {
+        console.debug("Restoring saved volume to: " + vol);
+        wavesurfer.setVolume(parseInt(vol));
+    } else {
+        vol = 1;
+    }
+    updateVolume(vol);
 });
 
 let allComments = {};
@@ -55,6 +63,7 @@ async function setUpMarkers() {
 wavesurfer.load(songUrl);
 
 function updateVolume(vol) {
+    localStorage.setItem('player_volume', vol.toString());
     playerVolume.innerText = Math.round(vol * 100).toString() + "%";
 }
 
