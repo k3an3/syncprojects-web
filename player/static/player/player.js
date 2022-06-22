@@ -12,6 +12,7 @@ const seekInc = 1;
 const volMax = 1;
 const volMin = 0;
 let loopAll = false;
+let party = false;
 
 let wavesurfer = WaveSurfer.create({
     container: '#waveform',
