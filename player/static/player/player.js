@@ -81,24 +81,30 @@ async function playerControl(e) {
         case "play":
             wavesurfer.playPause();
             if (wavesurfer.isPlaying()) {
+                party_action('play');
                 e.currentTarget.innerHTML = '<span class="fas fa-pause"></span>';
                 e.currentTarget.className = "btn btn-warning player-control";
             } else {
+                party_action('pause');
                 e.currentTarget.innerHTML = '<span class="fas fa-play"></span>';
                 e.currentTarget.className = "btn btn-success player-control";
             }
             break;
         case "forward":
             wavesurfer.skipForward(seekInc);
+            party_action('seek', {'offset': wavesurfer.getCurrentTime()});
             break;
         case "backward":
             wavesurfer.skipBackward(seekInc);
+            party_action('seek', {'offset': wavesurfer.getCurrentTime()});
             break;
         case "begin":
             wavesurfer.seekTo(0);
+            party_action('seek', {'offset': 0});
             break;
         case "end":
             wavesurfer.seekTo(1);
+            party_action('seek', {'offset': 1});
             break;
         case "loop":
             loopAll = !loopAll;
