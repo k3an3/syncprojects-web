@@ -25,6 +25,13 @@ class PartyConsumer(AsyncWebsocketConsumer):
         self.song = self.scope["url_route"]["kwargs"]["song"]
         if not await self.check_song_access(self.song):
             await self.close()
+        await self.channel_layer.group_send(
+            get_group(self.song),
+            {
+                'type': 'action',
+                'message': {'user': self.user.display_name(), 'action': 'join'}
+            }
+        )
         await self.channel_layer.group_add(
             get_group(self.song),
             self.channel_name
@@ -37,19 +44,25 @@ class PartyConsumer(AsyncWebsocketConsumer):
             get_group(self.song),
             self.channel_name
         )
+        await self.channel_layer.group_send(
+            get_group(self.song),
+            {
+                'type': 'action',
+                'message': {'user': self.user.display_name(), 'action': 'quit'}
+            }
+        )
 
     # Receive message from WebSocket
     async def receive(self, text_data):
         data = json.loads(text_data)
-        data['user'] = self.user.username
-        message = data['message']
+        data['user'] = self.user.display_name()
 
         # Send message to room group
         await self.channel_layer.group_send(
             get_group(self.song),
             {
                 'type': 'action',
-                'message': message
+                'message': data
             }
         )
 

@@ -7,6 +7,7 @@ const waveformDiv = document.getElementById('waveform');
 const playerControls = document.getElementById('player-controls');
 const playerVolume = document.getElementById('player-volume');
 const playButton = document.getElementById('player-play');
+const partyButton = document.getElementById('party-toggle');
 const volInc = 0.1;
 const seekInc = 1;
 const volMax = 1;
@@ -81,7 +82,7 @@ async function playerControl(e) {
         case "play":
             wavesurfer.playPause();
             if (wavesurfer.isPlaying()) {
-                party_action('play');
+                party_action('play', {offset: wavesurfer.getCurrentTime()});
                 e.currentTarget.innerHTML = '<span class="fas fa-pause"></span>';
                 e.currentTarget.className = "btn btn-warning player-control";
             } else {
@@ -159,6 +160,10 @@ wavesurfer.on('marker-click', (e) => {
     window.location = '#comment-' + allComments[e.time].id;
 });
 
+wavesurfer.on('seek', () => {
+    party_action('seek', {offset: wavesurfer.getCurrentTime()});
+});
+
 wavesurfer.on('error', (e) => {
     showToast("Audio Player", "Error: " + e, "danger");
     document.getElementById("audio-spinner").innerHTML = "<strong>Error loading audio</strong>";
@@ -175,3 +180,12 @@ wavesurfer.on('finish', (e) => {
 });
 
 bindEventToSelector('.player-control', playerControl);
+
+partyButton.addEventListener('click', e => {
+    if (!party) {
+        activateParty();
+    } else {
+        disableParty();
+    }
+    party = !party;
+});
