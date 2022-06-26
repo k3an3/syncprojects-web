@@ -1,7 +1,6 @@
 import json
 
 from channels.db import database_sync_to_async
-from core.models import Song
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 PARTY_GROUP = "party"
@@ -15,6 +14,7 @@ def get_group(key: int):
 class PartyConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def check_song_access(self, song_id):
+        from core.models import Song
         song = Song.objects.get(id=int(song_id))
         if self.user.can_sync(song):
             return True
