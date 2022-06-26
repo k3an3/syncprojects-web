@@ -1,6 +1,5 @@
 import hashlib
 import hmac
-
 from django.http import JsonResponse
 from rest_framework import permissions, status
 from rest_framework import viewsets
@@ -138,7 +137,7 @@ def update_webhook(request):
         secret = bytes(GOGS_SECRET.encode())
         mac = hmac.new(secret, msg=request.body, digestmod=hashlib.sha256)
         if hmac.compare_digest(mac.hexdigest(), request.headers['X-Gogs-Signature']):
-            if request.data.get("ref") == "refs/heads/master":
+            if request.data.get("ref") in {"refs/heads/master", "refs/heads/main"}:
                 update()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
     return HTTP_403_RESPONSE
