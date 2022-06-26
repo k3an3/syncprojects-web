@@ -82,30 +82,30 @@ async function playerControl(e) {
         case "play":
             wavesurfer.playPause();
             if (wavesurfer.isPlaying()) {
-                party_action('play', {offset: wavesurfer.getCurrentTime()});
+                partyAction('play', {offset: wavesurfer.getCurrentTime()});
                 e.currentTarget.innerHTML = '<span class="fas fa-pause"></span>';
                 e.currentTarget.className = "btn btn-warning player-control";
             } else {
-                party_action('pause');
+                partyAction('pause');
                 e.currentTarget.innerHTML = '<span class="fas fa-play"></span>';
                 e.currentTarget.className = "btn btn-success player-control";
             }
             break;
         case "forward":
             wavesurfer.skipForward(seekInc);
-            party_action('seek', {'offset': wavesurfer.getCurrentTime()});
+            partyAction('seek', {'offset': wavesurfer.getCurrentTime()});
             break;
         case "backward":
             wavesurfer.skipBackward(seekInc);
-            party_action('seek', {'offset': wavesurfer.getCurrentTime()});
+            partyAction('seek', {'offset': wavesurfer.getCurrentTime()});
             break;
         case "begin":
             wavesurfer.seekTo(0);
-            party_action('seek', {'offset': 0});
+            partyAction('seek', {'offset': 0});
             break;
         case "end":
             wavesurfer.seekTo(1);
-            party_action('seek', {'offset': 1});
+            partyAction('seek', {'offset': 1});
             break;
         case "loop":
             loopAll = !loopAll;
@@ -161,7 +161,7 @@ wavesurfer.on('marker-click', (e) => {
 });
 
 wavesurfer.on('seek', () => {
-    party_action('seek', {offset: wavesurfer.getCurrentTime()});
+    partyAction('seek', {offset: wavesurfer.getCurrentTime()});
 });
 
 wavesurfer.on('error', (e) => {
@@ -172,6 +172,7 @@ wavesurfer.on('error', (e) => {
 wavesurfer.on('finish', (e) => {
     if (loopAll) {
         wavesurfer.playPause();
+        partyAction('play', {'offset': 0.0});
         setTimeout(_ => {
             playButton.innerHTML = '<span class="fas fa-pause"></span>';
             playButton.className = "btn btn-warning";
@@ -181,11 +182,15 @@ wavesurfer.on('finish', (e) => {
 
 bindEventToSelector('.player-control', playerControl);
 
-partyButton.addEventListener('click', e => {
+partyButton.addEventListener('click', async _ => {
     if (!party) {
-        activateParty();
+        await activateParty();
+        partyButton.innerHTML = 'Leave Party Session <span class="fas fa-users"></span>';
+        partyButton.className = "btn btn-danger";
     } else {
-        disableParty();
+        await disableParty();
+        partyButton.innerHTML = 'Join Party Session <i class="fas fa-users"></i>';
+        partyButton.className = "btn btn-secondary";
     }
     party = !party;
 });

@@ -17,7 +17,7 @@ async function disableParty() {
     console.log("Party ended");
 }
 
-function party_action(action, data={}) {
+function partyAction(action, data = {}) {
     if (partySocket != null) {
         data.action = action;
         data.session = browserSessionId;
@@ -38,18 +38,18 @@ function registerSocket() {
             case "play":
                 wavesurfer.play(data.offset);
                 if (data.offset !== 0.0) {
-                    msg += ` at ${Math.round(data.offset)}`;
+                    msg += ` at ${secondsToMMSS(data.offset)}`;
                 }
-                //playButton.innerHTML = '<span class="fas fa-pause"></span>';
-                //playButton.className = "btn btn-warning player-control";
                 break;
             case "pause":
                 wavesurfer.pause();
-                //playButton.innerHTML = '<span class="fas fa-play"></span>';
-                //playButton.className = "btn btn-success player-control";
                 break;
             case "seek":
+                wavesurfer.un('seek');
                 wavesurfer.seekTo(data.offset / wavesurfer.getDuration());
+                wavesurfer.on('seek', () => {
+                    partyAction('seek', {offset: wavesurfer.getCurrentTime()});
+                });
                 msg = "";
                 break;
             case "join":
