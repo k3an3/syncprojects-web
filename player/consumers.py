@@ -2,6 +2,7 @@ import json
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.utils.html import escape
 
 PARTY_GROUP = "party"
 
@@ -29,7 +30,7 @@ class PartyConsumer(AsyncWebsocketConsumer):
             get_group(self.song),
             {
                 'type': 'action',
-                'message': {'user': self.user.display_name(), 'action': 'join'}
+                'message': {'user': escape(self.user.display_name()), 'action': 'join'}
             }
         )
         await self.channel_layer.group_add(
@@ -48,14 +49,14 @@ class PartyConsumer(AsyncWebsocketConsumer):
             get_group(self.song),
             {
                 'type': 'action',
-                'message': {'user': self.user.display_name(), 'action': 'quit'}
+                'message': {'user': escape(self.user.display_name()), 'action': 'quit'}
             }
         )
 
     # Receive message from WebSocket
     async def receive(self, text_data):
         data = json.loads(text_data)
-        data['user'] = self.user.display_name()
+        data['user'] = escape(self.user.display_name())
 
         # Send message to room group
         await self.channel_layer.group_send(
