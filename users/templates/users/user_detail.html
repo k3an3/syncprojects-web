@@ -33,12 +33,14 @@
                 <form method="post" action="{% url 'users:user-token' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-secondary">(Re)generate Token</button>
-                    {% if user.token %}
-                        <button onclick="alert('{{ user.token }}');" class="btn btn-sm btn-outline-secondary">Show
-                            Token
-                        </button>
-                    {% endif %}
                 </form>
+            </div>
+            <div class="btn-group me-2">
+                {% if user.token %}
+                    <button onclick="alert('{{ user.token }}');" class="btn btn-sm btn-outline-secondary">Show
+                        Token
+                    </button>
+                {% endif %}
             </div>
         {% endif %}
         {% if user.is_superuser %}
