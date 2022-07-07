@@ -29,6 +29,14 @@
                 <a href="{% url 'sync:client-login' %}" class="btn btn-sm btn-outline-secondary">Authorize Client</a>
                 <button id="sync-disable" class="btn btn-sm btn-outline-secondary">Disable sync for browser</button>
             </div>
+            <div class="btn-group me-2">
+                <form method="post" action="{% url 'users:user-token' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">(Re)generate Token</button>
+                    <button onclick="alert('{{ user.token }}');" class="btn btn-sm btn-outline-secondary">Show Token
+                    </button>
+                </form>
+            </div>
         {% endif %}
         {% if user.is_superuser %}
             <div class="btn-group me-2">

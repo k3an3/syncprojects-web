@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.views import generic
+from django.views import generic, View
+from rest_framework.authtoken.models import Token
 
 
 class UserDetailView(LoginRequiredMixin, generic.DetailView):
@@ -29,3 +31,12 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
 
     def get_success_url(self):
         return reverse('users:user-profile')
+
+
+class UserTokenView(LoginRequiredMixin, View):
+    def post(self, *args, **kwargs):
+        token, created = Token.objects.get_or_create(user=self.request.user)
+        if not created:
+            token.delete()
+            Token.objects.create(user=self.request.user)
+        return redirect('users:user-profile')

@@ -1,6 +1,7 @@
 import re
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from rest_framework.authtoken.models import Token
 
 from core.models import Project, Song, Album, FeatureChangelog
 from sync.models import Sync
@@ -80,3 +81,9 @@ class User(AbstractUser):
 
     def render_links(self):
         return [link for link in re.split(r'[, \n]', self.links) if re.match(r'https?:\/\/', link)]
+
+    def token(self):
+        try:
+            return Token.objects.get(user=self)
+        except Token.DoesNotExist:
+            pass
