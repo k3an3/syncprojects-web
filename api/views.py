@@ -1,15 +1,15 @@
 import hashlib
 import hmac
 from django.http import JsonResponse
-from rest_framework import permissions, status
+from rest_framework import permissions, status, mixins
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, action, permission_classes, authentication_classes
 from rest_framework.response import Response
 
 from api.permissions import UserHasProjectAccess
-from api.serializers import ProjectSerializer, LockSerializer, SongSerializer
+from api.serializers import ProjectSerializer, LockSerializer, SongSerializer, AlbumSerializer
 from api.utils import update, awp_write_peaks, awp_read_peaks, CsrfExemptSessionAuthentication, get_tokens_for_user
-from core.models import Song, Lock
+from core.models import Song, Lock, Album
 from sync.models import ChangelogEntry
 from sync.utils import get_signed_data
 from syncprojectsweb.settings import GOGS_SECRET
@@ -129,6 +129,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
             else:
                 # already unlocked
                 return Response({'status': 'unlocked', 'locked_by': None})
+
+
+class AlbumViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = AlbumSerializer
+    permission_classes = [permissions.IsAuthenticated, UserHasProjectAccess]
+    queryset = Album.objects.all()
 
 
 @api_view(['POST'])

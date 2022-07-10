@@ -13,7 +13,7 @@ class AdminOrSelfOnly(permissions.BasePermission):
 
 class UserHasProjectMemberAccess(permissions.BasePermission):
     """
-    Custom permission to only allow owners of an object to edit it.
+    Custom permission to only allow owners of an object to do anything
     """
 
     def has_object_permission(self, request, view, obj):
@@ -27,8 +27,8 @@ class UserHasProjectAccess(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return bool(
-            (request.method in SAFE_METHODS or view.action == 'lock') and
-            request.user.has_subscriber_access(obj) or
+            ((request.method in SAFE_METHODS or view.action == 'lock') and
+             request.user.has_subscriber_access(obj)) or
             request.user.can_sync(obj)
         )
 

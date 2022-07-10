@@ -3,7 +3,7 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from api.views import ProjectViewSet, update_webhook, peaks, \
-    sign_data, SongViewSet, fetch_user_tokens
+    sign_data, SongViewSet, fetch_user_tokens, AlbumViewSet
 from comments.api.urls import router as comments_router
 from player.api.urls import router as player_router
 from snippets.api.urls import router as snippets_router
@@ -13,6 +13,7 @@ from users.api.urls import router as users_router
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet, 'project')
+router.register(r'albums', AlbumViewSet, 'album')
 router.register(r'songs', SongViewSet, 'song')
 
 # Submodule APIs

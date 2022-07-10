@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import Project, Song, Lock
+from core.models import Project, Song, Lock, Album
 from sync.api.serializers import SyncSerializer
 
 
@@ -41,3 +41,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         return SongSerializer(request.user.collab_songs.filter(project=project), many=True, read_only=True).data
 
 
+class AlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = "__all__"
