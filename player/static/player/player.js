@@ -6,12 +6,17 @@ if (songUrlE) {
 const waveformDiv = document.getElementById('waveform');
 const playerControls = document.getElementById('player-controls');
 const playerVolume = document.getElementById('player-volume');
+const playerSpeed = document.getElementById('player-speed');
 const playButton = document.getElementById('player-play');
 const partyButton = document.getElementById('party-toggle');
 const volInc = 0.1;
 const seekInc = 1;
 const volMax = 1;
 const volMin = 0;
+const speedInc = 0.05;
+const speedMax = 2.0;
+const speedMin = 0.5;
+const speedDefault = 1.0;
 let loopAll = false;
 let party = false;
 
@@ -20,6 +25,8 @@ let wavesurfer = WaveSurfer.create({
     waveColor: 'cyan',
     progressColor: 'blue',
     hideScrollbar: true,
+    backend: 'MediaElement',
+    partialRender: false,
     plugins: [
         WaveSurfer.regions.create({}),
         WaveSurfer.markers.create({}),
@@ -35,7 +42,7 @@ wavesurfer.on('ready', async function () {
     let vol = localStorage.getItem('player_volume');
     if (vol != null) {
         console.debug("Restoring saved volume to: " + vol);
-        wavesurfer.setVolume(parseInt(vol));
+        wavesurfer.setVolume(parseFloat(vol));
     } else {
         vol = 1;
     }
@@ -69,6 +76,11 @@ function updateVolume(vol) {
     playerVolume.innerText = Math.round(vol * 100).toString() + "%";
 }
 
+function updateSpeed(speed) {
+    playerSpeed.innerText = speed.toFixed(2).toString() + "x";
+    wavesurfer.setPlaybackRate(speed);
+}
+
 function addMarker(time, color = "gray", text = "", position = "top") {
     return wavesurfer.addMarker({time: time, label: text, color: color, position: position});
 }
@@ -77,6 +89,7 @@ async function playerControl(e) {
     const action = e.currentTarget.id.split("-")[1];
     console.log("Wavesurfer action " + action);
     let vol = 0;
+    let speed = 1.0;
 
     switch (action) {
         case "play":
@@ -116,7 +129,7 @@ async function playerControl(e) {
             }
         case "volup":
             vol = wavesurfer.getVolume();
-            if (vol + volInc <= volMax) {
+            if ((vol + volInc).toFixed(2) <= volMax) {
                 vol += volInc;
                 wavesurfer.setVolume(vol);
                 updateVolume(vol);
@@ -126,7 +139,7 @@ async function playerControl(e) {
             break;
         case "voldown":
             vol = wavesurfer.getVolume();
-            if (vol - volInc >= volMin) {
+            if ((vol - volInc).toFixed(2) >= volMin) {
                 vol -= volInc;
                 wavesurfer.setVolume(vol);
                 updateVolume(vol);
@@ -142,6 +155,21 @@ async function playerControl(e) {
             } else {
                 e.currentTarget.className = "btn btn-outline-danger player-control";
             }
+            break;
+        case "slow":
+            speed = wavesurfer.getPlaybackRate();
+            if ((speed - speedInc).toFixed(2) >= speedMin) {
+                updateSpeed(speed - speedInc);
+            }
+            break;
+        case "fast":
+            speed = wavesurfer.getPlaybackRate();
+            if ((speed + speedInc).toFixed(2) <= speedMax) {
+                updateSpeed(speed + speedInc);
+            }
+            break;
+        case "normalspeed":
+            updateSpeed(speedDefault);
             break;
     }
 }

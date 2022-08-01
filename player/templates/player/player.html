@@ -29,6 +29,18 @@
                 class="fas fa-volume-up"></span></button>
         <span class="text-muted">Volume:&nbsp;</span><span class="text-muted" id="player-volume">-%</span>
     </div>
+
+    <div class="btn-group" role="group">
+        <button type="button" id="player-normalspeed" class="btn btn-outline-info player-control"><span
+                class="fas fa-tachometer-alt"></span></button>
+        <button type="button" id="player-slow" class="btn btn-secondary player-control"><span
+                class="fas fa-snowflake"></span>
+        </button>
+        <button type="button" id="player-fast" class="btn btn-secondary player-control"><span
+                class="fas fa-burn"></span></button>
+        <span class="text-muted">Speed:&nbsp;</span><span class="text-muted" id="player-speed">1.00x</span>
+    </div>
+
     <button class="btn btn-warning region-control" id="region-add">Add Region<span class="fas fa-plus"></span></button>
     <button class="btn btn-primary region-control" id="region-save" hidden>Save <span class="fas fa-save"></span>
     </button>
@@ -38,5 +50,3 @@
 {% include 'player/region.html' %}
 
 <span id="song_url" hidden>{{ song.signed_url }}</span>
-
-
