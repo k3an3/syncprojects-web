@@ -23,3 +23,15 @@ Note that due to some licensing restrictions of 3rd party code, one of the audio
 * Tracking of band/project expenses/income
 * Social features
 * S3/cloud auth actually secure
+
+# Installation
+```
+pip install -r requirements.txt
+./manage.py migrate
+./manage.py runserver
+```
+Or, use [Vagrant](https://www.vagrantup.com/) to set up a VM:
+```
+vagrant up
+```
+```
