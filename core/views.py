@@ -19,7 +19,7 @@ SONG_FIELDS = ['name', 'sync_enabled', 'directory_name', 'project_file', 'shared
 try:
     version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
     revision = subprocess.check_output(["git", "rev-list", "--count", "HEAD"]).strip().decode()
-except subprocess.CalledProcessError:
+except (subprocess.CalledProcessError, FileNotFoundError):
     version = None
     revision = None
 

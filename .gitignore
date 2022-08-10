@@ -70,3 +70,4 @@ peaks/
 static/audio/_documentation/
 static/audio/includes/
 *.bak
+.vagrant/
