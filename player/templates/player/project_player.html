@@ -1,0 +1,20 @@
+<div id="project-player">
+    <div id="waveform"></div>
+    <button class="btn btn-success btn-block" id="play-pause">
+        <span id="play" class="fas fa-play"> Play</span>
+        <span id="pause" class="fas fa-pause" style="display: none"> Pause</span>
+    </button>
+</div>
+
+<div class="list-group" id="playlist">
+    {% for album, songs in albums %}
+        {% for song in songs %}
+            {% if song.show_in_player and song.signed_url %}
+                <a href="{{ song.signed_url }}" class="list-group-item">
+                    <i class="fas fa-play"></i>
+                    {% if album.name %}{{ album.name }} &mdash; {% endif %}{{ song.name }}
+                </a>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</div>

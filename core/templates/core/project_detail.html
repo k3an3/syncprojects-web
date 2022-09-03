@@ -2,9 +2,6 @@
 {% load static %}
 {% load core_extras %}
 
-{% block head %}
-    {% include 'player/awp_player_res.html' %}
-{% endblock %}
 
 {% block header %}
     <h1 class="h2">{{ project.name }} Dashboard
@@ -145,7 +142,7 @@
                 </div>
             {% endfor %}
             <div class="col-lg-5">
-                {% include 'player/awp_player.html' %}
+                {% include 'player/project_player.html' %}
             </div>
         {% else %}
             <div class="alert alert-primary"><strong>No Songs here!</strong>{% if member %} Get started and <a
@@ -157,5 +154,6 @@
 {% endblock %}
 
 {% block script %}
+    {% include 'player/project_player_res.html' %}
     {% include 'sync/script.html' %}
 {% endblock %}
