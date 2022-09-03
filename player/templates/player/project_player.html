@@ -1,9 +1,13 @@
 <div id="project-player">
     <div id="waveform"></div>
-    <button class="btn btn-success btn-block" id="play-pause">
-        <span id="play" class="fas fa-play"> Play</span>
-        <span id="pause" class="fas fa-pause" style="display: none"> Pause</span>
-    </button>
+    <div class="button-group">
+        <button class="btn btn-success btn-block" id="play-pause">
+            <span id="play" class="fas fa-play"> Play</span>
+            <span id="pause" class="fas fa-pause" style="display: none"> Pause</span>
+        </button>
+        <button class="btn btn-default" id="prev"><span class="fas fa-step-backward"></span></button>
+        <button class="btn btn-default" id="next"><span class="fas fa-step-forward"></span></button>
+    </div>
 </div>
 
 <div class="list-group" id="playlist">

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let wavesurfer = WaveSurfer.create({
+    const wavesurfer = WaveSurfer.create({
         container: '#waveform',
         waveColor: 'cyan',
         progressColor: 'blue',
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         barWidth: 3,
     });
 
-    let playPause = document.querySelector('#play-pause');
+    const playPause = document.querySelector('#play-pause');
     playPause.addEventListener('click', function () {
         wavesurfer.playPause();
     });
@@ -23,11 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // The playlist links
-    let links = document.querySelectorAll('#playlist a');
+    const links = document.querySelectorAll('#playlist a');
     let currentTrack = 0;
 
     // Load a track by index and highlight the corresponding link
-    let setCurrentSong = index => {
+    const setCurrentSong = index => {
         links[currentTrack].classList.remove('active');
         currentTrack = index;
         links[currentTrack].classList.add('active');
@@ -54,6 +54,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Go to the next track on finish
     wavesurfer.on('finish', function () {
         setCurrentSong((currentTrack + 1) % links.length);
+    });
+
+    const next = document.querySelector("#next")
+    next.addEventListener('click', function () {
+        let newTrack = currentTrack;
+        if (currentTrack < links.length - 1) {
+            ++newTrack;
+        }
+        setCurrentSong(newTrack);
+        wavesurfer.play();
+    });
+
+    const prev = document.querySelector("#prev")
+    prev.addEventListener('click', function () {
+        let newTrack = currentTrack;
+        if (currentTrack > 0) {
+            --newTrack;
+        }
+        setCurrentSong(newTrack);
+        wavesurfer.play();
     });
 
     // Load the first track
