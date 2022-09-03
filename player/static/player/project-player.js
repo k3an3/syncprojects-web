@@ -1,3 +1,5 @@
+let initial = true;
+
 document.addEventListener('DOMContentLoaded', () => {
     const wavesurfer = WaveSurfer.create({
         container: '#waveform',
@@ -14,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toggle play/pause text
     wavesurfer.on('play', () => {
+        if (initial) {
+            links[currentTrack].classList.add('active');
+            initial = false;
+        }
         document.querySelector('#play').style.display = 'none';
         document.querySelector('#pause').style.display = '';
     });
@@ -30,8 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const setCurrentSong = index => {
         links[currentTrack].classList.remove('active');
         currentTrack = index;
-        links[currentTrack].classList.add('active');
         wavesurfer.load(links[currentTrack].href);
+        if (!initial) {
+            links[currentTrack].classList.add('active');
+        }
     };
 
     // Load the track on click
@@ -40,11 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             setCurrentSong(index);
         });
-    });
-
-    // Play on audio load
-    wavesurfer.on('ready', function () {
-        wavesurfer.play();
     });
 
     wavesurfer.on('error', function (e) {
@@ -63,7 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ++newTrack;
         }
         setCurrentSong(newTrack);
-        wavesurfer.play();
+        if (wavesurfer.isPlaying()) {
+            wavesurfer.play();
+        }
     });
 
     const prev = document.querySelector("#prev")
