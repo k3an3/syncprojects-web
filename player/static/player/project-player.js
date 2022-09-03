@@ -35,8 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load a track by index and highlight the corresponding link
     const setCurrentSong = index => {
         links[currentTrack].classList.remove('active');
-        currentTrack = index;
-        wavesurfer.load(links[currentTrack].href);
+        if (initial || currentTrack !== index) {
+            wavesurfer.load(links[currentTrack].href);
+            currentTrack = index;
+        }
         if (!initial) {
             links[currentTrack].classList.add('active');
         }
@@ -47,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             setCurrentSong(index);
+            wavesurfer.play();
         });
     });
 
@@ -83,4 +86,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load the first track
     setCurrentSong(currentTrack);
+    initial = false;
 });
