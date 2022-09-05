@@ -1,4 +1,5 @@
 let initial = true;
+let playing = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     const wavesurfer = WaveSurfer.create({
@@ -20,12 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
             links[currentTrack].classList.add('active');
             initial = false;
         }
+        playing = true;
         document.querySelector('#play').style.display = 'none';
         document.querySelector('#pause').style.display = '';
     });
     wavesurfer.on('pause', () => {
-        document.querySelector('#play').style.display = '';
-        document.querySelector('#pause').style.display = 'none';
+        if (!wavesurfer.isPlaying()) {
+            document.querySelector('#play').style.display = '';
+            document.querySelector('#pause').style.display = 'none';
+            playing = false;
+        }
     });
 
     // The playlist links
@@ -53,13 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    wavesurfer.on('ready', function (e) {
+        if (playing) {
+            wavesurfer.play();
+        }
+    });
+
     wavesurfer.on('error', function (e) {
         console.warn(e);
     });
 
     // Go to the next track on finish
     wavesurfer.on('finish', function () {
-        setCurrentSong((currentTrack + 1) % links.length);
+        let newTrack = currentTrack;
+        if (currentTrack < links.length - 1) {
+            ++newTrack;
+            setCurrentSong(newTrack);
+            wavesurfer.play();
+        }
     });
 
     const next = document.querySelector("#next")
@@ -86,5 +102,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load the first track
     setCurrentSong(currentTrack);
-    initial = false;
 });
