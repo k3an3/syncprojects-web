@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playPause = document.querySelector('#play-pause');
     playPause.addEventListener('click', function () {
         wavesurfer.playPause();
+        playing = !playing;
     });
 
     // Toggle play/pause text
@@ -29,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!wavesurfer.isPlaying()) {
             document.querySelector('#play').style.display = '';
             document.querySelector('#pause').style.display = 'none';
-            playing = false;
         }
     });
 
@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const setCurrentSong = index => {
         links[currentTrack].classList.remove('active');
         if (initial || currentTrack !== index) {
-            wavesurfer.load(links[currentTrack].href);
             currentTrack = index;
+            wavesurfer.load(links[currentTrack].href);
         }
         if (!initial) {
             links[currentTrack].classList.add('active');
@@ -74,30 +74,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentTrack < links.length - 1) {
             ++newTrack;
             setCurrentSong(newTrack);
-            wavesurfer.play();
+        } else {
+            initial = true;
+            setCurrentSong(0);
+            playing = false;
         }
     });
 
     const next = document.querySelector("#next")
     next.addEventListener('click', function () {
+        wavesurfer.cancelAjax();
         let newTrack = currentTrack;
         if (currentTrack < links.length - 1) {
             ++newTrack;
         }
         setCurrentSong(newTrack);
-        if (wavesurfer.isPlaying()) {
-            wavesurfer.play();
-        }
     });
 
     const prev = document.querySelector("#prev")
     prev.addEventListener('click', function () {
+        wavesurfer.cancelAjax();
         let newTrack = currentTrack;
         if (currentTrack > 0) {
             --newTrack;
         }
         setCurrentSong(newTrack);
-        wavesurfer.play();
     });
 
     // Load the first track
