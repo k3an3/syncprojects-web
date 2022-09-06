@@ -1,8 +1,41 @@
 let initial = true;
+let wavesurfer;
 let playing = false;
+let links;
+let currentTrack = 0;
+const partyButton = document.getElementById('party-toggle');
+let party = false;
+
+partyButton.addEventListener('click', async _ => {
+    if (!party) {
+        await activateParty();
+        partyButton.innerHTML = 'Leave Party Session <span class="fas fa-users"></span>';
+        partyButton.className = "btn btn-danger";
+    } else {
+        await disableParty();
+        partyButton.innerHTML = 'Join Party Session <i class="fas fa-users"></i>';
+        partyButton.className = "btn btn-secondary";
+    }
+    party = !party;
+});
+
+// Load a track by index and highlight the corresponding link
+function setCurrentSong(index, remote=false) {
+    links[currentTrack].classList.remove('active');
+    if (!initial && !remote) {
+        partyAction("song", {song: index});
+    }
+    if (initial || currentTrack !== index) {
+        currentTrack = index;
+        wavesurfer.load(links[currentTrack].href);
+    }
+    if (!initial) {
+        links[currentTrack].classList.add('active');
+    }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
-    const wavesurfer = WaveSurfer.create({
+    wavesurfer = WaveSurfer.create({
         container: '#waveform',
         waveColor: 'cyan',
         progressColor: 'blue',
@@ -12,8 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const playPause = document.querySelector('#play-pause');
     playPause.addEventListener('click', function () {
-        wavesurfer.playPause();
         playing = !playing;
+        wavesurfer.playPause();
+        if (playing) {
+            partyAction("play", {offset: wavesurfer.getCurrentTime()});
+        } else {
+            partyAction("pause");
+        }
     });
 
     // Toggle play/pause text
@@ -34,20 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // The playlist links
-    const links = document.querySelectorAll('#playlist a');
-    let currentTrack = 0;
-
-    // Load a track by index and highlight the corresponding link
-    const setCurrentSong = index => {
-        links[currentTrack].classList.remove('active');
-        if (initial || currentTrack !== index) {
-            currentTrack = index;
-            wavesurfer.load(links[currentTrack].href);
-        }
-        if (!initial) {
-            links[currentTrack].classList.add('active');
-        }
-    };
+    links = document.querySelectorAll('#playlist a');
 
     // Load the track on click
     Array.prototype.forEach.call(links, function (link, index) {
@@ -55,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             setCurrentSong(index);
             wavesurfer.play();
+            partyAction("play", {offset: wavesurfer.getCurrentTime()});
         });
     });
 

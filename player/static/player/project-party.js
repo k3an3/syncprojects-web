@@ -1,7 +1,7 @@
 const party_url =
     (location.protocol === 'https:' ? 'wss://' : 'ws://')
     + window.location.host
-    + '/ws/party/song/' + context.song + '/';
+    + '/ws/party/project/' + context.project + '/';
 let partySocket = null;
 const browserSessionId = Math.random().toString(36).substr(2);
 
@@ -51,6 +51,9 @@ function registerSocket() {
                     partyAction('seek', {offset: wavesurfer.getCurrentTime()});
                 });
                 msg = "";
+                break;
+            case "song":
+                setCurrentSong(data.song, true);
                 break;
             case "join":
                 msg = `${data.user} joined the party`

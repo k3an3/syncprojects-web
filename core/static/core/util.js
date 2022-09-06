@@ -144,8 +144,11 @@ function updateClocks() {
 let retries = 3;
 function setUpPlayer() {
     let time_btn = document.querySelector('#time-button');
-    if (time_btn != null)
+    if (time_btn != null) {
         time_btn.addEventListener('click', handleCommentTimeClick);
+    } else {
+        return;
+    }
     if (typeof wavesurfer !== 'undefined') {
         showTime();
         if (typeof comment_div !== 'undefined' && comment_div != null) {
