@@ -107,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    wavesurfer.on('seek', () => {
+        partyAction('seek', {offset: wavesurfer.getCurrentTime()});
+    });
+
     const next = document.querySelector("#next")
     next.addEventListener('click', function () {
         wavesurfer.cancelAjax();
