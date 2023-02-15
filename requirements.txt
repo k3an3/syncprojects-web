@@ -2,7 +2,7 @@ asgiref==3.5.0
 boto3==1.17.44
 channels==3.0.5
 channels-redis==3.4.0
-Django==3.2.15
+Django==3.2.18
 channels-redis==3.4.0
 django-bootstrap-v5==1.0.0
 django-debug-toolbar==3.2.1
